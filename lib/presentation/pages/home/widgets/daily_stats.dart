@@ -10,11 +10,13 @@ import '../../../../styles.dart';
 import 'package:provider/provider.dart';
 
 class DailyStats extends StatelessWidget {
-  final _chartSize = const Size(300.0, 300.0);
   DateFormat dateFormat = DateFormat('HH:mm');
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    final height = size.height;
+    final _chartSize = Size(height / 3, height / 3);
     return StateNotifierBuilder<DateState>(
       stateNotifier: context.watch<DateNotifier>(),
       builder: (BuildContext context, value, Widget child) {
