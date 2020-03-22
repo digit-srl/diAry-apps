@@ -1,9 +1,9 @@
 import 'package:diary/domain/entities/day.dart';
-import 'package:diary/location_utils.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
-import 'package:diary/extensions.dart';
+import 'package:diary/utils/extensions.dart';
 
 class LocationState {
 //  final List<bg.Location> liveLocations;

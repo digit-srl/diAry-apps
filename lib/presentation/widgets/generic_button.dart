@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/colors.dart';
+import 'package:diary/utils/colors.dart';
 
-import '../../styles.dart';
+import '../../utils/styles.dart';
 
 class GenericButton extends StatelessWidget {
   final String text;

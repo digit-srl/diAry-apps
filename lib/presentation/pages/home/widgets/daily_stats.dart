@@ -6,7 +6,7 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
-import '../../../../styles.dart';
+import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 
 class DailyStats extends StatelessWidget {

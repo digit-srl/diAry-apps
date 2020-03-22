@@ -2,11 +2,11 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:diary/location_utils.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'app.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
-import 'package:diary/extensions.dart';
+import 'package:diary/utils/extensions.dart';
 
 import 'domain/entities/day.dart';
 

@@ -2,8 +2,8 @@ import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'extensions.dart';
-import 'domain/entities/day.dart';
-import 'domain/entities/motion_activity.dart';
+import '../domain/entities/day.dart';
+import '../domain/entities/motion_activity.dart';
 
 class LocationUtils {
 //  static Future<Map<DateTime, Day>> aggregateLocationRecords() async {

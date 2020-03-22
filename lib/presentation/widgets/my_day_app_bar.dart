@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
-import 'package:diary/extensions.dart';
+import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;

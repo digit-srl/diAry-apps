@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/colors.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
-import 'package:diary/styles.dart';
+import 'package:diary/utils/styles.dart';
 
 class PlaceLegend extends StatelessWidget {
   @override

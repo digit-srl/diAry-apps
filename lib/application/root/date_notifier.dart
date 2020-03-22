@@ -1,7 +1,7 @@
 import 'package:state_notifier/state_notifier.dart';
 
 import 'package:intl/intl.dart';
-import 'package:diary/extensions.dart';
+import 'package:diary/utils/extensions.dart';
 
 class DateState {
   final DateTime selectedDate;

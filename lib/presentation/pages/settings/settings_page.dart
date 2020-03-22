@@ -7,9 +7,9 @@ import 'package:diary/application/root/date_notifier.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:provider/provider.dart';
-import '../../../colors.dart';
-import '../../../map_to_csv.dart';
-import 'package:diary/extensions.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/map_to_csv.dart';
+import 'package:diary/utils/extensions.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -36,7 +36,8 @@ class _SettingsPageState extends State<SettingsPage> {
         onTap: exportJson,
       ),
       SettingItem(Icons.gps_fixed, 'Calibra Sensori',
-          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.'),
+          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
+          enabled: false),
       SettingItem(Icons.local_hospital, 'Allerta sanitaria:',
           'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
           enabled: false),
@@ -45,19 +46,23 @@ class _SettingsPageState extends State<SettingsPage> {
     utils = [
       SettingItem(null, 'diAry - digital Arianna',
           'Versione 0.0.0. Premi per visualizzare il changelog',
-          customImageIconAsset: 'assets/diary_logo.png'),
+          enabled: false, customImageIconAsset: 'assets/diary_logo.png'),
       SettingItem(Icons.bug_report, 'Segnala un bug',
-          'Notifica un problema al team di sviluppo tramite mail.'),
+          'Notifica un problema al team di sviluppo tramite mail.',
+          enabled: false),
       SettingItem(Icons.star, 'Valutaci sullo store!',
-          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.'),
+          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
+          enabled: false),
       SettingItem(Icons.supervised_user_circle, 'Su di noi...',
-          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più'),
+          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più',
+          enabled: false),
     ];
 
     legals = [
-      SettingItem(Icons.info_outline, 'Terms of service', null),
-      SettingItem(Icons.info_outline, 'Privacy Policy', null),
-      SettingItem(Icons.info_outline, 'Licence open source', null),
+      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
+      SettingItem(Icons.info_outline, 'Privacy Policy', null, enabled: false),
+      SettingItem(Icons.info_outline, 'Licence open source', null,
+          enabled: false),
     ];
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
@@ -90,7 +95,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ListTile(
                 leading: Icon(
                   item.iconData,
-                  color: accentColor,
+                  color: item.enabled ? accentColor : secondaryText,
                 ),
                 title: Text(
                   item.title,
@@ -121,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 leading: item.iconData != null
                     ? Icon(
                         item.iconData,
-                        color: accentColor,
+                        color: item.enabled ? accentColor : secondaryText,
                       )
                     : Image.asset(
                         item.customImageIconAsset,
@@ -129,7 +134,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                 title: Text(
                   item.title,
-                  style: titleStyle,
+                  style: titleStyle.copyWith(
+                    color: item.enabled ? accentColor : secondaryText,
+                  ),
                 ),
                 subtitle: Text(
                   item.subtitle,
@@ -154,11 +161,13 @@ class _SettingsPageState extends State<SettingsPage> {
               ListTile(
                 leading: Icon(
                   item.iconData,
-                  color: accentColor,
+                  color: item.enabled ? accentColor : secondaryText,
                 ),
                 title: Text(
                   item.title,
-                  style: titleStyle,
+                  style: titleStyle.copyWith(
+                    color: item.enabled ? accentColor : secondaryText,
+                  ),
                 ),
                 onTap: item.onTap,
               ),

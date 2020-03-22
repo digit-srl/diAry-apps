@@ -11,10 +11,10 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
 import 'package:provider/provider.dart';
-import '../../../geospatial.dart';
+import '../../../utils/geospatial.dart';
 import 'geofence_view.dart';
 import 'widgets/geofence_marker.dart';
-import 'package:diary/extensions.dart';
+import 'package:diary/utils/extensions.dart';
 
 class MapPage extends StatefulWidget {
   @override

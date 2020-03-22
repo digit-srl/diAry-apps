@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:diary/colors.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';

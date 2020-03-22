@@ -9,7 +9,7 @@ import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/root/date_notifier.dart';
 import 'application/service_notifier.dart';
-import 'colors.dart';
+import 'utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg show Location;
