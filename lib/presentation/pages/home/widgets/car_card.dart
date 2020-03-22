@@ -13,14 +13,10 @@ class CarCard extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
 //        if (value.activity == MotionActivity.InVehicle) {
         return Container(
-          height: 240,
           margin: const EdgeInsets.only(top: 16),
           child: GenericCard(
-            icon: Icon(
-              Icons.directions_car,
-              color: Colors.black,
-              size: 80,
-            ),
+            iconData: Icons.directions_car,
+            iconColor: Colors.black,
 //              title: 'Ti stai muovendo con un veicolo',
             title: value.activity.toString().replaceAll('MotionActivity.', ''),
             description: 'Ci servirebbe sapere quale veicolo stai utilizzando',
