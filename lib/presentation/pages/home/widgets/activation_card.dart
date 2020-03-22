@@ -14,9 +14,10 @@ class ActivationCard extends StatelessWidget {
         final isEnabled = value.isEnabled;
         return Container(
           child: GenericCard(
-            iconData: Icons.directions_walk,
+            enabled: isEnabled,
             iconColor: value.isEnabled ? Colors.green : Colors.red,
-            title: 'Tracciamento ${value.isEnabled ? 'A' : 'Ina'}ttivo',
+            title:
+                '${value.isEnabled ? 'Tracciamento Attivo' : 'Tracciam. non attivo'}',
             description:
                 'Mantenere il tracciamento attivo per il buon funzionamento dell\'app.',
             bottomWidget: Align(

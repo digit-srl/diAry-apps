@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -415,6 +416,7 @@ class _MapPageState extends State<MapPage>
         markers: Set<Marker>.of(markers.values),
         circles: _allCircles,
       ),
+      floatingActionButton: MainMenuButton(),
     );
   }
 

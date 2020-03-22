@@ -15,11 +15,13 @@ class CarCard extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.only(top: 16),
           child: GenericCard(
+            enabled: false,
             iconData: Icons.directions_car,
             iconColor: Colors.black,
 //              title: 'Ti stai muovendo con un veicolo',
             title: value.activity.toString().replaceAll('MotionActivity.', ''),
-            description: 'Ci servirebbe sapere quale veicolo stai utilizzando',
+            description:
+                'Ti consigliamo di annotare quale veicolo stai utilizzando.',
             bottomWidget: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[

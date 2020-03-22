@@ -35,6 +35,8 @@ dependencies:
   path_provider: ^1.6.5
   share_extend: ^1.1.1
   device_preview: ^0.3.0+1
+  sized_context: ^0.2.1
+  unicorndial: ^1.1.5
   csv: ^4.0.3
   intl:
 

@@ -4,7 +4,8 @@ import 'colors.dart';
 
 const secondaryStyle = TextStyle(
     fontSize: 17, color: secondaryText, fontWeight: FontWeight.normal);
-
+const secondaryStyleDark =
+    TextStyle(fontSize: 17, color: accentColor, fontWeight: FontWeight.normal);
 const numberStyle = TextStyle(fontSize: 25);
 const titleCardStyle = TextStyle(fontSize: 25);
 const buttonStyle =

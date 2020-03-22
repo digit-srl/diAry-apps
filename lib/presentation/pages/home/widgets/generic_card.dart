@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../utils/styles.dart';
@@ -10,6 +11,7 @@ class GenericCard extends StatelessWidget {
   final Icon icon;
   final IconData iconData;
   final Color iconColor;
+  final bool enabled;
 
   const GenericCard(
       {Key key,
@@ -18,7 +20,8 @@ class GenericCard extends StatelessWidget {
       this.bottomWidget,
       this.icon,
       this.iconData,
-      this.iconColor})
+      this.iconColor,
+      this.enabled = false})
       : super(key: key);
 
   @override
@@ -28,7 +31,7 @@ class GenericCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: Color(0xFFEFF2F7),
+        color: enabled ? activatedCard : baseCard,
       ),
       child: Column(
         children: <Widget>[
@@ -40,11 +43,14 @@ class GenericCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: LayoutBuilder(
                     builder: (ctx, constraint) {
-                      return Icon(
-                        iconData,
-                        color: iconColor,
-                        size: constraint.maxWidth,
-                      );
+                      if (iconData != null) {
+                        return Icon(
+                          iconData,
+                          color: iconColor,
+                          size: constraint.maxWidth,
+                        );
+                      }
+                      return Image.asset('assets/diary_logo.png');
                     },
                   ),
                 ),
@@ -55,17 +61,15 @@ class GenericCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      AutoSizeText(
-                        title,
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                        style: titleCardStyle,
-                      ),
+                      AutoSizeText(title,
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          style: titleCardStyle),
                       SizedBox(height: 10),
                       AutoSizeText(
                         description,
-                        maxLines: 3,
-                        style: secondaryStyle,
+                        maxLines: 2,
+                        style: enabled ? secondaryStyleDark : secondaryStyle,
                         textAlign: TextAlign.start,
                       ),
                     ],
