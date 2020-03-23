@@ -41,6 +41,7 @@ class _MapPageState extends State<MapPage>
   Function removeLocationListener;
   Function removeDateListener;
   Function removeGeofenceListener;
+  Function removeGeofenceChangeListener;
 
   DateTime _currentDate = DateTime.now().withoutMinAndSec();
   String log = "";
@@ -128,7 +129,7 @@ class _MapPageState extends State<MapPage>
       },
     );
 
-    removeGeofenceListener =
+    removeGeofenceChangeListener =
         Provider.of<GeofenceChangeNotifier>(context).addListener(
       (state) {
         print('[MapPage] GeofenceNotifier');
@@ -462,11 +463,12 @@ class _MapPageState extends State<MapPage>
 
   @override
   void dispose() {
-    print('[MapPage dispose()]');
+    print('[MapPage] dispose()');
     removeServiceListener();
     removeDateListener();
     removeLocationListener();
     removeGeofenceListener();
+    removeGeofenceChangeListener();
     super.dispose();
   }
 }
