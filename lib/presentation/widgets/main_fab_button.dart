@@ -72,6 +72,7 @@ class MainMenuButton extends StatelessWidget {
           labelText: "Aggiungi luogo",
           currentButton: FloatingActionButton(
               heroTag: "aggiungi luogo",
+//              heroTag: null,
               backgroundColor: bgColor,
               foregroundColor: Colors.black,
               mini: true,
@@ -82,6 +83,7 @@ class MainMenuButton extends StatelessWidget {
           labelText: "Aggiungi segnalazione",
           currentButton: FloatingActionButton(
               heroTag: "aggiungi segnalazione",
+//              heroTag: null,
               backgroundColor: bgColor,
               foregroundColor: Colors.black,
               mini: true,

@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: MainMenuButton(),
+//      floatingActionButton: MainMenuButton(),
       bottomNavigationBar: Material(
         elevation: 4,
         child: Container(

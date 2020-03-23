@@ -1,3 +1,4 @@
+import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
 import 'package:diary/presentation/widgets/my_day_app_bar.dart';
@@ -37,6 +38,7 @@ class _RootPageState extends State<RootPage> {
           ],
         ),
       ),
+      floatingActionButton: MainMenuButton(),
     );
   }
 

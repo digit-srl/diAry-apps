@@ -52,9 +52,9 @@ class _MapPageState extends State<MapPage>
   Set<Marker> _currentPosition = {};
 
   Set<Marker> _annotations = {};
-  List<GeofenceMarker> _geofenceEvents = [];
   bg.Location _stationaryLocation;
 
+  List<GeofenceMarker> _geofenceEvents = [];
   Set<Circle> _geofenceEventEdges = {};
   Set<Circle> _geofenceEventLocations = {};
   Set<Circle> _stationaryMarker = {};
@@ -167,17 +167,17 @@ class _MapPageState extends State<MapPage>
     if (location.sample) {
       return;
     }
-//    addMarker(location);
-    circles.add(
-      Circle(
-          circleId: CircleId(location.uuid),
-          center: ll,
-          fillColor: Colors.black,
-          radius: 2),
-    );
-    setState(() {
-      updateAllCircles();
-    });
+    addMarker(location);
+//    circles.add(
+//      Circle(
+//          circleId: CircleId(location.uuid),
+//          center: ll,
+//          fillColor: Colors.black,
+//          radius: 2),
+//    );
+//    setState(() {
+//      updateAllCircles();
+//    });
   }
 
   void _onGeofence(bg.GeofenceEvent event) {
@@ -279,18 +279,27 @@ class _MapPageState extends State<MapPage>
     });
   }
 
-  void addMarker(bg.Location loc, {double hue}) {
-    final MarkerId markerId = MarkerId(loc.uuid);
+  void addMarker(bg.Location location, {double hue}) {
+    final MarkerId markerId = MarkerId(location.uuid);
     final Marker marker = Marker(
       markerId: markerId,
-      icon: BitmapDescriptor.defaultMarkerWithHue(
-          hue ?? BitmapDescriptor.hueGreen),
+      icon: _pinPositionMarkerIcon,
+//          onTap: () => onMarkerTap(loc),
       position: LatLng(
-        loc.coords.latitude,
-        loc.coords.longitude,
+        location.coords.latitude,
+        location.coords.longitude,
       ),
-      onTap: () => onMarkerTap(loc),
     );
+//    final Marker marker = Marker(
+//      markerId: markerId,
+//      icon: BitmapDescriptor.defaultMarkerWithHue(
+//          hue ?? BitmapDescriptor.hueGreen),
+//      position: LatLng(
+//        loc.coords.latitude,
+//        loc.coords.longitude,
+//      ),
+//      onTap: () => onMarkerTap(loc),
+//    );
     markers[markerId] = marker;
 //    _goToLocation(loc);
     setState(() {
@@ -303,12 +312,12 @@ class _MapPageState extends State<MapPage>
   /// Update Big Blue current position dot.
   void _updateCurrentPositionMarker(LatLng ll) {
     _currentPosition.clear();
-    markers[MarkerId("current_position")] = Marker(
+    final MarkerId markerId = MarkerId("current_position");
+    markers[markerId] = Marker(
       markerId: MarkerId("current_position"),
       position: ll,
       icon: _currentPositionMarkerIcon,
     );
-
     setState(() {});
 //    _currentPosition.add(Circle(
 //        circleId: CircleId('center'),
@@ -328,7 +337,7 @@ class _MapPageState extends State<MapPage>
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/current_pin.png')
+              imageConfiguration, 'assets/my_position_pin.png')
           .then(_updateCurrentBitmap);
     }
     if (_annotationPositionMarkerIcon == null) {
@@ -343,7 +352,7 @@ class _MapPageState extends State<MapPage>
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/black_pin.png')
+              imageConfiguration, 'assets/black_circle_pin.png')
           .then(_updateBlackBitmap);
     }
   }
@@ -417,7 +426,7 @@ class _MapPageState extends State<MapPage>
         markers: Set<Marker>.of(markers.values),
         circles: _allCircles,
       ),
-      floatingActionButton: MainMenuButton(),
+//      floatingActionButton: MainMenuButton(),
     );
   }
 
