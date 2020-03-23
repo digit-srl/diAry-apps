@@ -406,7 +406,7 @@ class _MapPageState extends State<MapPage>
         mapType: MapType.normal,
         initialCameraPosition: _initialPosition ?? _kGooglePlex,
         mapToolbarEnabled: false,
-        myLocationButtonEnabled: true,
+        myLocationButtonEnabled: false,
 //        myLocationEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
