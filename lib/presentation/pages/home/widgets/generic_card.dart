@@ -31,7 +31,7 @@ class GenericCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: enabled ? activatedCard : baseCard,
+        color: enabled ? baseCard : activatedCard,
       ),
       child: Column(
         children: <Widget>[
