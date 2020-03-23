@@ -44,7 +44,7 @@ android {
 
     defaultConfig {
         applicationId "srl.digit.diary"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -61,6 +61,9 @@ android {
     }
     buildTypes {
         release {
+            minifyEnabled false
+            useProguard true
+            shrinkResources false
             signingConfig signingConfigs.release
         }
     }
@@ -76,3 +79,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }
+// ADD THIS AT THE BOTTOM
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
