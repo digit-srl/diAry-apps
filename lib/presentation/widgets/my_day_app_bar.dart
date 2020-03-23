@@ -100,15 +100,15 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                Provider.of<LocationNotifier>(context, listen: false)
 //                    .addLocation(null);
 //              }),
-          IconButton(
-              color: isMoving ? Colors.green : Colors.red,
-              icon: Icon(Icons.directions_walk),
-              onPressed: () {
-                bg.BackgroundGeolocation.changePace(!isMoving);
-                setState(() {
-                  isMoving = !isMoving;
-                });
-              }),
+//          IconButton(
+//              color: isMoving ? Colors.green : Colors.red,
+//              icon: Icon(Icons.directions_walk),
+//              onPressed: () {
+//                bg.BackgroundGeolocation.changePace(!isMoving);
+//                setState(() {
+//                  isMoving = !isMoving;
+//                });
+//              }),
           IconButton(
             icon: Icon(_currentPage == 0
                 ? Icons.collections_bookmark

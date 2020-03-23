@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
               ),
               CarCard(),
               ActivationCard(),
-              PlaceLegend(),
+//              PlaceLegend(),
               SizedBox(
                 height: 20,
               ),
@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
                         width: 25,
                       ),
                       Text(
-                        '127',
+                        '-',
                         style: TextStyle(fontSize: 20),
                       )
                     ],
@@ -85,6 +85,18 @@ class HomePage extends StatelessWidget {
                 onPressed: () {},
               ),
               IconButton(
+                icon: Icon(Icons.list),
+                color: accentColor,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => SlicesPage(),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.settings),
                 color: accentColor,
                 iconSize: 30,
@@ -93,18 +105,6 @@ class HomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (BuildContext context) => SettingsPage(),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.list),
-                color: accentColor,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => SlicesPage(),
                     ),
                   );
                 },

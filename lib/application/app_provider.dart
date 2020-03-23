@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/application/service_notifier.dart';
@@ -22,7 +23,7 @@ class AppProvider with LocatorMixin {
 
     bg.BackgroundGeolocation.ready(bg.Config(
       reset: false,
-      debug: true,
+      debug: !kReleaseMode,
       persistMode: bg.Config.PERSIST_MODE_ALL,
       logLevel: bg.Config.LOG_LEVEL_VERBOSE,
       desiredAccuracy: bg.Config.DESIRED_ACCURACY_NAVIGATION,

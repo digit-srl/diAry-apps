@@ -21,7 +21,7 @@ class GenericCard extends StatelessWidget {
       this.icon,
       this.iconData,
       this.iconColor,
-      this.enabled = false})
+      this.enabled = true})
       : super(key: key);
 
   @override
