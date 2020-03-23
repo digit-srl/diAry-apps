@@ -169,7 +169,8 @@ class DailyStats extends StatelessWidget {
                   (e.activity == MotionActivity.OnFoot ||
                           e.activity == MotionActivity.Walking ||
                           e.activity == MotionActivity.Running ||
-                          e.activity == MotionActivity.InVehicle)
+                          e.activity == MotionActivity.InVehicle ||
+                          e.activity == MotionActivity.OnBicycle)
                       ? Colors.blue
                       : e.activity == MotionActivity.Inactive
                           ? Colors.grey[100]
