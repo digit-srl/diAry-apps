@@ -63,8 +63,8 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
       ],
       child: MaterialApp(
-        locale: DevicePreview.of(context).locale, // <--- Add the locale
-        builder: DevicePreview.appBuilder, // <--- Add the builder
+//        locale: DevicePreview.of(context).locale, // <--- Add the locale
+//        builder: DevicePreview.appBuilder, // <--- Add the builder
         title: 'Flutter Demo',
         theme: ThemeData(
             accentColor: accentColor,

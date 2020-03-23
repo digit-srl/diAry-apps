@@ -37,6 +37,7 @@ dependencies:
   device_preview: ^0.3.0+1
   sized_context: ^0.2.1
   unicorndial: ^1.1.5
+  firebase_core: ^0.4.4+3
   csv: ^4.0.3
   intl:
 
