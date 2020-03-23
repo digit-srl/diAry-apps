@@ -327,9 +327,9 @@ class _MapPageState extends State<MapPage>
 //        strokeWidth: 3,
 //        radius: 11));
 
-    setState(() {
-      updateAllCircles();
-    });
+//    setState(() {
+//      updateAllCircles();
+//    });
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
