@@ -6,6 +6,7 @@ import '../slices_page.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
 import 'widgets/gps_card.dart';
+import 'widgets/place_legend.dart';
 
 class MyBehavior extends ScrollBehavior {
   @override
@@ -32,7 +33,7 @@ class HomePage extends StatelessWidget {
               CarCard(),
               GpsCard(),
               ActivationCard(),
-//              PlaceLegend(),
+              PlaceLegend(),
               SizedBox(
                 height: 20,
               ),

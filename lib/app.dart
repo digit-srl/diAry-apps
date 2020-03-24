@@ -2,10 +2,11 @@ import 'package:device_preview/device_preview.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'application/app_provider.dart';
 import 'application/geofence_change_notifier.dart';
+import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/root/date_notifier.dart';
@@ -59,6 +60,9 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         StateNotifierProvider<GeofenceNotifier, GeofenceState>(
           create: (_) => GeofenceNotifier(),
+        ),
+        StateNotifierProvider<GeofenceEventNotifier, GeofenceEventState>(
+          create: (_) => GeofenceEventNotifier(),
         ),
         StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
           create: (_) => GeofenceChangeNotifier(),

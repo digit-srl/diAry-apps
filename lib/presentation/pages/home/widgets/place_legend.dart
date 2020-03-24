@@ -1,63 +1,68 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/geofence_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/styles.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 
 class PlaceLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return StateNotifierBuilder<GeofenceState>(
+      stateNotifier: context.watch<GeofenceNotifier>(),
+      builder: (BuildContext context, value, Widget child) {
+        if (value.geofences.isEmpty) {
+          return Container();
+        }
+        return Container(
 //      height: 200,
-      margin: const EdgeInsets.symmetric(vertical: 16.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: Color(0xFFEFF2F7),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+          margin: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            color: Color(0xFFEFF2F7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
 //          mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            'Legenda luoghi',
-            style: titleCardStyle,
-          ),
-          Text(
-            'Descrizione',
-            style: secondaryStyle,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          PlaceRowLegend(
-            title: 'Casa',
-            pinColor: Colors.green,
-            location: 'Lat: 0.000 Long: 0.000',
-          ),
-          PlaceRowLegend(
-            title: 'Uffico',
-            pinColor: Colors.orange,
-            location: 'Lat: 0.000 Long: 0.000',
-          ),
-          PlaceRowLegend(
-            title: 'Piazza',
-            pinColor: Colors.pink,
-            location: 'Lat: 0.000 Long: 0.000',
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GenericButton(
-                onPressed: () {},
-                text: 'AGGIUNGI LUOGO',
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Legenda luoghi',
+                style: titleCardStyle,
               ),
-            ),
+              Text(
+                'Descrizione',
+                style: secondaryStyle,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              for (bg.Geofence geofence in value.geofences)
+                PlaceRowLegend(
+                  title: geofence.identifier,
+                  pinColor: Colors.orange,
+                  location:
+                      'Lat: ${geofence.latitude} Long: ${geofence.longitude}',
+                ),
+//              Align(
+//                alignment: Alignment.centerRight,
+//                child: Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: GenericButton(
+//                    onPressed: () {},
+//                    text: 'AGGIUNGI LUOGO',
+//                  ),
+//                ),
+//              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -114,9 +119,12 @@ class PlaceRowLegend extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.edit),
+                icon: Icon(Icons.delete),
                 color: accentColor,
-                onPressed: () {},
+                onPressed: () {
+                  Provider.of<GeofenceNotifier>(context, listen: false)
+                      .removeGeofence(title);
+                },
               ),
             ],
           ),

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:diary/application/geofence_event_notifier.dart';
+import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -214,6 +216,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                         },
                         onTap: (location) {
                           setState(() {
+                            lastLocation = location;
                             addCircle(location);
                           });
                         },
@@ -262,7 +265,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
             right: 10.0,
             child: _top != null
                 ? FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: _addGeofence,
                     child: Icon(Icons.check),
                   )
                 : Container(),
@@ -306,6 +309,34 @@ class _AddPlacePageState extends State<AddPlacePage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {});
       });
+    });
+  }
+
+  void _addGeofence() {
+    final geofence = bg.Geofence(
+        identifier: placeEditingController.text.trim().toUpperCase(),
+        radius: radius,
+        latitude: lastLocation.latitude,
+        longitude: lastLocation.longitude,
+        notifyOnEntry: true,
+        notifyOnExit: true,
+        extras: {
+          'radius': radius,
+          'center': {
+            'latitude': lastLocation.latitude,
+            'longitude': lastLocation.longitude
+          }
+        } //
+
+        );
+    bg.BackgroundGeolocation.addGeofence(geofence).then((bool success) {
+      if (success) {
+        Provider.of<GeofenceNotifier>(context, listen: false)
+            .addGeofence(geofence);
+        Navigator.of(context).pop();
+      }
+    }).catchError((error) {
+      print('[addGeofence] ERROR: $error');
     });
   }
 

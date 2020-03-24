@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/application/geofence_change_notifier.dart';
-import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
@@ -120,7 +120,8 @@ class _MapPageState extends State<MapPage>
       },
     );
 
-    removeGeofenceListener = Provider.of<GeofenceNotifier>(context).addListener(
+    removeGeofenceListener =
+        Provider.of<GeofenceEventNotifier>(context).addListener(
       (state) {
         print('[MapPage] GeofenceNotifier');
         if (state.geofenceEvent != null) {
@@ -132,7 +133,7 @@ class _MapPageState extends State<MapPage>
     removeGeofenceChangeListener =
         Provider.of<GeofenceChangeNotifier>(context).addListener(
       (state) {
-        print('[MapPage] GeofenceNotifier');
+        print('[MapPage] GeofenceChangeNotifier');
         if (state.geofencesChangeEvent != null && _currentDate.isToday()) {
           _onGeofencesChange(state.geofencesChangeEvent);
         }
@@ -221,38 +222,38 @@ class _MapPageState extends State<MapPage>
     // Update current position marker.
     _updateCurrentPositionMarker(hit);
 
-    // Determine bearing from center -> event location
-    double bearing = Geospatial.getBearing(center, hit);
-    // Compute a coordinate at the intersection of the line joining center point -> event location and the circle.
-    LatLng edge =
-        Geospatial.computeOffsetCoordinate(center, geofence.radius, bearing);
+//    // Determine bearing from center -> event location
+//    double bearing = Geospatial.getBearing(center, hit);
+//    // Compute a coordinate at the intersection of the line joining center point -> event location and the circle.
+//    LatLng edge =
+//        Geospatial.computeOffsetCoordinate(center, geofence.radius, bearing);
     // Green for ENTER, Red for EXIT.
-    Color color = Colors.green;
-    if (event.action == "EXIT") {
-      color = Colors.red;
-    } else if (event.action == "DWELL") {
-      color = Colors.yellow;
-    }
+//    Color color = Colors.green;
+//    if (event.action == "EXIT") {
+//      color = Colors.red;
+//    } else if (event.action == "DWELL") {
+//      color = Colors.yellow;
+//    }
 
-    _geofenceEventEdges.add(
-      Circle(
-          circleId: CircleId(Random().nextInt(1000).toString()),
-          center: edge,
-          fillColor: color,
-          radius: 4,
-          strokeWidth: 1),
-    );
-
-    // Event location CircleMarker (background: black, stroke doesn't work so stack 2 circles)
-    _geofenceEventLocations.add(
-      Circle(
-          circleId: CircleId(Random().nextInt(1000).toString()),
-          center: edge,
-          strokeColor: Colors.black,
-          fillColor: Colors.blue,
-          radius: 4,
-          strokeWidth: 2),
-    );
+//    _geofenceEventEdges.add(
+//      Circle(
+//          circleId: CircleId(Random().nextInt(1000).toString()),
+//          center: edge,
+//          fillColor: color,
+//          radius: 4,
+//          strokeWidth: 1),
+//    );
+//
+//    // Event location CircleMarker (background: black, stroke doesn't work so stack 2 circles)
+//    _geofenceEventLocations.add(
+//      Circle(
+//          circleId: CircleId(Random().nextInt(1000).toString()),
+//          center: edge,
+//          strokeColor: Colors.black,
+//          fillColor: Colors.blue,
+//          radius: 4,
+//          strokeWidth: 2),
+//    );
 
     setState(() => updateAllCircles());
   }
