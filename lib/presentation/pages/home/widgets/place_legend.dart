@@ -32,7 +32,7 @@ class PlaceLegend extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                'Legenda luoghi',
+                'Luoghi',
                 style: titleCardStyle,
               ),
               Text(

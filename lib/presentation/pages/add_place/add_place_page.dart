@@ -12,8 +12,10 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
+  final bool myHomeEnabled;
 
-  const AddPlacePage({Key key, this.location}) : super(key: key);
+  const AddPlacePage({Key key, this.location, this.myHomeEnabled = true})
+      : super(key: key);
 
   @override
   _AddPlacePageState createState() => _AddPlacePageState();
@@ -21,7 +23,7 @@ class AddPlacePage extends StatefulWidget {
 
 class _AddPlacePageState extends State<AddPlacePage> {
   double radius = 20;
-
+  bool _isHome = false;
   TextEditingController placeEditingController = TextEditingController();
 
   TextEditingController descPlaceEditingController = TextEditingController();
@@ -120,6 +122,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                 data: themeData,
                                 child: TextField(
                                   controller: placeEditingController,
+                                  maxLength: 20,
                                   decoration: InputDecoration(
                                       hintText: 'Nome luogo',
                                       labelText: 'Nome luogo'),
@@ -137,23 +140,44 @@ class _AddPlacePageState extends State<AddPlacePage> {
                       Expanded(
 //                    padding: const EdgeInsets.only(top: 16.0),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Flexible(
                               child: Container(),
                             ),
                             Flexible(
                               flex: 5,
-                              child: Theme(
-                                data: themeData,
-                                child: TextField(
-                                  controller: descPlaceEditingController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Descrizione luogo',
-                                    labelText: 'Descrizione',
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Abitazione principale',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
                                   ),
-                                ),
+                                  Spacer(),
+                                  Switch(
+                                    value: _isHome,
+                                    onChanged: widget.myHomeEnabled
+                                        ? (bool value) {
+                                            setState(() {
+                                              this._isHome = value;
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                ],
                               ),
+//                              child: Theme(
+//                                data: themeData,
+//                                child: TextField(
+//                                  controller: descPlaceEditingController,
+//                                  decoration: InputDecoration(
+//                                    hintText: 'Descrizione luogo',
+//                                    labelText: 'Descrizione',
+//                                  ),
+//                                ),
+//                              ),
                             ),
                           ],
                         ),
@@ -161,7 +185,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                       Expanded(
 //                    padding: const EdgeInsets.only(top: 16.0),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Flexible(
                               child: Container(),
