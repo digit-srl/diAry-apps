@@ -84,11 +84,11 @@ void main() async {
   }
 
   runApp(
-//    MyDayApp(locationsPerDate: locationsPerDate, days: days),
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) =>
-          MyDayApp(locationsPerDate: locationsPerDate, days: days),
-    ),
+    MyDayApp(locationsPerDate: locationsPerDate, days: days),
+//    DevicePreview(
+//      enabled: !kReleaseMode,
+//      builder: (context) =>
+//          MyDayApp(locationsPerDate: locationsPerDate, days: days),
+//    ),
   );
 }
