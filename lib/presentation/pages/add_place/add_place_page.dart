@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
+import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,10 +13,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
-  final bool myHomeEnabled;
 
-  const AddPlacePage({Key key, this.location, this.myHomeEnabled = true})
-      : super(key: key);
+  const AddPlacePage({Key key, this.location}) : super(key: key);
 
   @override
   _AddPlacePageState createState() => _AddPlacePageState();
@@ -38,13 +37,17 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Completer<GoogleMapController> _controller = Completer();
   double zoom = 19.0;
   Widget fab = Container();
+  bool isHomeEnabled;
+
+  Size get _size => _key?.currentContext?.size;
 
   double _top;
 
   @override
   void initState() {
     super.initState();
-
+    isHomeEnabled = !Provider.of<UserRepositoryImpl>(context, listen: false)
+        .isThereHomeGeofence();
     final locations = Provider.of<LocationNotifier>(context, listen: false)
         .getCurrentDayLocations;
 
@@ -124,13 +127,18 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                   controller: placeEditingController,
                                   maxLength: 20,
                                   decoration: InputDecoration(
-                                      hintText: 'Nome luogo',
-                                      labelText: 'Nome luogo'),
-                                  onSubmitted: (text) {
-                                    final size = _key.currentContext.size;
-                                    _top = size.height - 30;
+                                    hintText: 'Nome luogo',
+                                    labelText: 'Nome luogo',
+                                  ),
+                                  onChanged: (text) {
+                                    if (text.trim().length > 3) {
+                                      _top = _size.height - 30;
+                                    } else {
+                                      _top = null;
+                                    }
                                     setState(() {});
                                   },
+                                  onSubmitted: (text) {},
                                 ),
                               ),
                             ),
@@ -158,7 +166,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                   Spacer(),
                                   Switch(
                                     value: _isHome,
-                                    onChanged: widget.myHomeEnabled
+                                    onChanged: isHomeEnabled
                                         ? (bool value) {
                                             setState(() {
                                               this._isHome = value;
@@ -338,30 +346,37 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void _addGeofence() {
     final geofence = bg.Geofence(
-        identifier: placeEditingController.text.trim().toUpperCase(),
-        radius: radius,
-        latitude: lastLocation.latitude,
-        longitude: lastLocation.longitude,
-        notifyOnEntry: true,
-        notifyOnExit: true,
-        extras: {
-          'radius': radius,
-          'center': {
-            'latitude': lastLocation.latitude,
-            'longitude': lastLocation.longitude
+      identifier: placeEditingController.text.trim().toUpperCase(),
+      radius: radius,
+      latitude: lastLocation.latitude,
+      longitude: lastLocation.longitude,
+      notifyOnEntry: true,
+      notifyOnExit: true,
+      extras: {
+        'radius': radius,
+        'center': {
+          'latitude': lastLocation.latitude,
+          'longitude': lastLocation.longitude
+        }
+      },
+    );
+    bg.BackgroundGeolocation.addGeofence(geofence).then(
+      (bool success) {
+        if (success) {
+          Provider.of<GeofenceNotifier>(context, listen: false)
+              .addGeofence(geofence);
+          if (_isHome) {
+            Provider.of<UserRepositoryImpl>(context, listen: false)
+                .setHomeGeofenceIdentifier(geofence.identifier);
           }
-        } //
-
-        );
-    bg.BackgroundGeolocation.addGeofence(geofence).then((bool success) {
-      if (success) {
-        Provider.of<GeofenceNotifier>(context, listen: false)
-            .addGeofence(geofence);
-        Navigator.of(context).pop();
-      }
-    }).catchError((error) {
-      print('[addGeofence] ERROR: $error');
-    });
+          Navigator.of(context).pop();
+        }
+      },
+    ).catchError(
+      (error) {
+        print('[addGeofence] ERROR: $error');
+      },
+    );
   }
 
   Future<void> _goToLocation(LatLng loc) async {

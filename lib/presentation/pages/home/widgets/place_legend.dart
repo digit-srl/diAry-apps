@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/infrastructure/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/styles.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -47,7 +49,10 @@ class PlaceLegend extends StatelessWidget {
                   title: geofence.identifier,
                   pinColor: Colors.orange,
                   location:
-                      'Lat: ${geofence.latitude} Long: ${geofence.longitude}',
+                      'Lat: ${geofence.latitude.toStringAsFixed(2)} Long: ${geofence.longitude.toStringAsFixed(2)}',
+                  onRemove: () {
+                    _onRemove(context, geofence.identifier);
+                  },
                 ),
 //              Align(
 //                alignment: Alignment.centerRight,
@@ -65,14 +70,48 @@ class PlaceLegend extends StatelessWidget {
       },
     );
   }
+
+  _onRemove(BuildContext context, String identifier) {
+    final homeIdentifier =
+        Provider.of<UserRepositoryImpl>(context, listen: false)
+            .getHomeGeofenceIdentifier();
+    showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+        title: Text("Sicuro di voler cancellare questo luogo?"),
+        actions: <Widget>[
+          BasicDialogAction(
+            title: Text("Si"),
+            onPressed: () {
+              Provider.of<GeofenceNotifier>(context, listen: false)
+                  .removeGeofence(identifier);
+              if (identifier == homeIdentifier) {
+                Provider.of<UserRepositoryImpl>(context, listen: false)
+                    .removeHomeGeofence();
+              }
+              Navigator.pop(context);
+            },
+          ),
+          BasicDialogAction(
+            title: Text("No"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class PlaceRowLegend extends StatelessWidget {
   final String title;
   final String location;
   final Color pinColor;
+  final Function onRemove;
 
-  const PlaceRowLegend({Key key, this.title, this.pinColor, this.location})
+  const PlaceRowLegend(
+      {Key key, this.title, this.pinColor, this.location, this.onRemove})
       : super(key: key);
 
   @override
@@ -121,10 +160,7 @@ class PlaceRowLegend extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete),
                 color: accentColor,
-                onPressed: () {
-                  Provider.of<GeofenceNotifier>(context, listen: false)
-                      .removeGeofence(title);
-                },
+                onPressed: onRemove,
               ),
             ],
           ),

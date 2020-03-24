@@ -1,9 +1,11 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:diary/application/gps_notifier.dart';
+import 'package:diary/infrastructure/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
+import 'package:hive/hive.dart';
 import 'application/app_provider.dart';
 import 'application/geofence_change_notifier.dart';
 import 'application/geofence_notifier.dart';
@@ -45,6 +47,9 @@ class _MyDayAppState extends State<MyDayApp> {
         Provider(
           create: (BuildContext context) => AppProvider(serviceNotifier),
           lazy: false,
+        ),
+        Provider<UserRepositoryImpl>(
+          create: (_) => UserRepositoryImpl(Hive.box('user')),
         ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),

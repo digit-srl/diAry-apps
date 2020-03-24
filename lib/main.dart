@@ -8,7 +8,8 @@ import 'app.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/utils/extensions.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 import 'domain/entities/day.dart';
 
 void main() async {
@@ -71,6 +72,8 @@ void main() async {
 //    today: todayDate,
 //  };
 
+  await Hive.initFlutter();
+  await Hive.openBox('user');
   final Map<DateTime, List<bg.Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
