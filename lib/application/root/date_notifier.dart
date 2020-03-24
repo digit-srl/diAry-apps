@@ -25,6 +25,8 @@ class DateState {
 class DateNotifier extends StateNotifier<DateState> with LocatorMixin {
   DateNotifier() : super(DateState(DateTime.now().withoutMinAndSec()));
 
+  DateTime get selectedDate => state.selectedDate;
+
   changeSelectedDate(DateTime selectedDate) {
     if (state.selectedDate != selectedDate) {
       state = state.copyWith(date: selectedDate);

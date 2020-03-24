@@ -1,3 +1,4 @@
+import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -68,16 +69,24 @@ class MainMenuButton extends StatelessWidget {
 
     return <UnicornButton>[
       UnicornButton(
-          hasLabel: true,
-          labelText: "Aggiungi luogo",
-          currentButton: FloatingActionButton(
-              heroTag: "aggiungi luogo",
+        hasLabel: true,
+        labelText: "Aggiungi luogo",
+        currentButton: FloatingActionButton(
+          heroTag: "aggiungi luogo",
 //              heroTag: null,
-              backgroundColor: bgColor,
-              foregroundColor: Colors.black,
-              mini: true,
-              child: Icon(Icons.add_location),
-              onPressed: () {})),
+          backgroundColor: bgColor,
+          foregroundColor: Colors.black,
+          mini: true,
+          child: Icon(Icons.add_location),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) => AddPlacePage(),
+              ),
+            );
+          },
+        ),
+      ),
       UnicornButton(
           hasLabel: true,
           labelText: "Aggiungi segnalazione",

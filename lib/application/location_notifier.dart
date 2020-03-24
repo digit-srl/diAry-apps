@@ -1,3 +1,4 @@
+import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:state_notifier/state_notifier.dart';
@@ -27,6 +28,15 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   }
 
   List<DateTime> get dates => days.keys.toList();
+
+  List<bg.Location> get getCurrentDayLocations {
+    final selectedDay = read<DateNotifier>().selectedDate;
+    final locations = locationsPerDate[selectedDay];
+    if (selectedDay.isToday()) {
+      locations.addAll(liveLocations);
+    }
+    return locations;
+  }
 
   int getTotalPoint(DateTime selectedDate) {
     if (!locationsPerDate.containsKey(selectedDate)) {

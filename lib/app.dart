@@ -10,6 +10,7 @@ import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/root/date_notifier.dart';
 import 'application/service_notifier.dart';
+import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -71,11 +72,22 @@ class _MyDayAppState extends State<MyDayApp> {
 //        builder: DevicePreview.appBuilder, // <--- Add the builder
         title: 'diAry',
         theme: ThemeData(
-            accentColor: accentColor,
-            primaryColor: Colors.white,
-            fontFamily: 'Nunito',
-            scaffoldBackgroundColor: Colors.white,
-            iconTheme: IconThemeData(color: accentColor)),
+          accentColor: accentColor,
+          primaryColor: Colors.white,
+          fontFamily: 'Nunito',
+          scaffoldBackgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: accentColor),
+          sliderTheme: SliderThemeData(
+            trackShape: CustomTrackShape(),
+            activeTrackColor: accentColor,
+            inactiveTrackColor: Color(0xFFC0CCDA),
+            inactiveTickMarkColor: Color(0xFFC0CCDA),
+            thumbColor: accentColor,
+            overlayColor: Color(0xFFC0CCDA).withOpacity(0.4),
+            overlappingShapeStrokeColor: accentColor,
+            valueIndicatorColor: accentColor,
+          ),
+        ),
         home: RootPage(),
       ),
     );
