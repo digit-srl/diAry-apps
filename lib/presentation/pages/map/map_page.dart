@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -12,8 +10,6 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
 import 'package:provider/provider.dart';
-import '../../../utils/geospatial.dart';
-import 'geofence_view.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 
@@ -84,18 +80,6 @@ class _MapPageState extends State<MapPage>
     if (mounted) {
       super.setState(fn);
     }
-  }
-
-  void _onAddGeofence(latLng) {
-    // TODO Play sound
-    Navigator.of(context).push(
-      MaterialPageRoute<Null>(
-        fullscreenDialog: true,
-        builder: (BuildContext context) {
-          return GeofenceView(latLng);
-        },
-      ),
-    );
   }
 
   @override
@@ -423,7 +407,6 @@ class _MapPageState extends State<MapPage>
           _controller.complete(controller);
           _loadInitialDailyMarkers();
         },
-        onLongPress: _onAddGeofence,
         markers: Set<Marker>.of(markers.values),
         circles: _allCircles,
       ),
