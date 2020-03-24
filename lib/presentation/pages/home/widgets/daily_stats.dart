@@ -258,7 +258,7 @@ class DailyStats extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                'Punti campionati',
+                                'Campionamenti',
                                 style: secondaryStyle,
                               ),
                               Padding(

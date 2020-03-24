@@ -83,11 +83,10 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                 ),
                 Text(
                   context.select((DateState value) =>
-                      value.isToday ? 'OGGI' : value.dateFormatted),
+                      value.isToday ? 'Oggi' : value.dateFormatted),
                   style: TextStyle(
                       color: Theme.of(context).accentColor,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600),
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             ),
