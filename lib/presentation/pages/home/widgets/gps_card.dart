@@ -15,7 +15,7 @@ class GpsCard extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(top: 16),
             child: GenericCard(
-              enabled: !value.gpsEnabled,
+              enabled: value.gpsEnabled,
               iconData: Icons.gps_off,
               iconColor: Colors.black,
               title: 'GPS non attivo',
