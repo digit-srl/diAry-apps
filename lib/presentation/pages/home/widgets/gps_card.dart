@@ -1,4 +1,5 @@
 import 'package:diary/application/gps_notifier.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
@@ -17,7 +18,7 @@ class GpsCard extends StatelessWidget {
             child: GenericCard(
               enabled: value.gpsEnabled,
               iconData: Icons.gps_off,
-              iconColor: Colors.black,
+              iconColor: accentColor,
               title: 'GPS non attivo',
               description:
                   'Senza GPS, non può essere effettuato il tracciamento',
