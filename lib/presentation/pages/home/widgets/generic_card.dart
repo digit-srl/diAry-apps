@@ -31,7 +31,7 @@ class GenericCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: enabled ? baseCard : activatedCard,
+        color: enabled ? baseCard : deactivatedCard,
       ),
       child: Column(
         children: <Widget>[
@@ -69,7 +69,7 @@ class GenericCard extends StatelessWidget {
                       AutoSizeText(
                         description,
                         maxLines: 2,
-                        style: enabled ? secondaryStyleDark : secondaryStyle,
+                        style: enabled ? secondaryStyle : secondaryStyleDark,
                         textAlign: TextAlign.start,
                       ),
                     ],
