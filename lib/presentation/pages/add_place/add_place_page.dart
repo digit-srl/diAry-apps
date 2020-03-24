@@ -100,14 +100,15 @@ class _AddPlacePageState extends State<AddPlacePage> {
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 0.0),
                   child: Column(
                     children: <Widget>[
-                      Expanded(
-//                    padding: const EdgeInsets.only(top: 20.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Flexible(
+                      Row(
+//                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Flexible(
+                            child: AspectRatio(
+                              aspectRatio: 1,
                               child: Container(
                                 margin: const EdgeInsets.all(12.0),
+                                width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
                                   border: Border.all(
@@ -119,31 +120,31 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                 ),
                               ),
                             ),
-                            Flexible(
-                              flex: 5,
-                              child: Theme(
-                                data: themeData,
-                                child: TextField(
-                                  controller: placeEditingController,
-                                  maxLength: 20,
-                                  decoration: InputDecoration(
-                                    hintText: 'Nome luogo',
-                                    labelText: 'Nome luogo',
-                                  ),
-                                  onChanged: (text) {
-                                    if (text.trim().length > 3) {
-                                      _top = _size.height - 30;
-                                    } else {
-                                      _top = null;
-                                    }
-                                    setState(() {});
-                                  },
-                                  onSubmitted: (text) {},
+                          ),
+                          Flexible(
+                            flex: 5,
+                            child: Theme(
+                              data: themeData,
+                              child: TextField(
+                                controller: placeEditingController,
+                                maxLength: 20,
+                                decoration: InputDecoration(
+                                  hintText: 'Nome luogo',
+                                  labelText: 'Nome luogo',
                                 ),
+                                onChanged: (text) {
+                                  if (text.trim().length > 3) {
+                                    _top = _size.height - 30;
+                                  } else {
+                                    _top = null;
+                                  }
+                                  setState(() {});
+                                },
+                                onSubmitted: (text) {},
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       Expanded(
 //                    padding: const EdgeInsets.only(top: 16.0),
@@ -218,9 +219,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 30.0,
                       ),
                     ],
                   ),

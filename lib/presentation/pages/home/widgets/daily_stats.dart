@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -259,6 +260,7 @@ class DailyStats extends StatelessWidget {
                             children: <Widget>[
                               Text(
                                 'Campionamenti',
+                                maxLines: 1,
                                 style: secondaryStyle,
                               ),
                               Padding(
