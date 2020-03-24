@@ -1,12 +1,11 @@
-import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/home/widgets/car_card.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import '../slices_page.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
+import 'widgets/gps_card.dart';
 
 class MyBehavior extends ScrollBehavior {
   @override
@@ -31,6 +30,7 @@ class HomePage extends StatelessWidget {
                 height: 5,
               ),
               CarCard(),
+              GpsCard(),
               ActivationCard(),
 //              PlaceLegend(),
               SizedBox(
