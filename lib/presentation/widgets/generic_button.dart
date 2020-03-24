@@ -16,7 +16,7 @@ class GenericButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-      color: withBorder ? Colors.black : null,
+      color: withBorder ? accentColor : null,
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       onPressed: onPressed,
 //      hoverColor: Colors.white,

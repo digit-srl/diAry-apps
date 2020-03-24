@@ -20,7 +20,7 @@ class MainMenuButton extends StatelessWidget {
       child: UnicornDialer(
 //          onMainButtonPressed: _onClickMenu,
           hasBackground: false,
-          parentButtonBackground: Colors.black,
+          parentButtonBackground: accentColor,
           orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add, color: Colors.black),
           childButtons: _buildMenuItems(context)),
@@ -39,7 +39,7 @@ class MainMenuButton extends StatelessWidget {
           heroTag: "aggiungi luogo",
 //              heroTag: null,
           backgroundColor: bgColor,
-          foregroundColor: Colors.black,
+          foregroundColor: accentColor,
           mini: true,
           child: Icon(Icons.add_location),
           onPressed: () {
