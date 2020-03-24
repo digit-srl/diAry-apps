@@ -1,4 +1,5 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
@@ -60,6 +61,9 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
           create: (_) => GeofenceChangeNotifier(),
+        ),
+        StateNotifierProvider<GpsNotifier, GpsState>(
+          create: (_) => GpsNotifier(),
         ),
       ],
       child: MaterialApp(
