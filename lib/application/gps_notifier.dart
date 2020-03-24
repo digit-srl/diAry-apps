@@ -10,7 +10,10 @@ class GpsState {
 
 class GpsNotifier extends StateNotifier<GpsState> with LocatorMixin {
   GpsNotifier() : super(GpsState(false)) {
-    bg.BackgroundGeolocation.onProviderChange(_onProviderChange);
+    bg.BackgroundGeolocation.providerState.then((bg.ProviderChangeEvent event) {
+      _onProviderChange(event);
+      bg.BackgroundGeolocation.onProviderChange(_onProviderChange);
+    });
   }
 
   _onProviderChange(bg.ProviderChangeEvent event) {
