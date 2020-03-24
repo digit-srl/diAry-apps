@@ -1,5 +1,6 @@
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -33,6 +34,7 @@ class MainMenuButton extends StatelessWidget {
       UnicornButton(
         hasLabel: true,
         labelText: "Aggiungi luogo",
+        labelColor: accentColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi luogo",
 //              heroTag: null,
@@ -55,6 +57,7 @@ class MainMenuButton extends StatelessWidget {
       UnicornButton(
           hasLabel: true,
           labelText: "Aggiungi segnalazione",
+          labelColor: accentColor,
           currentButton: FloatingActionButton(
               heroTag: "aggiungi segnalazione",
 //              heroTag: null,
