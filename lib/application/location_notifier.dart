@@ -32,8 +32,11 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   List<bg.Location> get getCurrentDayLocations {
     final selectedDay = read<DateNotifier>().selectedDate;
     final locations = locationsPerDate[selectedDay];
+    if (locations == null) {
+      return liveLocations;
+    }
     if (selectedDay.isToday()) {
-      locations.addAll(liveLocations);
+      locations?.addAll(liveLocations);
     }
     return locations;
   }

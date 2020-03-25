@@ -219,11 +219,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Provider.of<DateState>(context, listen: false).selectedDate;
 
     final locations = Provider.of<LocationNotifier>(context, listen: false)
-        .locationsPerDate[currentDate];
-    if (currentDate.isToday()) {
-      locations.addAll(
-          Provider.of<LocationNotifier>(context, listen: false).liveLocations);
-    }
+        .getCurrentDayLocations;
 
     final List<File> files =
         await saveFilesOnLocalStorage(locations, currentDate);

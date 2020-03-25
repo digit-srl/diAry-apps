@@ -46,6 +46,14 @@ class LocationUtils {
     for (var map in locationsMap) {
       try {
         final bg.Location loc = bg.Location(map);
+        final speed = loc?.coords?.speed ?? 100.0;
+        if (speed < 1.0) {
+          final currentAvtivity = loc.activity.type;
+          loc.activity.type = 'still';
+          print('Set to STILL record with speed < 1.0 m/s');
+          print(
+              'Before was $currentAvtivity with speed: ${loc.coords.speed} m/s');
+        }
         final date =
             DateTime.tryParse(loc.timestamp).toLocal().withoutMinAndSec();
         if (!locationsPerDay.containsKey(date)) {
@@ -53,8 +61,8 @@ class LocationUtils {
         }
         locationsPerDay[date].add(loc);
       } catch (ex) {
-        print('[ERROR _readLocations]\n$map\n$ex');
-        print('[END_ERROR _readLocations]');
+        print('[ERROR] _readLocations \n$map\n$ex');
+        print('[END_ERROR _readLocations');
       }
     }
     locationsPerDay.keys.forEach((element) {
