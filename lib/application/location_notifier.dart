@@ -50,7 +50,8 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
         : locationsPerDate[selectedDate].length;
   }
 
-  Day getDay(DateTime selectedDate) {
+  Day getDay() {
+    final selectedDate = read<DateNotifier>().selectedDate;
     Day day;
     if (selectedDate.isToday() && liveLocations.isNotEmpty) {
       final partialSlices = days[selectedDate]?.slices ?? [];

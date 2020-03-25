@@ -19,7 +19,6 @@ class MyBehavior extends ScrollBehavior {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).padding.bottom);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.fromLTRB(16, 65, 16, 0),
@@ -31,7 +30,7 @@ class HomePage extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              CarCard(),
+//              CarCard(),
               GpsCard(),
               ActivationCard(),
               PlaceLegend(),

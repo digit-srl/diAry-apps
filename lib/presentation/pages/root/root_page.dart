@@ -1,9 +1,9 @@
+import 'package:diary/presentation/pages/annotations/annotations_page.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
 import 'package:diary/presentation/widgets/my_day_app_bar.dart';
 
 import '../map/map_page.dart';
-import '../notes/notes_page.dart';
 
 class RootPage extends StatefulWidget {
   @override
@@ -26,7 +26,7 @@ class _RootPageState extends State<RootPage> {
               children: <Widget>[
                 HomePage(),
                 MapPage(),
-                NotesPage(),
+                AnnotationsPage(),
               ],
             ),
             Positioned(

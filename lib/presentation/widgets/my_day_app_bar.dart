@@ -145,13 +145,13 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
     bg.BackgroundGeolocation.getCurrentPosition(
         persist: true,
         // <-- do not persist this location
-        desiredAccuracy: 40,
+        desiredAccuracy: 5,
         // <-- desire an accuracy of 40 meters or less
         maximumAge: 10000,
         // <-- Up to 10s old is fine.
-        timeout: 30,
+        timeout: 10,
         // <-- wait 30s before giving up.
-        samples: 3,
+        samples: 10,
         // <-- sample just 1 location
         extras: {"getCurrentPosition": true}).then((bg.Location location) {
       print('[getCurrentPosition] - $location');

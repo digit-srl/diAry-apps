@@ -23,8 +23,8 @@ class DailyStats extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
         print('StateNotifierBuilder STATS DETAILS');
 
-        Day day = Provider.of<LocationNotifier>(context, listen: false)
-            .getDay(value.selectedDate);
+        Day day =
+            Provider.of<LocationNotifier>(context, listen: false).getDay();
         print('[DailyStats] selected day: $day');
         List<CircularSegmentEntry> stationarySliceSegments = [];
         List<CircularSegmentEntry> movementSliceSegments = [];
@@ -313,7 +313,8 @@ class DailyStats extends StatelessWidget {
                                       width: 5,
                                     ),
                                     Text(
-                                      (day?.notes?.length ?? 0).toString(),
+                                      (day?.annotations?.length ?? 0)
+                                          .toString(),
                                       textAlign: TextAlign.center,
                                       style: numberStyle,
                                     ),

@@ -1,6 +1,8 @@
+import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:hive/hive.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
@@ -28,6 +30,10 @@ class LocationUtils {
       days[key] = Day(
           date: key,
           slices: aggregateLocationsInSlices(locationsPerDay[key]),
+          annotations: Hive.box<Annotation>('annotations')
+              .values
+              .where((annotation) => annotation.dateTime.isSameDay(key))
+              .toList(),
           pointCount: locationsPerDay[key].length);
     }
     return days;

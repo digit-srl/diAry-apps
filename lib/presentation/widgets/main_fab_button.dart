@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
@@ -12,9 +13,12 @@ class MainFabButton extends StatelessWidget {
   final double bottomPadding;
   final Function onMainButtonTap;
   final GlobalKey dialerKey;
+
   MainFabButton(
       {Key key, this.onMainButtonTap, this.dialerKey, this.bottomPadding});
+
   bool isOpen = false;
+
   @override
   Widget build(BuildContext context) {
     double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
@@ -65,17 +69,28 @@ class MainFabButton extends StatelessWidget {
         ),
       ),
       UnicornButton(
-          hasLabel: true,
-          labelText: "Aggiungi segnalazione",
-          labelColor: accentColor,
-          currentButton: FloatingActionButton(
-              heroTag: "aggiungi segnalazione",
+        hasLabel: true,
+        labelText: "Aggiungi segnalazione",
+        labelColor: accentColor,
+        currentButton: FloatingActionButton(
+          heroTag: "aggiungi segnalazione",
 //              heroTag: null,
-              backgroundColor: bgColor,
-              foregroundColor: Colors.black,
-              mini: true,
-              child: Icon(Icons.bookmark_border),
-              onPressed: () {})),
+          backgroundColor: bgColor,
+          foregroundColor: Colors.black,
+          mini: true,
+          child: Icon(Icons.bookmark_border),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) => Provider.value(
+                    value:
+                        Provider.of<UserRepositoryImpl>(context, listen: false),
+                    child: AddAnnotationPage()),
+              ),
+            );
+          },
+        ),
+      ),
     ];
   }
 

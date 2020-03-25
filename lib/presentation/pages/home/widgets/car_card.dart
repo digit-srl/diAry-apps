@@ -16,7 +16,7 @@ class CarCard extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(top: 16),
             child: GenericCard(
-              enabled: false,
+              enabled: true,
               iconData: Icons.directions_car,
               iconColor: Colors.black,
 //              title: 'Ti stai muovendo con un veicolo',

@@ -25,8 +25,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
   bool _isHome = false;
   TextEditingController placeEditingController = TextEditingController();
 
-  TextEditingController descPlaceEditingController = TextEditingController();
-
   ThemeData themeData = ThemeData(primaryColor: accentColor);
   Circle place;
   BitmapDescriptor _currentPositionMarkerIcon;
@@ -131,6 +129,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                 decoration: InputDecoration(
                                   hintText: 'Nome luogo',
                                   labelText: 'Nome luogo',
+                                  labelStyle: TextStyle(color: secondaryText),
                                 ),
                                 onChanged: (text) {
                                   if (text.trim().length > 3) {
@@ -322,7 +321,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void getCurrentLocationAndUpdateMap() {
-    bg.BackgroundGeolocation.getCurrentPosition().then((bg.Location location) {
+    bg.BackgroundGeolocation.getCurrentPosition(
+      persist: true,
+      maximumAge: 5000,
+      timeout: 10,
+      samples: 5,
+      desiredAccuracy: 5,
+    ).then((bg.Location location) {
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       markers.clear();

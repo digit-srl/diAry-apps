@@ -6,8 +6,7 @@ import 'package:provider/provider.dart';
 class SlicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final day = Provider.of<LocationNotifier>(context, listen: false)
-        .getDay(Provider.of<DateState>(context, listen: false).selectedDate);
+    final day = Provider.of<LocationNotifier>(context, listen: false).getDay();
     return Scaffold(
       appBar: AppBar(
         title: Text('Spicchi giornalieri'),

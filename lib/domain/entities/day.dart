@@ -1,17 +1,18 @@
-import 'note.dart';
+import 'package:diary/domain/entities/annotation.dart';
+
 import 'slice.dart';
 import 'package:meta/meta.dart';
 
 class Day {
   final DateTime date;
   final List<Slice> slices;
-  final List<Note> notes;
+  final List<Annotation> annotations;
 
 //  final List<Location> notes;
   final pointCount;
 
   Day(
-      {this.notes = const [],
+      {this.annotations = const [],
       @required this.date,
       this.slices = const [],
       this.pointCount = 0});
@@ -19,7 +20,7 @@ class Day {
   List<double> get annotationSlices {
     final list = <double>[];
     int cumulativeMinutes = 0;
-    for (Note note in notes) {
+    for (Annotation note in annotations) {
       final currentMinutes = note.dateTime.hour * 60 + note.dateTime.minute;
       final partialMinutes = currentMinutes - cumulativeMinutes;
       list.add(partialMinutes.toDouble());
@@ -34,12 +35,13 @@ class Day {
 
   copyWith(List<Slice> slices) {
     return Day(
-        date: this.date, slices: slices ?? this.slices, notes: this.notes);
+        date: this.date,
+        slices: slices ?? this.slices,
+        annotations: this.annotations);
   }
 
   @override
   String toString() {
-    // TODO: implement toString
-    return 'Date; $date, SlicesCount: ${slices.length} notesCount: ${notes.length}';
+    return 'Date; $date, SlicesCount: ${slices.length} notesCount: ${annotations.length}';
   }
 }

@@ -10,6 +10,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:diary/utils/extensions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
+import 'domain/entities/annotation.dart';
 import 'domain/entities/day.dart';
 
 void main() async {
@@ -28,6 +29,8 @@ void main() async {
       statusBarColor: Colors.white,
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -74,7 +77,9 @@ void main() async {
 //  };
 
   await Hive.initFlutter();
+  Hive.registerAdapter(AnnotationAdapter());
   await Hive.openBox('user');
+  await Hive.openBox<Annotation>('annotations');
   final Map<DateTime, List<bg.Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
