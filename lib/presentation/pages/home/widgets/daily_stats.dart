@@ -233,7 +233,7 @@ class DailyStats extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               AnimatedCircularChart(
-//                key: GlobalKey(),
+                key: GlobalKey(),
                 size: _chartSize,
                 initialChartData: data,
                 edgeStyle: SegmentEdgeStyle.flat,
