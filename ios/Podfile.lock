@@ -6,6 +6,8 @@ PODS:
   - CocoaLumberjack/Core (3.6.1)
   - Crashlytics (3.14.0):
     - Fabric (~> 1.10.2)
+  - esys_flutter_share (0.0.1):
+    - Flutter
   - Fabric (1.10.2)
   - Firebase/Analytics (6.15.0):
     - Firebase/Core
@@ -109,6 +111,8 @@ PODS:
     - Flutter
   - path_provider_macos (0.0.1):
     - Flutter
+  - "permission_handler (4.4.0+hotfix.2)":
+    - Flutter
   - PromisesObjC (1.2.8)
   - share_extend (0.0.1):
     - Flutter
@@ -118,6 +122,7 @@ PODS:
 
 DEPENDENCIES:
   - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
+  - esys_flutter_share (from `.symlinks/plugins/esys_flutter_share/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - Flutter (from `Flutter`)
@@ -127,6 +132,7 @@ DEPENDENCIES:
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - share_extend (from `.symlinks/plugins/share_extend/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
 
@@ -154,6 +160,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   background_fetch:
     :path: ".symlinks/plugins/background_fetch/ios"
+  esys_flutter_share:
+    :path: ".symlinks/plugins/esys_flutter_share/ios"
   firebase_analytics:
     :path: ".symlinks/plugins/firebase_analytics/ios"
   firebase_crashlytics:
@@ -172,6 +180,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider/ios"
   path_provider_macos:
     :path: ".symlinks/plugins/path_provider_macos/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   share_extend:
     :path: ".symlinks/plugins/share_extend/ios"
   sqflite:
@@ -181,6 +191,7 @@ SPEC CHECKSUMS:
   background_fetch: c0d7c541f8495527ed7f167eb9ee2eeab0790703
   CocoaLumberjack: b17ae15142558d08bbacf69775fa10c4abbebcc9
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
+  esys_flutter_share: bb47e3a9047ce7d8718b48bcb81fc23d4a6f1e4c
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   Firebase: 5d77105d9740a07ca6b16927ca971db7e860faaf
   firebase_analytics: dacdcfc524d722fff13dcff942f0dfa47e6be567
@@ -205,10 +216,11 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
+  permission_handler: d5d46b2ca93671e8dcf870b949e304c7ddb65ad0
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   share_extend: b6748dc53695587891126a89533b862b92548c7b
   sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
 
-PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+PODFILE CHECKSUM: df843281060625850c17c2081dc2de7d232ce6ee
 
 COCOAPODS: 1.8.4

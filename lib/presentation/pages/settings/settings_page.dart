@@ -1,15 +1,10 @@
 import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
-
-import 'package:diary/utils/permissions_utils.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:share_extend/share_extend.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/utils.dart';

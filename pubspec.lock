@@ -332,7 +332,7 @@ packages:
       name: google_maps_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.25"
+    version: "0.5.25+1"
   graphs:
     dependency: transitive
     description:
