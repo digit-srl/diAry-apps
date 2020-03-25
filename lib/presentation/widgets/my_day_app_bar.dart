@@ -39,59 +39,70 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
     print('[AppBar] build()');
     final dates = Provider.of<LocationNotifier>(context, listen: false).dates;
 
-    return Container(
-      color: Colors.white.withOpacity(0.4),
-      height: 60,
-      padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-              icon: Icon(_currentPage == 0 ? Icons.map : Icons.arrow_back),
-              onPressed: () {
-                widget.changePage(_currentPage == 0 ? 1 : 0);
-                setState(() {
-                  _currentPage = _currentPage == 0 ? 1 : 0;
-                });
-              }),
-          GestureDetector(
-            onTap: () async {
-              final selected = await showDatePicker(
-                context: context,
-                initialDate: Provider.of<DateState>(context, listen: false)
-                    .selectedDate
-                    .withoutMinAndSec(),
-                firstDate: dates.first,
-                lastDate: dates.last.add(Duration(minutes: 1)),
-                selectableDayPredicate: (DateTime date) => dates.contains(
-                  date.withoutMinAndSec(),
-                ),
-              );
+    return WillPopScope(
+      onWillPop: () {
+        if (_currentPage != 0) {
+          widget.changePage(0);
+          setState(() {
+            _currentPage = 0;
+          });
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: Container(
+        color: Colors.white.withOpacity(0.4),
+        height: 60,
+        padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(_currentPage == 0 ? Icons.map : Icons.arrow_back),
+                onPressed: () {
+                  widget.changePage(_currentPage == 0 ? 1 : 0);
+                  setState(() {
+                    _currentPage = _currentPage == 0 ? 1 : 0;
+                  });
+                }),
+            GestureDetector(
+              onTap: () async {
+                final selected = await showDatePicker(
+                  context: context,
+                  initialDate: Provider.of<DateState>(context, listen: false)
+                      .selectedDate
+                      .withoutMinAndSec(),
+                  firstDate: dates.first,
+                  lastDate: dates.last.add(Duration(minutes: 1)),
+                  selectableDayPredicate: (DateTime date) => dates.contains(
+                    date.withoutMinAndSec(),
+                  ),
+                );
 
-              if (selected == null) return;
-              Provider.of<DateNotifier>(context, listen: false)
-                  .changeSelectedDate(selected);
-            },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 35,
-                ),
-                Text(
-                  context.select((DateState value) =>
-                      value.isToday ? 'Oggi' : value.dateFormatted),
-                  style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+                if (selected == null) return;
+                Provider.of<DateNotifier>(context, listen: false)
+                    .changeSelectedDate(selected);
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 35,
+                  ),
+                  Text(
+                    context.select((DateState value) =>
+                        value.isToday ? 'Oggi' : value.dateFormatted),
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-          ),
 //          IconButton(
 //              icon: Icon(Icons.change_history),
 //              onPressed: () {
@@ -109,22 +120,23 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                  isMoving = !isMoving;
 //                });
 //              }),
-          IconButton(
-            icon: Icon(_currentPage == 0
-                ? Icons.collections_bookmark
-                : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
-            onPressed: () {
-              if (_currentPage == 1) {
-                getCurrentLoc();
-              } else {
-                widget.changePage(2);
-                setState(() {
-                  _currentPage = 2;
-                });
-              }
-            },
-          ),
-        ],
+            IconButton(
+              icon: Icon(_currentPage == 0
+                  ? Icons.collections_bookmark
+                  : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
+              onPressed: () {
+                if (_currentPage == 1) {
+                  getCurrentLoc();
+                } else {
+                  widget.changePage(2);
+                  setState(() {
+                    _currentPage = 2;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

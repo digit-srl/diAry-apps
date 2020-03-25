@@ -73,7 +73,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
     circles.add(place);
   }
 
-  GlobalKey _key = GlobalKey();
+  final GlobalKey _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {

@@ -7,6 +7,10 @@ import 'package:unicorndial/unicorndial.dart';
 import 'package:provider/provider.dart';
 
 class MainMenuButton extends StatelessWidget {
+  final Function onMainButtonTap;
+  final GlobalKey dialerKey;
+  MainMenuButton({Key key, this.onMainButtonTap, this.dialerKey});
+  bool isOpen = false;
   @override
   Widget build(BuildContext context) {
     double buttonBottomPadding = 60.0 - 32;
@@ -15,11 +19,13 @@ class MainMenuButton extends StatelessWidget {
       // fallback for all non iPhone X
       buttonBottomPadding += 30.0;
     }
+    print('MAIN MENU BUTTON BUILD');
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, buttonBottomPadding),
       child: UnicornDialer(
-//          onMainButtonPressed: _onClickMenu,
-          hasBackground: false,
+          key: dialerKey,
+          onMainButtonPressed: onMainButtonTap,
+          hasBackground: true,
           parentButtonBackground: accentColor,
           orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add, color: Colors.black),
