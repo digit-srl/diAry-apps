@@ -1,3 +1,4 @@
+import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
@@ -7,6 +8,11 @@ class SlicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final day = Provider.of<LocationNotifier>(context, listen: false).getDay();
+    final slices = day.slices;
+    if (slices.last.activity == MotionActivity.Unknown) {
+      slices.removeLast();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Spicchi giornalieri'),
