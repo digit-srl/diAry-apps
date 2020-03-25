@@ -42,7 +42,8 @@ class HomePage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Material(
-        elevation: 4,
+        elevation: 15,
+        color: Colors.white,
         child: Container(
           height: 60 + MediaQuery.of(context).padding.bottom,
           child: Column(
