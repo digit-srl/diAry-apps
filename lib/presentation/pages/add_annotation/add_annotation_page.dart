@@ -116,7 +116,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                                 labelText: 'Nome segnalazione',
                                 labelStyle: TextStyle(color: secondaryText)),
                             onChanged: (text) {
-                              if (text.trim().length > 5 &&
+                              if (text.trim().length >= 3 &&
                                   newLocation != null) {
                                 _top = _size.height - 30;
                               } else {
@@ -258,7 +258,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          if (annotationEditingController.text.trim().length > 5 &&
+          if (annotationEditingController.text.trim().length >= 3 &&
               newLocation != null) {
             _top = _size.height - 30;
           } else {

@@ -132,7 +132,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                   labelStyle: TextStyle(color: secondaryText),
                                 ),
                                 onChanged: (text) {
-                                  if (text.trim().length > 3) {
+                                  if (text.trim().length >= 3) {
                                     _top = _size.height - 30;
                                   } else {
                                     _top = null;

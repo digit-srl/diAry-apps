@@ -8,7 +8,7 @@ class SlicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final day = Provider.of<LocationNotifier>(context, listen: false).getDay();
-    final slices = day.slices;
+    final slices = List.from(day.slices);
     if (slices.last.activity == MotionActivity.Unknown) {
       slices.removeLast();
     }
@@ -20,7 +20,7 @@ class SlicesPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
-          children: day.slices
+          children: slices
               .map(
                 (slice) => Card(
                   child: ListTile(
