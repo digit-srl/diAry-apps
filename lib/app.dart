@@ -108,7 +108,8 @@ class _MyDayAppState extends State<MyDayApp> {
           },
           child: Scaffold(
             body: RootPage(),
-            floatingActionButton: MainMenuButton(
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: MainFabButton(
               dialerKey: dialerKey,
             ),
           ),

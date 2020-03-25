@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:diary/utils/colors.dart';
@@ -6,22 +8,24 @@ import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'package:provider/provider.dart';
 
-class MainMenuButton extends StatelessWidget {
+class MainFabButton extends StatelessWidget {
+  final double bottomPadding;
   final Function onMainButtonTap;
   final GlobalKey dialerKey;
-  MainMenuButton({Key key, this.onMainButtonTap, this.dialerKey});
+  MainFabButton(
+      {Key key, this.onMainButtonTap, this.dialerKey, this.bottomPadding});
   bool isOpen = false;
   @override
   Widget build(BuildContext context) {
-    double buttonBottomPadding = 60.0 - 32;
-    var mediaQueryData = MediaQuery.of(context);
-    if (_isIPhoneX(mediaQueryData)) {
-      // fallback for all non iPhone X
-      buttonBottomPadding += 30.0;
-    }
+    double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
+//    var mediaQueryData = MediaQuery.of(context);
+//    if (_isIPhoneX(mediaQueryData)) {
+//      // fallback for all non iPhone X
+//      buttonBottomPadding += 30.0;
+//    }
     print('MAIN MENU BUTTON BUILD');
     return Container(
-      padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, buttonBottomPadding),
+      padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
           key: dialerKey,
           onMainButtonPressed: onMainButtonTap,

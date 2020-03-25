@@ -17,6 +17,7 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
