@@ -1,14 +1,18 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:diary/utils/permissions_utils.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/colors.dart';
-import '../../../utils/map_to_csv.dart';
+import '../../../utils/utils.dart';
 import 'package:diary/utils/extensions.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -184,6 +188,38 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   exportJson() async {
+    PermissionStatus permissionStatus = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+
+    print(permissionStatus);
+    if (permissionStatus == PermissionStatus.neverAskAgain) {
+      Alert(
+        context: context,
+        title: 'Attenzione',
+        desc: 'In precedenza hai disabilitato la richiesta del permesso. '
+            'Ora per abilitare il permesso di scrittura va in impostazioni',
+        buttons: [
+          DialogButton(
+            child: Text(
+              'Impostazioni',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              PermissionHandler().openAppSettings();
+            },
+          ),
+        ],
+      ).show();
+      return;
+    } else if (permissionStatus != PermissionStatus.granted) {
+      final permissions = await PermissionHandler()
+          .requestPermissions([PermissionGroup.storage]);
+      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        return;
+      }
+    }
+
     final currentDate =
         Provider.of<DateState>(context, listen: false).selectedDate;
 
@@ -193,9 +229,14 @@ class _SettingsPageState extends State<SettingsPage> {
       locations.addAll(
           Provider.of<LocationNotifier>(context, listen: false).liveLocations);
     }
-    final File file = await exportCsv(locations, currentDate);
-    if (file == null) return;
-    final path = file.path;
+
+    final List<File> files =
+        await saveFilesOnLocalStorage(locations, currentDate);
+    if (files == null || files.isEmpty) return;
+    final csvFile = files[0];
+    final jsonFile = files[1];
+    final csvPath = csvFile.path;
+    final jsonPath = jsonFile.path;
 
     Alert(
       context: context,
@@ -208,7 +249,21 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           onPressed: () {
             Navigator.pop(context);
-            ShareExtend.share(path, 'file');
+//            ShareExtend.share(path, 'file');
+            Share.file('Il mio file CSV', csvPath.split('/').last,
+                csvFile.readAsBytesSync(), 'application/*');
+          },
+        ),
+        DialogButton(
+          child: Text(
+            'JSON',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+//            ShareExtend.share(path, 'file');
+            Share.file('Il mio file CSV', jsonPath.split('/').last,
+                jsonFile.readAsBytesSync(), 'application/*');
           },
         ),
       ],

@@ -9,16 +9,19 @@ import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/loc.dart';
 
-exportCsv(List<bg.Location> locations, DateTime currentDate) async {
+Future<List<File>> saveFilesOnLocalStorage(
+    List<bg.Location> locations, DateTime currentDate) async {
   List<Map<String, dynamic>> result = [];
 //  final locations = await bg.BackgroundGeolocation.locations;
   for (bg.Location loc in locations) {
     result.add(Loc.fromJson(Map<String, dynamic>.from(loc.map)).toJson());
   }
   var csv = mapListToCsv(result);
-  var jjj = json.encode(result);
-  writeJson(jjj, currentDate);
-  return await writeCsv(csv, currentDate);
+  var jsonEncoded = json.encode(result);
+
+  final csvFile = await writeCsv(csv, currentDate);
+  final jsonFile = await writeJson(jsonEncoded, currentDate);
+  return [csvFile, jsonFile];
 }
 
 Future<String> _localPath(DateTime currentDate) async {
