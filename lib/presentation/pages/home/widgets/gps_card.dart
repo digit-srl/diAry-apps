@@ -22,13 +22,14 @@ class GpsCard extends StatelessWidget {
               title: 'GPS non attivo',
               description:
                   'Senza GPS, non può essere effettuato il tracciamento',
-              bottomWidget: Align(
-                alignment: Alignment.centerRight,
-                child: GenericButton(
-                  onPressed: () {},
-                  text: value.gpsEnabled ? 'DISATTIVA' : 'ATTIVA',
-                ),
-              ),
+              bottomWidget: Container(),
+//              bottomWidget: Align(
+//                alignment: Alignment.centerRight,
+//                child: GenericButton(
+//                  onPressed: () {},
+//                  text: value.gpsEnabled ? 'DISATTIVA' : 'ATTIVA',
+//                ),
+//              ),
             ),
           );
         }
