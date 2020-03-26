@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
@@ -56,6 +55,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
       return;
     }
     getCurrentLocationAndUpdateMap();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   addCircle(LatLng location) {
@@ -383,6 +389,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   Future<void> _goToLocation(LatLng loc) async {
+    if (!mounted) return;
     final GoogleMapController controller = await _controller.future;
     try {
       controller.moveCamera(

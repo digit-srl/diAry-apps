@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:diary/application/geofence_notifier.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/application/day_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
-import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -24,7 +22,6 @@ class AddAnnotationPage extends StatefulWidget {
 
 class _AddAnnotationPageState extends State<AddAnnotationPage> {
   double radius = 20;
-  bool _isHome = false;
   TextEditingController annotationEditingController = TextEditingController();
 
   ThemeData themeData = ThemeData(primaryColor: accentColor);
@@ -32,7 +29,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
-
+  final GlobalKey _key = GlobalKey();
   Set<Marker> markers = {};
   Completer<GoogleMapController> _controller = Completer();
   double zoom = 19.0;
@@ -49,14 +46,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   void initState() {
     super.initState();
     day = Provider.of<DateNotifier>(context, listen: false).selectedDate;
-    final locations = Provider.of<LocationNotifier>(context, listen: false)
-        .getCurrentDayLocations;
-
-    if (locations.isNotEmpty) {
-      final coords = locations.last.coords;
-      lastLocation = LatLng(coords.latitude, coords.longitude);
-    }
-
     getCurrentLocationAndUpdateMap();
   }
 
@@ -71,7 +60,12 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     );
   }
 
-  final GlobalKey _key = GlobalKey();
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,22 +196,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             right: 10.0,
             child: _top != null
                 ? FloatingActionButton(
-                    onPressed: () async {
-//                      newLocation.map['extras'] = {
-//                        'annotation': annotationEditingController.text.trim(),
-//                      };
-                      final box = Hive.box<Annotation>('annotations');
-                      final annotation = Annotation(
-                        id: newLocation.uuid,
-                        dateTime: DateTime.tryParse(newLocation.timestamp),
-                        title: annotationEditingController.text.trim(),
-                        latitude: newLocation.coords.latitude,
-                        longitude: newLocation.coords.longitude,
-                      );
-                      final result = await box.add(annotation);
-                      print('[AddAnnotationPage] add annotation $result');
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: _addAnnotation,
                     child: Icon(Icons.check),
                   )
                 : Container(),
@@ -225,6 +204,21 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         ],
       ),
     );
+  }
+
+  _addAnnotation() async {
+    final box = Hive.box<Annotation>('annotations');
+    final annotation = Annotation(
+      id: newLocation.uuid,
+      dateTime: DateTime.tryParse(newLocation.timestamp).toLocal(),
+      title: annotationEditingController.text.trim(),
+      latitude: newLocation.coords.latitude,
+      longitude: newLocation.coords.longitude,
+    );
+    final result = await box.add(annotation);
+    Provider.of<DayNotifier>(context, listen: false).addAnnotation(annotation);
+    print('[AddAnnotationPage] add annotation $result');
+    Navigator.of(context).pop();
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
@@ -272,6 +266,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   Future<void> _goToLocation(LatLng loc) async {
+    if (!mounted) return;
     final GoogleMapController controller = await _controller.future;
     try {
       controller.moveCamera(
