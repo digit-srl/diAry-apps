@@ -1,10 +1,8 @@
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:intl/intl.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import '../../../../utils/styles.dart';
@@ -18,13 +16,12 @@ class DailyStats extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
     final _chartSize = Size(height / 3, height / 3);
-    return StateNotifierBuilder<DateState>(
-      stateNotifier: context.watch<DateNotifier>(),
+    return StateNotifierBuilder<DayState>(
+      stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         print('StateNotifierBuilder STATS DETAILS');
 
-        Day day =
-            Provider.of<LocationNotifier>(context, listen: false).getDay();
+        Day day = value.day;
         print('[DailyStats] selected day: $day');
         List<CircularSegmentEntry> stationarySliceSegments = [];
         List<CircularSegmentEntry> movementSliceSegments = [];
@@ -197,7 +194,6 @@ class DailyStats extends StatelessWidget {
 //        print(annotationSlices);
 //        print(annotationSlices.reduce((value, element) => value + element));
 //        day.notes.forEach((element) => print(element.dateTime));
-
           for (int i = 0; i < annotationSlices.length; i++) {
             if (annotationSlices[i] == 0.0) {
               annotationSegments.add(CircularSegmentEntry(5, Colors.black));
@@ -273,10 +269,7 @@ class DailyStats extends StatelessWidget {
                                       width: 5,
                                     ),
                                     Text(
-                                      Provider.of<LocationNotifier>(context,
-                                              listen: false)
-                                          .getTotalPoint(value.selectedDate)
-                                          .toString(),
+                                      day.pointCount.toString(),
                                       style: numberStyle,
                                       textAlign: TextAlign.center,
                                     ),

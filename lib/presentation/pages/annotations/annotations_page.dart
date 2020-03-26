@@ -1,5 +1,4 @@
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';

@@ -2,13 +2,12 @@ import 'dart:io';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/utils.dart';
-import 'package:diary/utils/extensions.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

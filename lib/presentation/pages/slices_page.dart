@@ -1,13 +1,12 @@
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/date_notifier.dart';
 import 'package:provider/provider.dart';
 
 class SlicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final day = Provider.of<LocationNotifier>(context, listen: false).getDay();
+    final day = Provider.of<DayState>(context, listen: false).day;
     final slices = List.from(day.slices);
 
     if (slices.isNotEmpty && slices.last.activity == MotionActivity.Unknown) {

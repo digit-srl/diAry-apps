@@ -1,7 +1,8 @@
+import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -82,8 +83,8 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                 );
 
                 if (selected == null) return;
-                Provider.of<DateNotifier>(context, listen: false)
-                    .changeSelectedDate(selected);
+                Provider.of<DayNotifier>(context, listen: false)
+                    .changeDay(selected);
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,15 +112,16 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                Provider.of<LocationNotifier>(context, listen: false)
 //                    .addLocation(null);
 //              }),
-//          IconButton(
-//              color: isMoving ? Colors.green : Colors.red,
-//              icon: Icon(Icons.directions_walk),
-//              onPressed: () {
-//                bg.BackgroundGeolocation.changePace(!isMoving);
-//                setState(() {
-//                  isMoving = !isMoving;
-//                });
-//              }),
+            IconButton(
+                color: isMoving ? Colors.green : Colors.red,
+                icon: Icon(Icons.directions_walk),
+                onPressed: () {
+                  bg.BackgroundGeolocation.changePace(!isMoving);
+                  isMoving = !isMoving;
+//                  setState(() {
+//
+//                  });
+                }),
             IconButton(
               icon: Icon(_currentPage == 0
                   ? Icons.collections_bookmark

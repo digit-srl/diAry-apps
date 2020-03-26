@@ -7,7 +7,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:diary/application/geofence_change_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
 import 'package:provider/provider.dart';
 import 'widgets/geofence_marker.dart';
@@ -361,6 +361,7 @@ class _MapPageState extends State<MapPage>
   }
 
   Future<void> _goToLocation(LatLng loc) async {
+    if (!mounted) return;
     final GoogleMapController controller = await _controller.future;
     try {
       controller.moveCamera(

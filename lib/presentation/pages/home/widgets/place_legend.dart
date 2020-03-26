@@ -3,7 +3,6 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
-import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';

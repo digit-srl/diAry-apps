@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
-import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import '../slices_page.dart';
 import 'widgets/activation_card.dart';

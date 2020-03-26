@@ -1,4 +1,4 @@
-import 'package:device_preview/device_preview.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
@@ -13,7 +13,7 @@ import 'application/geofence_change_notifier.dart';
 import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
-import 'application/root/date_notifier.dart';
+import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
 import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
@@ -56,6 +56,9 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
+        ),
+        StateNotifierProvider<DayNotifier, DayState>(
+          create: (_) => DayNotifier(widget.days),
         ),
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
