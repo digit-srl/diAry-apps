@@ -19,7 +19,6 @@
 //  }
 //}
 
-import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:flutter/material.dart' show Colors;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,8 +28,11 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 class GeofenceMarker extends Circle {
   bg.Geofence geofence;
 
-  GeofenceMarker(ColoredGeofence coloredGeofence, [bool triggered = false])
-      : super(
+  GeofenceMarker(
+    ColoredGeofence coloredGeofence,
+    Function(ColoredGeofence) onTap, [
+    bool triggered = false,
+  ]) : super(
           circleId: CircleId(coloredGeofence.geofence.identifier),
           center: LatLng(coloredGeofence.geofence.latitude,
               coloredGeofence.geofence.longitude),
@@ -39,7 +41,11 @@ class GeofenceMarker extends Circle {
           fillColor: (triggered)
               ? Colors.black26.withOpacity(0.2)
               : coloredGeofence.color.withOpacity(0.3),
+          consumeTapEvents: true,
+          onTap: () {
+            onTap(coloredGeofence);
+          },
         ) {
-    this.geofence = geofence;
+    this.geofence = coloredGeofence.geofence;
   }
 }

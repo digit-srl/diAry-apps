@@ -9,7 +9,6 @@ import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'application/app_provider.dart';
-import 'application/geofence_change_notifier.dart';
 import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';

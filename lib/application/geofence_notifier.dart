@@ -23,7 +23,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     final coloredGeofences = <ColoredGeofence>[];
     geofences.forEach((geofence) {
       final color = Hive.box<int>('geofences_color')
-          .get(geofence.identifier, defaultValue: 125);
+          .get(geofence.identifier, defaultValue: 65280);
       coloredGeofences.add(ColoredGeofence(geofence, Color(color)));
     });
     state = GeofenceState(coloredGeofences);

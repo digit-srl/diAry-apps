@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -175,10 +179,81 @@ class _MapPageState extends State<MapPage>
 //    });
   }
 
+  _onGeofenceTap(ColoredGeofence coloredGeofence) {
+    print('[MapPage] _onGeofenceTap');
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.person_pin,
+                        size: 35,
+                        color: coloredGeofence.color,
+                      ),
+                    ),
+                    Text(
+                      coloredGeofence.geofence.identifier,
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.settings_ethernet,
+                        color: coloredGeofence.color,
+                      ),
+                    ),
+                    Text(
+                        'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri'),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Row(
+                    children: <Widget>[
+                      Spacer(),
+                      GenericButton(
+                        text: 'Elimina',
+                        onPressed: () async {
+                          final deleted = await PlaceUtils.removePlace(
+                              context, coloredGeofence.geofence.identifier);
+                          if (deleted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+//                      GenericButton(
+//                        text: 'Modifica',
+//                        onPressed: () {},
+//                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   void _onGeofence(List<ColoredGeofence> geofences) {
     _geofences.clear();
     geofences.forEach((ColoredGeofence coloredGeofence) {
-      _geofences.add(GeofenceMarker(coloredGeofence));
+      _geofences.add(GeofenceMarker(coloredGeofence, _onGeofenceTap));
     });
     setState(() {
       updateAllCircles();
