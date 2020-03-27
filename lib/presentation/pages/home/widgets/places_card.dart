@@ -11,64 +11,47 @@ import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 
-class PlaceLegend extends StatelessWidget {
+class PlacesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateNotifierBuilder<GeofenceState>(
-      stateNotifier: context.watch<GeofenceNotifier>(),
-      builder: (BuildContext context, value, Widget child) {
-        if (value.geofences.isEmpty) {
-          return Container();
-        }
-        return Container(
-//      height: 200,
-          margin: const EdgeInsets.symmetric(vertical: 16.0),
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            color: Color(0xFFEFF2F7),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-//          mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                'Luoghi',
-                style: titleCardStyle,
+        stateNotifier: context.watch<GeofenceNotifier>(),
+        builder: (BuildContext context, value, Widget child) {
+          if (value.geofences.isEmpty) {
+            return Container();
+          }
+
+          return Card(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            color: baseCard,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  AutoSizeText("I tuoi luoghi",
+                      textAlign: TextAlign.start,
+                      maxLines: 1,
+                      style: titleCardStyle),
+                  SizedBox(height: 8),
+                  for (bg.Geofence geofence in value.geofences)
+                    PlaceRowLegend(
+                      title: geofence.identifier,
+                      pinColor: Colors.orange,
+                      location:
+                          'Lat: ${geofence.latitude.toStringAsFixed(2)} Long: ${geofence.longitude.toStringAsFixed(2)}',
+                      onRemove: () {
+                        _onRemove(context, geofence.identifier);
+                      },
+                    ),
+                ],
               ),
-              Text(
-                'Descrizione',
-                style: secondaryStyle,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              for (bg.Geofence geofence in value.geofences)
-                PlaceRowLegend(
-                  title: geofence.identifier,
-                  pinColor: Colors.orange,
-                  location:
-                      'Lat: ${geofence.latitude.toStringAsFixed(2)} Long: ${geofence.longitude.toStringAsFixed(2)}',
-                  onRemove: () {
-                    _onRemove(context, geofence.identifier);
-                  },
-                ),
-//              Align(
-//                alignment: Alignment.centerRight,
-//                child: Padding(
-//                  padding: const EdgeInsets.all(8.0),
-//                  child: GenericButton(
-//                    onPressed: () {},
-//                    text: 'AGGIUNGI LUOGO',
-//                  ),
-//                ),
-//              ),
-            ],
-          ),
-        );
-      },
-    );
+            ),
+          );
+        });
   }
 
   _onRemove(BuildContext context, String identifier) {
@@ -81,6 +64,12 @@ class PlaceLegend extends StatelessWidget {
         title: Text("Sicuro di voler cancellare questo luogo?"),
         actions: <Widget>[
           BasicDialogAction(
+            title: Text("Annulla"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          BasicDialogAction(
             title: Text("Si"),
             onPressed: () {
               Provider.of<GeofenceNotifier>(context, listen: false)
@@ -89,12 +78,6 @@ class PlaceLegend extends StatelessWidget {
                 Provider.of<UserRepositoryImpl>(context, listen: false)
                     .removeHomeGeofence();
               }
-              Navigator.pop(context);
-            },
-          ),
-          BasicDialogAction(
-            title: Text("No"),
-            onPressed: () {
               Navigator.pop(context);
             },
           ),
@@ -120,20 +103,18 @@ class PlaceRowLegend extends StatelessWidget {
       children: <Widget>[
         Container(
 //            color: Colors.green,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Icon(
-                Icons.person_pin,
+                Icons.place,
                 color: pinColor,
-                size: 50,
+                size: 28,
               ),
               Expanded(
                 child: Container(
-//                    height: 20,
-//                    color: Colors.yellow,
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -143,14 +124,6 @@ class PlaceRowLegend extends StatelessWidget {
                           title,
                           maxLines: 1,
                           style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Container(
-//                          color: Colors.blue,
-                        child: AutoSizeText(
-                          location,
-                          maxLines: 1,
-                          style: secondaryStyle,
                         ),
                       ),
                     ],
@@ -164,10 +137,6 @@ class PlaceRowLegend extends StatelessWidget {
               ),
             ],
           ),
-        ),
-        Container(
-          color: Colors.black,
-          height: 1,
         ),
       ],
     );

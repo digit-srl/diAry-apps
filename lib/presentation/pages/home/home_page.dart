@@ -4,7 +4,8 @@ import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats.dart';
 import 'package:diary/presentation/pages/home/widgets/gps_card.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
+import 'package:diary/presentation/pages/home/widgets/places_card.dart';
+import 'package:diary/presentation/pages/home/widgets/places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/wom_card.dart';
 import 'package:diary/presentation/pages/map/map_page.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -85,9 +86,10 @@ class _HomePageState extends State<HomePage> {
               ActivationCard(),
               BetaCard(),
               // WomCard(),
-              PlaceLegend(),
+              //PlaceLegend(),
+              PlacesCard(),
               SizedBox(
-                height: 4,
+                height: 16,
               ),
             ],
           ),
