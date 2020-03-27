@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/day.dart';
+import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -121,6 +122,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //  }
 
   void _onLocation(bg.Location location) {
+    Hive.box<String>('logs').add('[onLocation] $location');
     print('[LocationNotifier] _onLocation()');
     if (location.sample) return;
     print('[LocationNotifier] true loction');

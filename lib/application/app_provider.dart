@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/application/service_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 class AppProvider with LocatorMixin {
@@ -45,6 +46,7 @@ class AppProvider with LocatorMixin {
   }
 
   _onEnabledChange(bool enabled) {
+    Hive.box<String>('logs').add('[onEnabledChange] $enabled');
     serviceNotifier.setEnabled(enabled);
   }
 }

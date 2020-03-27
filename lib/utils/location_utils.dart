@@ -79,6 +79,11 @@ class LocationUtils {
     return locationsPerDay;
   }
 
+  Map<DateTime, bool> fakeActive = {
+    DateTime(2020, 3, 27, 17, 22): false,
+    DateTime(2020, 3, 27, 17, 25): true,
+  };
+
   static List<Slice> aggregateLocationsInSlices(List<bg.Location> locations,
       {List<Slice> partialDaySlices = const []}) {
     if (locations.isEmpty) return [];

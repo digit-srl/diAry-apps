@@ -1,3 +1,4 @@
+import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -19,6 +20,7 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
   addGeofence() {}
 
   void _onGeofence(bg.GeofenceEvent geofenceEvent) {
+    Hive.box<String>('logs').add('[onGeofence] $geofenceEvent');
     state = GeofenceEventState(geofenceEvent);
   }
 }

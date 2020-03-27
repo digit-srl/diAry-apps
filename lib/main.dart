@@ -77,6 +77,7 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(AnnotationAdapter());
+  await Hive.openBox<String>('logs');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox<int>('geofences_color');

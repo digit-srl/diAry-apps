@@ -1,7 +1,6 @@
 import 'dart:ui' show Color;
 
 import 'package:diary/domain/entities/colored_geofence.dart';
-import 'package:flutter/material.dart' show Colors;
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
