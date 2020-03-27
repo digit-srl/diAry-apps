@@ -26,12 +26,12 @@ class AppProvider with LocatorMixin {
       debug: !kReleaseMode,
       persistMode: bg.Config.PERSIST_MODE_ALL,
       logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-      desiredAccuracy: bg.Config.DESIRED_ACCURACY_NAVIGATION,
+      desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
       distanceFilter: 30.0,
       stopTimeout: 1,
       stopOnTerminate: false,
       startOnBoot: true,
-      enableHeadless: true,
+      enableHeadless: false,
       maxDaysToPersist: 30,
     )).then((bg.State state) {
       print("[ready] ${state.toMap()}");
