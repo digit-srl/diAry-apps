@@ -14,21 +14,36 @@ class GenericButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      color: withBorder ? accentColor : null,
+    return withBorder ? RaisedButton(
+      color: accentColor,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       onPressed: onPressed,
-      hoverColor: withBorder ? Colors.grey : Colors.white,
-      splashColor: withBorder ? Colors.grey : Colors.white,
+      hoverColor: Colors.grey,
+      splashColor:Colors.grey,
       shape: RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0),
+        borderRadius: new BorderRadius.circular(16.0),
+      ),
+      child: AutoSizeText(
+        text,
+        maxLines: 1,
+        textAlign: TextAlign.center,
+        style: buttonStyle,
+      ),
+    )
+
+        : FlatButton(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      onPressed: onPressed,
+      hoverColor: Colors.white,
+      splashColor: Colors.white,
+      shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(16.0),
             ),
       child: AutoSizeText(
         text,
         maxLines: 1,
         textAlign: TextAlign.center,
-          style:
-            withBorder ? buttonStyle : buttonStyle.copyWith(color: accentColor),
+          style: buttonStyle.copyWith(color: accentColor),
       ),
     );
   }
