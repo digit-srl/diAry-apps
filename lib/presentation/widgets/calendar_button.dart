@@ -1,4 +1,3 @@
-
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class _CalendarButtonState extends State<CalendarButton> {
     return Row(
       children: <Widget>[
         Expanded(child: Container()),
-        FlatButton(
+        FlatButton.icon(
           onPressed: () async {
             final selected = await showDatePicker(
               context: context,
@@ -39,25 +38,19 @@ class _CalendarButtonState extends State<CalendarButton> {
                 .changeSelectedDate(selected);
           },
           shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(8.0),
+            borderRadius: new BorderRadius.circular(16.0),
           ),
-          child: Row(
-            //crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.keyboard_arrow_down,
-                color: accentColor,
-              ),
-              Text(
-                context.select((DateState value) =>
-                    value.isToday ? 'Oggi' : value.dateFormatted),
-                style: TextStyle(
-                    color: accentColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
+          icon: Icon(
+            Icons.today,
+            color: accentColor,
           ),
+          label: Text(
+              context.select((DateState value) =>
+                  value.isToday ? 'Oggi' : value.dateFormatted),
+              style: TextStyle(
+                  color: accentColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold)),
         ),
         Expanded(child: Container()),
       ],

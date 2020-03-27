@@ -13,27 +13,18 @@ class GpsCard extends StatelessWidget {
       stateNotifier: context.watch<GpsNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         if (!value.gpsEnabled) {
-          return Container(
-            margin: const EdgeInsets.only(top: 16),
-            child: GenericCard(
+          return GenericCard(
               enabled: value.gpsEnabled,
               iconData: Icons.gps_off,
               iconColor: accentColor,
               title: 'GPS non attivo',
               description:
                   'Senza GPS, non può essere effettuato il tracciamento',
-              bottomWidget: Container(),
-//              bottomWidget: Align(
-//                alignment: Alignment.centerRight,
-//                child: GenericButton(
-//                  onPressed: () {},
-//                  text: value.gpsEnabled ? 'DISATTIVA' : 'ATTIVA',
-//                ),
-//              ),
-            ),
-          );
+              bottomButtons: null,
+            );
+        } else {
+          return Container();
         }
-        return Container();
       },
     );
   }

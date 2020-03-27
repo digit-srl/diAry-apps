@@ -12,10 +12,8 @@ class CarCard extends StatelessWidget {
     return StateNotifierBuilder<MotionActivityState>(
       stateNotifier: context.watch<MotionActivityNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        if (value.activity == MotionActivity.InVehicle) {
-          return Container(
-            margin: const EdgeInsets.only(top: 16),
-            child: GenericCard(
+        //if (value.activity == MotionActivity.InVehicle) {
+          return GenericCard(
               enabled: true,
               iconData: Icons.directions_car,
               iconColor: Colors.black,
@@ -24,26 +22,20 @@ class CarCard extends StatelessWidget {
                   value.activity.toString().replaceAll('MotionActivity.', ''),
               description:
                   'Ti consigliamo di annotare quale veicolo stai utilizzando.',
-              bottomWidget: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    child: GenericButton(
+              bottomButtons: <Widget>[
+                    GenericButton(
+                      onPressed: () {},
                       text: 'Auto propria',
                       withBorder: false,
                     ),
-                  ),
-                  Expanded(
-                    child: GenericButton(
+
+                GenericButton(
                       onPressed: () {},
                       text: 'Altro mezzo',
                     ),
-                  ),
                 ],
-              ),
-            ),
-          );
-        }
+            );
+        //}
         return Container();
       },
     );

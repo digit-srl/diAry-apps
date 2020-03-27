@@ -7,7 +7,7 @@ import '../../../../utils/styles.dart';
 class GenericCard extends StatelessWidget {
   final String title;
   final String description;
-  final Widget bottomWidget;
+  final List<Widget> bottomButtons;
   final Icon icon;
   final IconData iconData;
   final Color iconColor;
@@ -17,7 +17,7 @@ class GenericCard extends StatelessWidget {
       {Key key,
       this.title,
       this.description,
-      this.bottomWidget,
+      this.bottomButtons,
       this.icon,
       this.iconData,
       this.iconColor,
@@ -27,8 +27,8 @@ class GenericCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(top: 16.0),
-      elevation: 0,
+      margin: const EdgeInsets.fromLTRB(16,8,16,8),
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       color: enabled ? baseCard : deactivatedCard,
 
@@ -81,9 +81,9 @@ class GenericCard extends StatelessWidget {
             ),
             SizedBox(height: 8),
             ButtonBar(
-              children: <Widget>[
-                bottomWidget,
-              ],
+              children:
+                  // modificato in maniera tale da prendere più flessibilmente una lista di buttons
+                bottomButtons, 
             )
           ],
         ),

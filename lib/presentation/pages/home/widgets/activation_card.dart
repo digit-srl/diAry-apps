@@ -1,3 +1,4 @@
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
@@ -12,23 +13,19 @@ class ActivationCard extends StatelessWidget {
       stateNotifier: context.watch<ServiceNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         final isEnabled = value.isEnabled;
-        return Container(
-          child: GenericCard(
-            enabled: isEnabled,
-            iconColor: value.isEnabled ? Colors.green : Colors.red,
-            title:
-                '${value.isEnabled ? 'Tracciamento Attivo' : 'Tracciam. non attivo'}',
-            description:
-                'Mantenere il tracciamento attivo per il buon funzionamento dell\'app.',
-            bottomWidget: Align(
-              alignment: Alignment.centerRight,
-              child: GenericButton(
-                onPressed: context.watch<ServiceNotifier>().invertEnabled,
-                text: value.isEnabled ? 'Disattiva' : 'Attiva',
-              ),
-            ),
-          ),
-        );
+        return GenericCard(
+              enabled: isEnabled,
+              iconColor: accentColor,
+              title:
+                  '${value.isEnabled ? 'Tracciamento Attivo' : 'Tracciam. non attivo'}',
+              description:
+                  'Mantenere il tracciamento attivo per il buon funzionamento dell\'app.',
+              bottomButtons: <Widget>[
+                GenericButton(
+                  onPressed: context.watch<ServiceNotifier>().invertEnabled,
+                  text: value.isEnabled ? 'Disattiva' : 'Attiva',
+                ),
+              ]);
       },
     );
   }

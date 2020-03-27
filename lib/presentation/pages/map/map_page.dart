@@ -404,9 +404,8 @@ class _MapPageState extends State<MapPage>
       appBar: AppBar(
         elevation: 4,
         title: CalendarButton(),
-        leading: new IconButton(
-          icon: new Icon(Icons.arrow_back, color: accentColor),
-          onPressed: () => Navigator.of(context).pop(),
+        iconTheme: IconThemeData(
+            color: accentColor
         ),
         actions: <Widget>[
           IconButton(

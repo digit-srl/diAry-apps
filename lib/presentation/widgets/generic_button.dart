@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
-
+import 'package:flutter/material.dart';
 import '../../utils/styles.dart';
 
 class GenericButton extends StatelessWidget {
@@ -17,20 +16,18 @@ class GenericButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlatButton(
       color: withBorder ? accentColor : null,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      //padding: const EdgeInsets.symmetric(horizontal: 16.0),
       onPressed: onPressed,
-//      hoverColor: Colors.white,
+      hoverColor: withBorder ? Colors.grey : Colors.white,
       splashColor: withBorder ? Colors.grey : Colors.white,
-      shape: withBorder
-          ? RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(8.0),
-            )
-          : null,
+            ),
       child: AutoSizeText(
         text,
         maxLines: 1,
         textAlign: TextAlign.center,
-        style:
+          style:
             withBorder ? buttonStyle : buttonStyle.copyWith(color: accentColor),
       ),
     );

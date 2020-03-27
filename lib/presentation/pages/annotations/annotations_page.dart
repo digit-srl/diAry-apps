@@ -48,17 +48,15 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+            color: accentColor
+        ),
         elevation: _elevation,
         title: CalendarButton(),
-        leading: new IconButton(
-          icon: new Icon(Icons.arrow_back, color: accentColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.search),
-            color: accentColor,
-            onPressed: null, // todo
+            onPressed: (){},
             tooltip: "Cerca segnalazione",
           )
         ],

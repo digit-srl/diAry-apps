@@ -1,11 +1,14 @@
 import 'package:diary/presentation/pages/annotations/annotations_page.dart';
 import 'package:diary/presentation/pages/home/widgets/activation_card.dart';
+import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
+import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats.dart';
 import 'package:diary/presentation/pages/home/widgets/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:diary/presentation/pages/map/map_page.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +30,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +37,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: MainFabButton(),
       body: Scaffold(
         appBar: AppBar(
+          iconTheme: IconThemeData(
+              color: accentColor
+          ),
           elevation: 0,
           centerTitle: true,
           title: CalendarButton(),
@@ -67,30 +72,26 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-          child: ScrollConfiguration(
-            behavior:
-            HomeScrollBehavior(), // disabilita il ripple da scorrimento
-            child: ListView(
-              // controller: _controller, // pone automaticam. ombreggiatura, da fixare
-              children: <Widget>[
-                DailyStats(),
-                SizedBox(
-                  height: 5,
-                ),
-//              CarCard(),
-                GpsCard(),
-                ActivationCard(),
-                PlaceLegend(),
-                SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
+        body: ScrollConfiguration(
+          behavior: HomeScrollBehavior(), // disabilita il ripple da scorrimento
+          child: ListView(
+            // controller: _controller, // pone automaticam. ombreggiatura, da fixare
+            children: <Widget>[
+              DailyStats(),
+
+              // CarCard(),
+              GpsCard(),
+              ActivationCard(),
+              BetaCard(),
+              PlaceLegend(),
+              SizedBox(
+                height: 20,
+              ),
+            ],
           ),
         ),
         bottomNavigationBar: Material(
+          color: Colors.white,
           elevation: 4,
           child: Container(
             height: 60 + MediaQuery.of(context).padding.bottom,
@@ -133,19 +134,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.cloud_upload),
                       color: accentColor,
                       iconSize: 30,
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.list),
-                      color: accentColor,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => SlicesPage(),
-                          ),
-                        );
-                      },
+                      onPressed: _notImplemented,
                     ),
                     IconButton(
                       icon: Icon(Icons.settings),
@@ -173,4 +162,35 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+
+  // todo sostituire quando disponibile con l'implementazione unificata per alertDialog
+    Future<void> _notImplemented() async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: true, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+
+            title: Text('Coming soon!'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Questa funzione non è ancora stata implementata.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              GenericButton(
+                withBorder: false,
+                text: 'Va bene',
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 }

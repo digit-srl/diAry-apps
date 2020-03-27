@@ -248,7 +248,7 @@ class DailyStats extends StatelessWidget {
                     value.isToday ? dateFormat.format(DateTime.now()) : null,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0), // 20
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // 20
                 child: IntrinsicHeight(
                   child: Row(
                     children: <Widget>[
