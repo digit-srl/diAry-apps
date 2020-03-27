@@ -22,9 +22,9 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     final geofences = await bg.BackgroundGeolocation.geofences;
     final coloredGeofences = <ColoredGeofence>[];
     geofences.forEach((geofence) {
-      final color = Hive.box<Color>('geofences_color')
-          .get(geofence.identifier, defaultValue: Colors.green);
-      coloredGeofences.add(ColoredGeofence(geofence, color));
+      final color = Hive.box<int>('geofences_color')
+          .get(geofence.identifier, defaultValue: 125);
+      coloredGeofences.add(ColoredGeofence(geofence, Color(color)));
     });
     state = GeofenceState(coloredGeofences);
   }
@@ -39,7 +39,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     final success = await bg.BackgroundGeolocation.removeGeofence(identifier);
 
     if (success) {
-      Hive.box<Color>('geofences_color').delete(identifier);
+      Hive.box<int>('geofences_color').delete(identifier);
       final list = state.geofences;
       list.removeWhere((element) => element.geofence.identifier == identifier);
       state = GeofenceState(list);

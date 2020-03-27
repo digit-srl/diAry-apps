@@ -379,8 +379,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
         if (success) {
           Provider.of<GeofenceNotifier>(context, listen: false)
               .addGeofence(geofence, currentColor);
-          Hive.box<Color>('geofences_color')
-              .put(geofence.identifier, currentColor);
+          Hive.box<int>('geofences_color')
+              .put(geofence.identifier, currentColor.value);
           if (_isHome) {
             Provider.of<UserRepositoryImpl>(context, listen: false)
                 .setHomeGeofenceIdentifier(geofence.identifier);

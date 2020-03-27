@@ -8,8 +8,6 @@ import 'package:diary/utils/styles.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 
 class PlaceLegend extends StatelessWidget {
   @override
