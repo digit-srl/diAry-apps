@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 
 import '../slices_page.dart';
 
-class HomeScrollBehavior extends ScrollBehavior {
+class NoRippleOnScrollBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
       BuildContext context, Widget child, AxisDirection axisDirection) {
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         body: ScrollConfiguration(
-          behavior: HomeScrollBehavior(), // disabilita il ripple da scorrimento
+          behavior: NoRippleOnScrollBehavior(),
           child: ListView(
             children: <Widget>[
               DailyStats(),
@@ -142,15 +142,15 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.cloud_upload),
                       color: accentColor,
                       iconSize: 28,
-                      tooltip: "Condividi con la community",
-                      onPressed: _notImplemented,
+                      tooltip: "Coming soon!",
+                      onPressed: () {},
                     ),
                     IconButton(
                       icon: Icon(Icons.local_hospital),
                       color: accentColor,
                       iconSize: 28,
-                      tooltip: "Aggiornamenti sanitari",
-                      onPressed: _notImplemented,
+                      tooltip: "Aggiornamenti sanitari - Coming soon!",
+                      onPressed: () {},
                     ),
 
                     IconButton(
@@ -179,35 +179,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-
-  // todo sostituire quando disponibile con l'implementazione unificata per alertDialog
-    Future<void> _notImplemented() async {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: true, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-
-            title: Text('Coming soon!'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Questa funzione non è ancora stata implementata.'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              GenericButton(
-                withBorder: false,
-                text: 'Va bene',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
 }

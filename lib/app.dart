@@ -90,6 +90,7 @@ class _MyDayAppState extends State<MyDayApp> {
           iconTheme: IconThemeData(color: accentColor),
 
         ),
+        // todo riporta struttura come prima
         home:  HomePage()
       ),
     );
