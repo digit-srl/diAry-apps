@@ -256,7 +256,7 @@ class DailyStats extends StatelessWidget {
 //                  fit: FlexFit.loose,
                         child: Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
@@ -266,13 +266,13 @@ class DailyStats extends StatelessWidget {
                                 style: secondaryStyle,
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(4.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Icon(Icons.place),
                                     SizedBox(
-                                      width: 5,
+                                      width: 4,
                                     ),
                                     Text(
                                       Provider.of<LocationNotifier>(context,
@@ -296,14 +296,14 @@ class DailyStats extends StatelessWidget {
                       Flexible(
                         child: Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Text('Segnalazioni',
                                   maxLines: 1, style: secondaryStyle),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(4.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
@@ -312,7 +312,7 @@ class DailyStats extends StatelessWidget {
                                       size: 25,
                                     ),
                                     SizedBox(
-                                      width: 5,
+                                      width: 4,
                                     ),
                                     Text(
                                       (day?.annotations?.length ?? 0)

@@ -1,5 +1,5 @@
 PODS:
-  - background_fetch (0.5.4):
+  - background_fetch (0.5.5):
     - Flutter
   - CocoaLumberjack (3.6.1):
     - CocoaLumberjack/Core (= 3.6.1)
@@ -188,10 +188,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
 
 SPEC CHECKSUMS:
-  background_fetch: c0d7c541f8495527ed7f167eb9ee2eeab0790703
+  background_fetch: 733393ca9893eadff0f7297a3818afe57fd68cb1
   CocoaLumberjack: b17ae15142558d08bbacf69775fa10c4abbebcc9
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
-  esys_flutter_share: bb47e3a9047ce7d8718b48bcb81fc23d4a6f1e4c
+  esys_flutter_share: 403498dab005b36ce1f8d7aff377e81f0621b0b4
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   Firebase: 5d77105d9740a07ca6b16927ca971db7e860faaf
   firebase_analytics: dacdcfc524d722fff13dcff942f0dfa47e6be567
@@ -223,4 +223,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: df843281060625850c17c2081dc2de7d232ce6ee
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
