@@ -8,6 +8,8 @@ import 'package:diary/presentation/pages/home/widgets/places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/wom_card.dart';
 import 'package:diary/presentation/pages/map/map_page.dart';
+import 'package:flutter/material.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
@@ -77,7 +79,6 @@ class _HomePageState extends State<HomePage> {
         body: ScrollConfiguration(
           behavior: HomeScrollBehavior(), // disabilita il ripple da scorrimento
           child: ListView(
-            // controller: _controller, // pone automaticam. ombreggiatura, da fixare
             children: <Widget>[
               DailyStats(),
 

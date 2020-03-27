@@ -1,4 +1,4 @@
-import 'package:device_preview/device_preview.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
@@ -7,11 +7,10 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:hive/hive.dart';
 import 'application/app_provider.dart';
-import 'application/geofence_change_notifier.dart';
 import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
-import 'application/root/date_notifier.dart';
+import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +53,9 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
         ),
+        StateNotifierProvider<DayNotifier, DayState>(
+          create: (_) => DayNotifier(widget.days),
+        ),
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
         ),
@@ -69,9 +71,9 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<GeofenceEventNotifier, GeofenceEventState>(
           create: (_) => GeofenceEventNotifier(),
         ),
-        StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
-          create: (_) => GeofenceChangeNotifier(),
-        ),
+//        StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
+//          create: (_) => GeofenceChangeNotifier(),
+//        ),
         StateNotifierProvider<GpsNotifier, GpsState>(
           create: (_) => GpsNotifier(),
         ),

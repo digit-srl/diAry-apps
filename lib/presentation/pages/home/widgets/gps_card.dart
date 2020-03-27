@@ -2,7 +2,6 @@ import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:provider/provider.dart';
 import 'generic_card.dart';
 

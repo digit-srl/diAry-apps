@@ -33,11 +33,21 @@ class Day {
     return list;
   }
 
-  copyWith(List<Slice> slices) {
+  copyWith(List<Slice> slices, [int newPoints = 0]) {
     return Day(
         date: this.date,
         slices: slices ?? this.slices,
-        annotations: this.annotations);
+        annotations: this.annotations,
+        pointCount: this.pointCount + newPoints);
+  }
+
+  copyWithNewAnnotation(Annotation annotation) {
+    annotations.add(annotation);
+    return Day(
+        date: this.date,
+        slices: this.slices,
+        annotations: this.annotations,
+        pointCount: this.pointCount);
   }
 
   @override

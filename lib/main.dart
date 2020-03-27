@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +79,7 @@ void main() async {
   Hive.registerAdapter(AnnotationAdapter());
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
+  await Hive.openBox<int>('geofences_color');
   final Map<DateTime, List<bg.Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);

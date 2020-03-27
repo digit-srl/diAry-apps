@@ -52,8 +52,8 @@ class LocationUtils {
     for (var map in locationsMap) {
       try {
         final bg.Location loc = bg.Location(map);
-        final speed = loc?.coords?.speed ?? 100.0;
-        if (speed < 1.0) {
+        final speed = loc?.coords?.speed ?? 0.0;
+        if (speed < 0.5) {
           final currentAvtivity = loc.activity.type;
           loc.activity.type = 'still';
           print('Set to STILL record with speed < 1.0 m/s');

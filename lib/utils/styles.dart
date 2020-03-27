@@ -10,3 +10,4 @@ const numberStyle = TextStyle(fontSize: 25);
 const titleCardStyle = TextStyle(fontSize: 25);
 const buttonStyle =
     TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600);
+const whiteText = TextStyle(color: Colors.white);
