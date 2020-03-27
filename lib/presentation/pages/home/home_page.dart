@@ -5,6 +5,7 @@ import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats.dart';
 import 'package:diary/presentation/pages/home/widgets/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
+import 'package:diary/presentation/pages/home/widgets/wom_card.dart';
 import 'package:diary/presentation/pages/map/map_page.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
@@ -83,9 +84,10 @@ class _HomePageState extends State<HomePage> {
               GpsCard(),
               ActivationCard(),
               BetaCard(),
+              // WomCard(),
               PlaceLegend(),
               SizedBox(
-                height: 20,
+                height: 4,
               ),
             ],
           ),
@@ -102,7 +104,10 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: 20,
+                      width: 8,
+                    ),
+                    SizedBox(
+                      width: 8,
                     ),
                     Container(
                       padding: const EdgeInsets.all(6),
@@ -128,18 +133,27 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(
-                      width: 10,
+                      width: 8,
                     ),
                     IconButton(
                       icon: Icon(Icons.cloud_upload),
                       color: accentColor,
-                      iconSize: 30,
+                      iconSize: 28,
+                      tooltip: "Condividi con la community",
                       onPressed: _notImplemented,
                     ),
                     IconButton(
+                      icon: Icon(Icons.local_hospital),
+                      color: accentColor,
+                      iconSize: 28,
+                      tooltip: "Aggiornamenti sanitari",
+                      onPressed: _notImplemented,
+                    ),
+
+                    IconButton(
                       icon: Icon(Icons.settings),
                       color: accentColor,
-                      iconSize: 30,
+                      iconSize: 28,
                       tooltip: "Impostazioni",
                       onPressed: () {
                         Navigator.push(

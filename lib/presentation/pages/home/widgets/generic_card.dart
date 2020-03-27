@@ -80,10 +80,10 @@ class GenericCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 8),
-            ButtonBar(
+             ButtonBar(
               children:
                   // modificato in maniera tale da prendere più flessibilmente una lista di buttons
-                bottomButtons, 
+              bottomButtons == null ? <Widget>[] : bottomButtons,
             )
           ],
         ),

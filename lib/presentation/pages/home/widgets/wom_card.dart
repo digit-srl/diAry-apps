@@ -7,35 +7,34 @@ import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:provider/provider.dart';
 import 'generic_card.dart';
 
-class CarCard extends StatelessWidget {
+class WomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateNotifierBuilder<MotionActivityState>(
       stateNotifier: context.watch<MotionActivityNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         //if (value.activity == MotionActivity.InVehicle) {
-          return GenericCard(
-              enabled: true,
-              iconData: Icons.directions_car,
-              iconColor: accentColor,
+        return GenericCard(
+          enabled: true,
+          iconData: Icons.favorite_border,
+          iconColor: accentColor,
 //              title: 'Ti stai muovendo con un veicolo',
-              title:
-                  value.activity.toString().replaceAll('MotionActivity.', ''),
-              description:
-                  'Ti consigliamo di annotare quale veicolo stai utilizzando.',
-              bottomButtons: <Widget>[
-                    GenericButton(
-                      onPressed: () {},
-                      text: 'Auto propria',
-                      withBorder: false,
-                    ),
+          title: "Ottieni xx WOM",
+          description:
+              'Condividere i tuoi dati ci permette di incrociarli con gli altri.',
+          bottomButtons: <Widget>[
 
-                GenericButton(
-                      onPressed: () {},
-                      text: 'Altro mezzo',
-                    ),
-                ],
-            );
+            GenericButton(
+              onPressed: () {},
+              withBorder: false,
+              text: 'Cosa sono i WOM?',
+            ),
+            GenericButton(
+              onPressed: () {},
+              text: 'Carica dati',
+            ),
+          ],
+        );
         //}
         return Container();
       },

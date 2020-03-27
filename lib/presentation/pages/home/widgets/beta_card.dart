@@ -21,7 +21,7 @@ class BetaCard extends StatelessWidget {
           iconColor: accentColor,
           title: 'diAry v.0.0.5',
           description:
-              'Questa scheda viene mostrata solo ai beta tester; contiene funzioni per il test.',
+              'Scheda viene mostrata solo ai beta tester; contiene funzioni per il test.',
           bottomButtons: <Widget>[
             GenericButton(
               onPressed: () {
