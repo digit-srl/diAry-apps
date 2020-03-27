@@ -198,25 +198,49 @@ class Geofence {
 class Extras {
   Center center;
   int radius;
+  String event;
+  bool enabled;
 
-  Extras({this.center, this.radius});
+  Extras({this.center, this.radius, this.event, this.enabled});
 
   Extras.fromJson(Map<String, dynamic> json) {
     center = json['center'] != null
         ? new Center.fromJson(Map<String, dynamic>.from(json['center']))
         : null;
     radius = json['radius'];
+    event = json['event'];
+    enabled = json['enabled'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-
     data['center'] = this.center?.toJson();
-
     data['radius'] = this.radius;
+    data['enabled'] = this.enabled;
+    data['event'] = this.event;
+    data.removeWhere((key, element) => element == null);
     return data;
   }
 }
+//
+//class Event {
+//  String event;
+//  bool enabled;
+//
+//  Event({this.event, this.enabled});
+//
+//  Event.fromJson(Map<String, dynamic> json) {
+//    event = json['event'];
+//    enabled = json['enabled'];
+//  }
+//
+//  Map<String, dynamic> toJson() {
+//    final Map<String, dynamic> data = new Map<String, dynamic>();
+//    data['event'] = this.event;
+//    data['enabled'] = this.enabled;
+//    return data;
+//  }
+//}
 
 class Center {
   double latitude;
