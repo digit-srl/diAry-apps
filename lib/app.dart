@@ -75,9 +75,9 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<GeofenceEventNotifier, GeofenceEventState>(
           create: (_) => GeofenceEventNotifier(),
         ),
-        StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
-          create: (_) => GeofenceChangeNotifier(),
-        ),
+//        StateNotifierProvider<GeofenceChangeNotifier, GeofenceChangeState>(
+//          create: (_) => GeofenceChangeNotifier(),
+//        ),
         StateNotifierProvider<GpsNotifier, GpsState>(
           create: (_) => GpsNotifier(),
         ),

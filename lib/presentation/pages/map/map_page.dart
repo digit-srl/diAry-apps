@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -37,6 +39,7 @@ class _MapPageState extends State<MapPage>
   Function removeLocationListener;
   Function removeDateListener;
   Function removeGeofenceListener;
+  Function removeGeofenceEventListener;
   Function removeGeofenceChangeListener;
 
   DateTime _currentDate = DateTime.now().withoutMinAndSec();
@@ -104,25 +107,32 @@ class _MapPageState extends State<MapPage>
       },
     );
 
-    removeGeofenceListener =
+    removeGeofenceEventListener =
         Provider.of<GeofenceEventNotifier>(context).addListener(
       (state) {
-        print('[MapPage] GeofenceNotifier');
+        print('[MapPage] GeofenceEventNotifier');
         if (state.geofenceEvent != null) {
-          _onGeofence(state.geofenceEvent);
+          _onGeofenceEvent(state.geofenceEvent);
         }
       },
     );
 
-    removeGeofenceChangeListener =
-        Provider.of<GeofenceChangeNotifier>(context).addListener(
+    removeGeofenceListener = Provider.of<GeofenceNotifier>(context).addListener(
       (state) {
-        print('[MapPage] GeofenceChangeNotifier');
-        if (state.geofencesChangeEvent != null && _currentDate.isToday()) {
-          _onGeofencesChange(state.geofencesChangeEvent);
-        }
+        print('[MapPage] GeofenceNotifier');
+        _onGeofence(state.geofences);
       },
     );
+
+//    removeGeofenceChangeListener =
+//        Provider.of<GeofenceChangeNotifier>(context).addListener(
+//      (state) {
+//        print('[MapPage] GeofenceChangeNotifier');
+//        if (state.geofencesChangeEvent != null && _currentDate.isToday()) {
+//          _onGeofencesChange(state.geofencesChangeEvent);
+//        }
+//      },
+//    );
 
     removeServiceListener = Provider.of<ServiceNotifier>(context).addListener(
       (state) {
@@ -165,8 +175,18 @@ class _MapPageState extends State<MapPage>
 //    });
   }
 
-  void _onGeofence(bg.GeofenceEvent event) {
-    print('[MapPage] [_onGeofence]');
+  void _onGeofence(List<ColoredGeofence> geofences) {
+    _geofences.clear();
+    geofences.forEach((ColoredGeofence coloredGeofence) {
+      _geofences.add(GeofenceMarker(coloredGeofence));
+    });
+    setState(() {
+      updateAllCircles();
+    });
+  }
+
+  void _onGeofenceEvent(bg.GeofenceEvent event) {
+    print('[MapPage] [_onGeofenceEvent]');
     GeofenceMarker marker = _geofences.firstWhere(
         (GeofenceMarker marker) =>
             marker.geofence.identifier == event.identifier,
@@ -183,23 +203,23 @@ class _MapPageState extends State<MapPage>
       return;
     }
 
-    bg.Geofence geofence = marker.geofence;
-
-    // Render a new greyed-out geofence CircleMarker to show it's been fired but only if it hasn't been drawn yet.
-    // since we can have multiple hits on the same geofence.  No point re-drawing the same hit circle twice.
-    GeofenceMarker eventMarker = _geofenceEvents.firstWhere(
-        (GeofenceMarker marker) =>
-            marker.geofence.identifier == event.identifier,
-        orElse: () => null);
-    if (eventMarker == null)
-      _geofenceEvents.add(GeofenceMarker(geofence, true));
-
-    // Build geofence hit statistic markers:
-    // 1.  A computed CircleMarker upon the edge of the geofence circle (red=exit, green=enter)
-    // 2.  A CircleMarker for the actual location of the geofence event.
-    // 3.  A black PolyLine joining the two above.
+//    bg.Geofence geofence = marker.geofence;
+//
+//    // Render a new greyed-out geofence CircleMarker to show it's been fired but only if it hasn't been drawn yet.
+//    // since we can have multiple hits on the same geofence.  No point re-drawing the same hit circle twice.
+//    GeofenceMarker eventMarker = _geofenceEvents.firstWhere(
+//        (GeofenceMarker marker) =>
+//            marker.geofence.identifier == event.identifier,
+//        orElse: () => null);
+//    if (eventMarker == null)
+//      _geofenceEvents.add(GeofenceMarker(geofence, true));
+//
+//    // Build geofence hit statistic markers:
+//    // 1.  A computed CircleMarker upon the edge of the geofence circle (red=exit, green=enter)
+//    // 2.  A CircleMarker for the actual location of the geofence event.
+//    // 3.  A black PolyLine joining the two above.
     bg.Location location = event.location;
-    LatLng center = new LatLng(geofence.latitude, geofence.longitude);
+//    LatLng center = new LatLng(geofence.latitude, geofence.longitude);
     LatLng hit =
         new LatLng(location.coords.latitude, location.coords.longitude);
 
@@ -242,27 +262,27 @@ class _MapPageState extends State<MapPage>
     setState(() => updateAllCircles());
   }
 
-  void _onGeofencesChange(bg.GeofencesChangeEvent event) {
-    print('[MapPage] [_onGeofencesChange]');
-    print('[${bg.Event.GEOFENCESCHANGE}] - $event');
-    event.off.forEach((String identifier) {
-      _geofences.removeWhere((GeofenceMarker marker) {
-        return marker.geofence.identifier == identifier;
-      });
-    });
-
-    event.on.forEach((bg.Geofence geofence) {
-      _geofences.add(GeofenceMarker(geofence));
-    });
-
-    if (event.off.isEmpty && event.on.isEmpty) {
-      _geofences.clear();
-    }
-
-    setState(() {
-      updateAllCircles();
-    });
-  }
+//  void _onGeofencesChange(bg.GeofencesChangeEvent event) {
+//    print('[MapPage] [_onGeofencesChange]');
+//    print('[${bg.Event.GEOFENCESCHANGE}] - $event');
+//    event.off.forEach((String identifier) {
+//      _geofences.removeWhere((GeofenceMarker marker) {
+//        return marker.geofence.identifier == identifier;
+//      });
+//    });
+//
+//    event.on.forEach((bg.Geofence geofence) {
+//      _geofences.add(GeofenceMarker(geofence));
+//    });
+//
+//    if (event.off.isEmpty && event.on.isEmpty) {
+//      _geofences.clear();
+//    }
+//
+//    setState(() {
+//      updateAllCircles();
+//    });
+//  }
 
   void addMarker(bg.Location location, {double hue}) {
     final MarkerId markerId = MarkerId(location.uuid);
@@ -462,6 +482,7 @@ class _MapPageState extends State<MapPage>
     removeDateListener();
     removeLocationListener();
     removeGeofenceListener();
+    removeGeofenceEventListener();
     removeGeofenceChangeListener();
     super.dispose();
   }

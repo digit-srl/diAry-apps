@@ -41,6 +41,7 @@ dependencies:
   hive: ^1.4.1+1
   hive_flutter: ^0.3.0+2
   flutter_dialogs: ^1.0.2
+  flutter_colorpicker: ^0.3.2
   intl:
 
 dev_dependencies:

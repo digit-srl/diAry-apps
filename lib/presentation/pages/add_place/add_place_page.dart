@@ -5,10 +5,13 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
@@ -70,7 +73,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
     Circle place = Circle(
       circleId: CircleId('place'),
       center: location,
-      fillColor: Colors.orange.withOpacity(0.3),
+      fillColor: currentColor.withOpacity(0.3),
       radius: radius,
       strokeWidth: 0,
     );
@@ -110,17 +113,20 @@ class _AddPlacePageState extends State<AddPlacePage> {
                           Flexible(
                             child: AspectRatio(
                               aspectRatio: 1,
-                              child: Container(
-                                margin: const EdgeInsets.all(12.0),
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.orange,
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 2.0,
-                                    style: BorderStyle.solid,
+                              child: GestureDetector(
+                                onTap: _selectColor,
+                                child: Container(
+                                  margin: const EdgeInsets.all(12.0),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: currentColor,
+//                                    border: Border.all(
+//                                      color: Colors.grey,
+//                                      width: 2.0,
+//                                      style: BorderStyle.solid,
+//                                    ),
+                                    shape: BoxShape.circle,
                                   ),
-                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ),
@@ -231,33 +237,31 @@ class _AddPlacePageState extends State<AddPlacePage> {
               ),
               Flexible(
                 flex: 5,
-                child: Container(
-                  color: Colors.pink,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: <Widget>[
-                      GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: lastLocation ?? LatLng(0.0, 0.0),
-                          zoom: zoom,
-                        ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: lastLocation ?? LatLng(0.0, 0.0),
+                        zoom: zoom,
+                      ),
 //                  onCameraMove: (cameraPosition) {
 //                    setState(() {
 //                      addCircle(cameraPosition.target);
 //                    });
 //                  },
-                        onMapCreated: (controller) {
-                          _controller.complete(controller);
-                        },
-                        onTap: (location) {
-                          setState(() {
-                            lastLocation = location;
-                            addCircle(location);
-                          });
-                        },
-                        markers: markers,
-                        circles: circles,
-                      ),
+                      onMapCreated: (controller) {
+                        _controller.complete(controller);
+                      },
+                      onTap: (location) {
+                        setState(() {
+                          lastLocation = location;
+                          addCircle(location);
+                        });
+                      },
+                      markers: markers,
+                      circles: circles,
+                    ),
 //                Positioned(
 //                  top: -10,
 //                  right: 0.0,
@@ -265,32 +269,31 @@ class _AddPlacePageState extends State<AddPlacePage> {
 //                    onPressed: () {},
 //                  ),
 //                ),
-                      Positioned(
-                        top: 30,
-                        right: 10.0,
-                        child: Container(
-                          width: 35,
-                          height: 35,
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(color: accentColor, blurRadius: 3),
-                            ],
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              icon: Icon(Icons.gps_fixed),
-                              iconSize: 17,
-                              color: accentColor,
-                              onPressed: getCurrentLocationAndUpdateMap,
-                            ),
+                    Positioned(
+                      top: 30,
+                      right: 10.0,
+                      child: Container(
+                        width: 35,
+                        height: 35,
+                        margin: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(color: accentColor, blurRadius: 3),
+                          ],
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            icon: Icon(Icons.gps_fixed),
+                            iconSize: 17,
+                            color: accentColor,
+                            onPressed: getCurrentLocationAndUpdateMap,
                           ),
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -369,11 +372,15 @@ class _AddPlacePageState extends State<AddPlacePage> {
         }
       },
     );
+
+    //TODO spostare in GeofenceNotifier
     bg.BackgroundGeolocation.addGeofence(geofence).then(
       (bool success) {
         if (success) {
           Provider.of<GeofenceNotifier>(context, listen: false)
-              .addGeofence(geofence);
+              .addGeofence(geofence, currentColor);
+          Hive.box<Color>('geofences_color')
+              .put(geofence.identifier, currentColor);
           if (_isHome) {
             Provider.of<UserRepositoryImpl>(context, listen: false)
                 .setHomeGeofenceIdentifier(geofence.identifier);
@@ -407,5 +414,60 @@ class _AddPlacePageState extends State<AddPlacePage> {
       print('[MapPage] [Error] [_goToLocation]');
       print(ex);
     }
+  }
+
+  Color currentColor = Colors.orange;
+
+  void _selectColor() async {
+    Color tmpColor = currentColor;
+    await Alert(
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+      ),
+      context: context,
+      title: 'Scegli il colore',
+      content: BlockPicker(
+        onColorChanged: (Color value) {
+          tmpColor = value;
+        },
+        pickerColor: tmpColor,
+        layoutBuilder:
+            (BuildContext context, List<Color> colors, PickerItem child) {
+          Orientation orientation = MediaQuery.of(context).orientation;
+          return Container(
+            width: orientation == Orientation.portrait ? 300.0 : 300.0,
+            height: orientation == Orientation.portrait ? 300.0 : 200.0,
+            child: GridView.count(
+              crossAxisCount: orientation == Orientation.portrait ? 5 : 6,
+              crossAxisSpacing: 5.0,
+              mainAxisSpacing: 5.0,
+              children: colors.map((Color color) => child(color)).toList(),
+            ),
+          );
+        },
+      ),
+      buttons: [
+        DialogButton(
+          color: Colors.white,
+          child: Text('Annulla'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        DialogButton(
+          child: Text(
+            'Conferma',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            setState(() {
+              this.currentColor = tmpColor;
+              addCircle(lastLocation);
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ).show();
   }
 }

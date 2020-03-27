@@ -79,6 +79,7 @@ void main() async {
   Hive.registerAdapter(AnnotationAdapter());
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
+  await Hive.openBox<Color>('geofences_color');
   final Map<DateTime, List<bg.Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
@@ -43,14 +44,14 @@ class PlaceLegend extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              for (bg.Geofence geofence in value.geofences)
+              for (ColoredGeofence coloredGeofence in value.geofences)
                 PlaceRowLegend(
-                  title: geofence.identifier,
-                  pinColor: Colors.orange,
+                  title: coloredGeofence.geofence.identifier,
+                  pinColor: coloredGeofence.color,
                   location:
-                      'Lat: ${geofence.latitude.toStringAsFixed(2)} Long: ${geofence.longitude.toStringAsFixed(2)}',
+                      'Lat: ${coloredGeofence.geofence.latitude.toStringAsFixed(2)} Long: ${coloredGeofence.geofence.longitude.toStringAsFixed(2)}',
                   onRemove: () {
-                    _onRemove(context, geofence.identifier);
+                    _onRemove(context, coloredGeofence.geofence.identifier);
                   },
                 ),
 //              Align(
