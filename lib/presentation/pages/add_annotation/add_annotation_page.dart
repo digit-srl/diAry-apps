@@ -4,6 +4,7 @@ import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
@@ -40,24 +41,14 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   String error;
   double _top;
 
-  DateTime day;
+  DateTime selectedDate;
 
   @override
   void initState() {
     super.initState();
-    day = Provider.of<DateNotifier>(context, listen: false).selectedDate;
+    selectedDate =
+        Provider.of<DateNotifier>(context, listen: false).selectedDate;
     getCurrentLocationAndUpdateMap();
-  }
-
-  addPin(LatLng location) {
-    markers.clear();
-    markers.add(
-      Marker(
-        markerId: MarkerId('current'),
-        icon: _currentPositionMarkerIcon,
-        position: lastLocation,
-      ),
-    );
   }
 
   @override
@@ -131,62 +122,58 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               ),
               Flexible(
                 flex: 5,
-                child: Container(
-                  color: Colors.pink,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: <Widget>[
-                      GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: lastLocation ?? LatLng(0.0, 0.0),
-                          zoom: zoom,
-                        ),
-                        onMapCreated: (controller) {
-                          _controller.complete(controller);
-                        },
-                        markers: markers,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: lastLocation ?? LatLng(0.0, 0.0),
+                        zoom: zoom,
                       ),
-                      newLocation == null
-                          ? Container(
-                              color: Colors.black.withOpacity(0.5),
+                      onMapCreated: (controller) {
+                        _controller.complete(controller);
+                      },
+                      markers: markers,
+                    ),
+                    newLocation == null
+                        ? Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: Center(
+                              child: Text(
+                                'Acquisizione Posizione...',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 30),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    error != null
+                        ? Positioned(
+                            top: 30,
+                            right: 10.0,
+                            child: Container(
+                              width: 35,
+                              height: 35,
+                              margin: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(color: accentColor, blurRadius: 3),
+                                ],
+                              ),
                               child: Center(
-                                child: Text(
-                                  'Acquisizione Posizione...',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 30),
+                                child: IconButton(
+                                  icon: Icon(Icons.gps_fixed),
+                                  iconSize: 17,
+                                  color: accentColor,
+                                  onPressed: getCurrentLocationAndUpdateMap,
                                 ),
                               ),
-                            )
-                          : Container(),
-                      error != null
-                          ? Positioned(
-                              top: 30,
-                              right: 10.0,
-                              child: Container(
-                                width: 35,
-                                height: 35,
-                                margin: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: accentColor, blurRadius: 3),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                    icon: Icon(Icons.gps_fixed),
-                                    iconSize: 17,
-                                    color: accentColor,
-                                    onPressed: getCurrentLocationAndUpdateMap,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
               ),
             ],
@@ -238,18 +225,12 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   void getCurrentLocationAndUpdateMap() {
-    bg.BackgroundGeolocation.getCurrentPosition(
-        persist: true,
-        maximumAge: 10000,
-        timeout: 10,
-        samples: 5,
-        desiredAccuracy: 5,
-        extras: {'prova': 'prova'}).then((bg.Location location) {
+    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
       newLocation = location;
-      addPin(LatLng(location.coords.latitude, location.coords.longitude));
-      _goToLocation(
-          LatLng(location.coords.latitude, location.coords.longitude));
-
+      lastLocation =
+          LatLng(location.coords.latitude, location.coords.longitude);
+      _goToLocation(lastLocation);
+      addPin(lastLocation);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           if (annotationEditingController.text.trim().length >= 3 &&
@@ -260,9 +241,20 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
           }
         });
       });
-    }).catchError((ex) {
+    }, (ex) {
       error = ex.toString();
     });
+  }
+
+  addPin(LatLng location) {
+    markers.clear();
+    markers.add(
+      Marker(
+        markerId: MarkerId('current'),
+        icon: _currentPositionMarkerIcon,
+        position: location,
+      ),
+    );
   }
 
   Future<void> _goToLocation(LatLng loc) async {

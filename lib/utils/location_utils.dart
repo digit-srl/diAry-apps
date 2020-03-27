@@ -23,6 +23,17 @@ class LocationUtils {
 //    return days;
 //  }
 
+  static void getCurrentLocationAndUpdateMap(
+      Function(bg.Location) onDone, Function(dynamic) onError) {
+    bg.BackgroundGeolocation.getCurrentPosition(
+      persist: true,
+      maximumAge: 5000,
+      timeout: 10,
+      samples: 5,
+      desiredAccuracy: 5,
+    ).then(onDone, onError: onError);
+  }
+
   static Map<DateTime, Day> aggregateLocationsInDayPerDate(
       Map<DateTime, List<bg.Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
