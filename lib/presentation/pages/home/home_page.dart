@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
+import '../logs_page.dart';
 import '../slices_page.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
@@ -107,6 +108,19 @@ class HomePage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => SettingsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.bug_report),
+                    color: accentColor,
+                    iconSize: 30,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => LogsPage(),
                         ),
                       );
                     },

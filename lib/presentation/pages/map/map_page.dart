@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
-import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
-import 'package:diary/application/geofence_change_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';

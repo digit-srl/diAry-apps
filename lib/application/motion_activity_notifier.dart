@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -21,6 +22,7 @@ class MotionActivityNotifier extends StateNotifier<MotionActivityState>
   }
 
   _onActivityChange(bg.ActivityChangeEvent event) {
+    Hive.box<String>('logs').add('[onActivityChange] $event');
     changeActivity(getActivityFromString(event.activity));
   }
 }
