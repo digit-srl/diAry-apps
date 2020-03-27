@@ -26,71 +26,67 @@ class GenericCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(top: 16.0),
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        color: enabled ? baseCard : deactivatedCard,
-      ),
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Flexible(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: LayoutBuilder(
-                    builder: (ctx, constraint) {
-                      if (iconData != null) {
-                        return Icon(
-                          iconData,
-                          color: iconColor,
-                          size: constraint.maxWidth,
-                        );
-                      }
-                      return Image.asset('assets/diary_logo.png');
-                    },
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      color: enabled ? baseCard : deactivatedCard,
+
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8,16,8,0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Flexible(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: LayoutBuilder(
+                      builder: (ctx, constraint) {
+                        if (iconData != null) {
+                          return Icon(
+                            iconData,
+                            color: iconColor,
+                            size: constraint.maxWidth,
+                          );
+                        }
+                        return Image.asset('assets/diary_logo.png');
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Flexible(
-                flex: 8,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      AutoSizeText(title,
+                Flexible(
+                  flex: 8,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        AutoSizeText(title,
+                            textAlign: TextAlign.start,
+                            maxLines: 1,
+                            style: titleCardStyle),
+                        SizedBox(height: 8),
+                        AutoSizeText(
+                          description,
+                          maxLines: 2,
+                          style: enabled ? secondaryStyle : secondaryStyleDark,
                           textAlign: TextAlign.start,
-                          maxLines: 1,
-                          style: titleCardStyle),
-                      SizedBox(height: 10),
-                      AutoSizeText(
-                        description,
-                        maxLines: 2,
-                        style: enabled ? secondaryStyle : secondaryStyleDark,
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: <Widget>[
-              Flexible(
-                flex: 3,
-                child: Container(),
-              ),
-              Flexible(flex: 8, child: bottomWidget),
-            ],
-          ),
-        ],
+              ],
+            ),
+            SizedBox(height: 8),
+            ButtonBar(
+              children: <Widget>[
+                bottomWidget,
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

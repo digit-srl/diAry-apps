@@ -1,5 +1,7 @@
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root/date_notifier.dart';
+import 'package:diary/presentation/widgets/calendar_button.dart';
+import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +17,55 @@ class AnnotationsPage extends StatefulWidget {
 class _AnnotationsPageState extends State<AnnotationsPage> {
   DateFormat format = DateFormat('HH : mm');
 
+  final double targetElevation = 4;
+  double _elevation = 0;
+  ScrollController _controller;
+
   @override
   void initState() {
-    // TODO: implement initState
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
     super.initState();
+  }
+
+  void _scrollListener() {
+    double newElevation = _controller.offset > 1 ? targetElevation : 0;
+    if (_elevation != newElevation) {
+      setState(() {
+        _elevation = newElevation;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller?.removeListener(_scrollListener);
+    _controller?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 65, 16, 0),
-        child: StateNotifierBuilder<DateState>(
+      appBar: AppBar(
+        elevation: _elevation,
+        title: CalendarButton(),
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back, color: accentColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.search),
+            color: accentColor,
+            onPressed: null, // todo
+            tooltip: "Cerca segnalazione",
+          )
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: MainFabButton(),
+      body: StateNotifierBuilder<DateState>(
           stateNotifier: context.watch<DateNotifier>(),
           builder: (BuildContext context, value, Widget child) {
             final day =
@@ -34,10 +73,22 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
 
             if (day.annotations.isEmpty) {
               return Center(
-                child: Text('Nessuna annotazione'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.bookmark_border,
+                      color: accentColor,
+                      size: 40,
+                    ),
+                    Text('Nessuna annotazione'),
+                  ],
+                ),
               );
             }
             return ListView.separated(
+              padding:  EdgeInsets.all(8),
+              controller: _controller,
               itemCount: day.annotations.length,
               itemBuilder: (context, index) {
                 final annotation = day.annotations[index];
@@ -58,7 +109,6 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
             );
           },
         ),
-      ),
     );
   }
 }

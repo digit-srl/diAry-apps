@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -240,13 +241,14 @@ class DailyStats extends StatelessWidget {
                 chartType: CircularChartType.Radial,
                 labelStyle: TextStyle(
                     fontSize: 30,
-                    color: Colors.black,
+                    fontFamily: 'Nunito',
+                    color: accentColor,
                     fontWeight: FontWeight.bold),
                 holeLabel:
                     value.isToday ? dateFormat.format(DateTime.now()) : null,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                padding: const EdgeInsets.symmetric(vertical: 0.0), // 20
                 child: IntrinsicHeight(
                   child: Row(
                     children: <Widget>[
@@ -288,8 +290,8 @@ class DailyStats extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 2,
-                        color: Colors.black,
+                        width: 1,
+                        color: accentColor,
                       ),
                       Flexible(
                         child: Container(

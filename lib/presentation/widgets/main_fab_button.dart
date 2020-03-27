@@ -31,7 +31,7 @@ class MainFabButton extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
-          key: dialerKey,
+          //key: dialerKey,
           onMainButtonPressed: onMainButtonTap,
           hasBackground: true,
           parentButtonBackground: accentColor,

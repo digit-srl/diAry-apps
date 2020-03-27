@@ -29,14 +29,14 @@ class CarCard extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: GenericButton(
-                      text: 'AUTO PROPRIA',
+                      text: 'Auto propria',
                       withBorder: false,
                     ),
                   ),
                   Expanded(
                     child: GenericButton(
                       onPressed: () {},
-                      text: 'ALTRO MEZZO',
+                      text: 'Altro mezzo',
                     ),
                   ),
                 ],

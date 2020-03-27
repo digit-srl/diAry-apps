@@ -24,7 +24,7 @@ class ActivationCard extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: GenericButton(
                 onPressed: context.watch<ServiceNotifier>().invertEnabled,
-                text: value.isEnabled ? 'DISATTIVA' : 'ATTIVA',
+                text: value.isEnabled ? 'Disattiva' : 'Attiva',
               ),
             ),
           ),

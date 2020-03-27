@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:diary/presentation/widgets/calendar_button.dart';
+import 'package:diary/presentation/widgets/main_fab_button.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -395,8 +398,29 @@ class _MapPageState extends State<MapPage>
   @override
   Widget build(BuildContext context) {
     print('[MapPage] build');
+
     _createMarkerImageFromAsset(context);
     return Scaffold(
+      appBar: AppBar(
+        elevation: 4,
+        title: CalendarButton(),
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back, color: accentColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.gps_fixed),
+            color: accentColor,
+            onPressed: () {
+              getCurrentLoc();
+            },
+            tooltip: "Centra su tua posizione",
+          )
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: MainFabButton(),
       body: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: _initialPosition ?? _kGooglePlex,
@@ -410,7 +434,6 @@ class _MapPageState extends State<MapPage>
         markers: Set<Marker>.of(markers.values),
         circles: _allCircles,
       ),
-//      floatingActionButton: MainMenuButton(),
     );
   }
 
@@ -463,5 +486,24 @@ class _MapPageState extends State<MapPage>
     removeGeofenceListener();
     removeGeofenceChangeListener();
     super.dispose();
+  }
+
+  getCurrentLoc() {
+    bg.BackgroundGeolocation.getCurrentPosition(
+        persist: true,
+        // <-- do not persist this location
+        desiredAccuracy: 5,
+        // <-- desire an accuracy of 40 meters or less
+        maximumAge: 10000,
+        // <-- Up to 10s old is fine.
+        timeout: 10,
+        // <-- wait 30s before giving up.
+        samples: 10,
+        // <-- sample just 1 location
+        extras: {"getCurrentPosition": true}).then((bg.Location location) {
+      print('[getCurrentPosition] - $location');
+    }).catchError((error) {
+      print('[getCurrentPosition] ERROR: $error');
+    });
   }
 }
