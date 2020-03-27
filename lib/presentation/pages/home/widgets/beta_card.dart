@@ -1,3 +1,4 @@
+import 'package:diary/presentation/pages/logs_page.dart';
 import 'package:diary/presentation/pages/slices_page.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -35,8 +36,7 @@ class _BetaCardState extends State<BetaCard> {
           description:
           'Scheda viene mostrata solo ai beta tester; contiene funzioni per il test.',
           bottomButtons: <Widget>[
-            /*
-            todo decommentare per aggiungere le funzionalità di debug e gps fittizio
+
             IconButton(
                 icon: Icon(Icons.change_history),
                 onPressed: () {
@@ -54,8 +54,23 @@ class _BetaCardState extends State<BetaCard> {
                     isMoving = !isMoving;
                   });
                 }),
-            */
-            GenericButton(
+
+            IconButton(
+              icon: Icon(Icons.bug_report),
+              color: accentColor,
+              iconSize: 28,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => LogsPage(),
+                  ),
+                );
+              },
+            ),
+
+            IconButton(
+              icon: Icon(Icons.format_list_bulleted),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -64,7 +79,6 @@ class _BetaCardState extends State<BetaCard> {
                   ),
                 );
               },
-              text: 'Spicchi giornalieri',
             )
           ],
         );

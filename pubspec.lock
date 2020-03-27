@@ -279,13 +279,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
-  flutter_dialogs:
-    dependency: "direct main"
-    description:
-      name: flutter_dialogs
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   flutter_image:
     dependency: transitive
     description:

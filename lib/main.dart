@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'app.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
+as bg;
 import 'package:diary/utils/extensions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
@@ -82,7 +82,7 @@ void main() async {
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox<int>('geofences_color');
   final Map<DateTime, List<bg.Location>> locationsPerDate =
-      await LocationUtils.readAndFilterLocationsPerDay();
+  await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
 
   final today = DateTime.now().withoutMinAndSec();

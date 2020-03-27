@@ -1,4 +1,5 @@
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
@@ -52,7 +53,16 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
         return Future.value(true);
       },
       child: Container(
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withOpacity(0.8),
+
+        // todo esperimento: appbar con sfondo gradiente
+        //decoration: BoxDecoration(
+        //  gradient: LinearGradient(
+        //    begin: Alignment.topCenter,
+        //    end: Alignment.bottomCenter,
+        //    colors: [Colors.white,  Colors.white.withOpacity(0)]
+        //  )
+        //),
         height: 60,
         padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
         child: Row(
@@ -68,41 +78,39 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                     _currentPage = _currentPage == 0 ? 1 : 0;
                   });
                 }),
-            GestureDetector(
-              onTap: () async {
-                final selected = await showDatePicker(
-                  context: context,
-                  initialDate: Provider.of<DateState>(context, listen: false)
-                      .selectedDate
-                      .withoutMinAndSec(),
-                  firstDate: dates.first,
-                  lastDate: dates.last.add(Duration(minutes: 1)),
-                  selectableDayPredicate: (DateTime date) => dates.contains(
-                    date.withoutMinAndSec(),
-                  ),
-                );
+               FlatButton.icon(
+                onPressed: () async {
+                  final selected = await showDatePicker(
+                    context: context,
+                    initialDate: Provider.of<DateState>(context, listen: false)
+                        .selectedDate
+                        .withoutMinAndSec(),
+                    firstDate: dates.first,
+                    lastDate: dates.last.add(Duration(minutes: 1)),
+                    selectableDayPredicate: (DateTime date) => dates.contains(
+                      date.withoutMinAndSec(),
+                    ),
+                  );
 
-                if (selected == null) return;
-                Provider.of<DayNotifier>(context, listen: false)
-                    .changeDay(selected);
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 35,
-                  ),
-                  Text(
+                  if (selected == null) return;
+                  Provider.of<DateNotifier>(context, listen: false)
+                      .changeSelectedDate(selected);
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(16.0),
+                ),
+                icon: Icon(
+                  Icons.today,
+                  color: accentColor,
+                ),
+                label: Text(
                     context.select((DateState value) =>
-                        value.isToday ? 'Oggi' : value.dateFormatted),
+                    value.isToday ? 'Oggi' : value.dateFormatted),
                     style: TextStyle(
-                        color: Theme.of(context).accentColor,
+                        color: accentColor,
                         fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+                        fontWeight: FontWeight.bold)),
+
             ),
 //          IconButton(
 //              icon: Icon(Icons.change_history),
@@ -112,16 +120,16 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                Provider.of<LocationNotifier>(context, listen: false)
 //                    .addLocation(null);
 //              }),
-            IconButton(
-                color: isMoving ? Colors.green : Colors.red,
-                icon: Icon(Icons.directions_walk),
-                onPressed: () {
-                  bg.BackgroundGeolocation.changePace(!isMoving);
-                  isMoving = !isMoving;
+//            IconButton(
+//                color: isMoving ? Colors.green : Colors.red,
+//                icon: Icon(Icons.directions_walk),
+//                onPressed: () {
+//                  bg.BackgroundGeolocation.changePace(!isMoving);
+//                  isMoving = !isMoving;
 //                  setState(() {
 //
 //                  });
-                }),
+//                }),
             IconButton(
               icon: Icon(_currentPage == 0
                   ? Icons.collections_bookmark

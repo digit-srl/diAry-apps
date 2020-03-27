@@ -51,22 +51,6 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-            color: accentColor
-        ),
-        elevation: _elevation,
-        title: CalendarButton(),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: (){},
-            tooltip: "Cerca segnalazione",
-          )
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: MainFabButton(),
       body: StateNotifierBuilder<DateState>(
           stateNotifier: context.watch<DateNotifier>(),
           builder: (BuildContext context, dateState, Widget child) {
