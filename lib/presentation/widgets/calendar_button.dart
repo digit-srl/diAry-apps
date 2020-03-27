@@ -7,6 +7,8 @@ import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
 
 // widget che mostra il calendario nella parte centrale della appBar
+// dismesso
+/*
 class CalendarButton extends StatefulWidget {
   @override
   _CalendarButtonState createState() => _CalendarButtonState();
@@ -59,3 +61,4 @@ class _CalendarButtonState extends State<CalendarButton> {
     );
   }
 }
+ */
