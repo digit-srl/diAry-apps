@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 const secondaryStyle = TextStyle(
-    fontSize: 17, color: secondaryText, fontWeight: FontWeight.normal);
+    fontSize: 15, color: secondaryText, fontWeight: FontWeight.normal);
 const secondaryStyleDark =
     TextStyle(fontSize: 17, color: accentColor, fontWeight: FontWeight.normal);
 const numberStyle = TextStyle(fontSize: 25);

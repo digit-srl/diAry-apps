@@ -46,6 +46,8 @@ class PlaceLegend extends StatelessWidget {
                     PlaceRowLegend(
                       title: coloredGeofence.geofence.identifier,
                       pinColor: coloredGeofence.color,
+
+                      geoRadius: "Raggio: " +  coloredGeofence.geofence.radius.toInt().toString() + " metri",
                       location: 'Lat: ${coloredGeofence.geofence.latitude.toStringAsFixed(2)} Long: ${coloredGeofence.geofence.longitude.toStringAsFixed(2)}',
 
                       lastLine: coloredGeofence == value.geofences.last,
@@ -97,6 +99,7 @@ class PlaceLegend extends StatelessWidget {
 class PlaceRowLegend extends StatelessWidget {
   final String title;
   final String location;
+  final String geoRadius;
   final Color pinColor;
   final Function onRemove;
   final bool lastLine;
@@ -106,6 +109,7 @@ class PlaceRowLegend extends StatelessWidget {
       this.title,
       this.pinColor,
       this.location,
+      this.geoRadius,
       this.onRemove,
       this.lastLine})
       : super(key: key);
@@ -152,7 +156,8 @@ class PlaceRowLegend extends StatelessWidget {
                       Container(
 //                          color: Colors.blue,
                         child: AutoSizeText(
-                          location,
+                          //location,
+                          geoRadius,
                           maxLines: 1,
                           style: secondaryStyle,
                         ),
