@@ -28,7 +28,7 @@ class GenericCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.fromLTRB(16,8,16,8),
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       color: enabled ? baseCard : deactivatedCard,
 
