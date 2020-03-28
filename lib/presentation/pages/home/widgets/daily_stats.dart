@@ -284,9 +284,8 @@ class DailyStats extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        width: 1,
-                        color: accentColor,
+                      VerticalDivider(
+                        color: secondaryText,
                       ),
                       Flexible(
                         child: Container(
