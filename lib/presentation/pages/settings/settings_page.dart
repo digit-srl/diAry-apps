@@ -4,6 +4,7 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
+import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:provider/provider.dart';
@@ -21,11 +22,12 @@ class _SettingsPageState extends State<SettingsPage> {
   final double targetElevation = 3;
   double _elevation = 0;
   ScrollController _controller;
+  String version = '';
 
   @override
   void initState() {
     super.initState();
-
+    readVersion();
     items = [
       SettingItem(
         Icons.file_download,
@@ -43,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     utils = [
       SettingItem(null, 'diAry - digital Arianna',
-          'Versione 0.0.0. Premi per visualizzare il changelog',
+          'Premi per visualizzare il changelog',
           enabled: false, customImageIconAsset: 'assets/diary_logo.png'),
       SettingItem(Icons.bug_report, 'Segnala un bug',
           'Notifica un problema al team di sviluppo tramite mail.',
@@ -275,11 +277,23 @@ class _SettingsPageState extends State<SettingsPage> {
     _controller?.removeListener(_scrollListener);
     _controller?.dispose();
   }
+
+  void readVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        if (mounted) {
+          version = packageInfo.version;
+          utils[0].title = 'diAry - digital Arianna v. $version';
+        }
+      });
+    });
+  }
 }
 
 class SettingItem {
   final IconData iconData;
-  final String title;
+  String title;
   final String subtitle;
   final bool enabled;
   final Function onTap;

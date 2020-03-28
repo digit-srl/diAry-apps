@@ -112,16 +112,16 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                Provider.of<LocationNotifier>(context, listen: false)
 //                    .addLocation(null);
 //              }),
-            IconButton(
-                color: isMoving ? Colors.green : Colors.red,
-                icon: Icon(Icons.directions_walk),
-                onPressed: () {
-                  bg.BackgroundGeolocation.changePace(!isMoving);
-                  isMoving = !isMoving;
-//                  setState(() {
-//
-//                  });
-                }),
+//            IconButton(
+//                color: isMoving ? Colors.green : Colors.red,
+//                icon: Icon(Icons.directions_walk),
+//                onPressed: () {
+//                  bg.BackgroundGeolocation.changePace(!isMoving);
+//                  isMoving = !isMoving;
+////                  setState(() {
+////
+////                  });
+//                }),
             IconButton(
               icon: Icon(_currentPage == 0
                   ? Icons.collections_bookmark
