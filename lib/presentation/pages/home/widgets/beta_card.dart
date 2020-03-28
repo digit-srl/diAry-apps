@@ -34,28 +34,8 @@ class _BetaCardState extends State<BetaCard> {
           iconColor: accentColor,
           title: 'diAry v.0.0.5 Beta',
           description:
-          'Scheda viene mostrata solo ai beta tester; contiene funzioni per il test.',
+          'Scheda mostrata solo ai beta tester. Contiene funzioni per il test.',
           bottomButtons: <Widget>[
-
-            /* todo decommentare per gps fittizio e altra funzione debug
-            IconButton(
-                icon: Icon(Icons.change_history),
-                onPressed: () {
-                  Provider.of<ServiceNotifier>(context, listen: false)
-                      .invertEnabled();
-                  Provider.of<LocationNotifier>(context, listen: false)
-                      .addLocation(null);
-                }),
-            IconButton(
-                color: isMoving ? Colors.green : Colors.red,
-                icon: Icon(Icons.directions_walk),
-                onPressed: () {
-                  bg.BackgroundGeolocation.changePace(!isMoving);
-                  setState(() {
-                    isMoving = !isMoving;
-                  });
-                }),
-         */
             IconButton(
               icon: Icon(Icons.bug_report),
               color: accentColor,

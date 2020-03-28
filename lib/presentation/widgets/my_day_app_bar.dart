@@ -78,39 +78,65 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                     _currentPage = _currentPage == 0 ? 1 : 0;
                   });
                 }),
-               FlatButton.icon(
-                onPressed: () async {
-                  final selected = await showDatePicker(
-                    context: context,
-                    initialDate: Provider.of<DateState>(context, listen: false)
-                        .selectedDate
-                        .withoutMinAndSec(),
-                    firstDate: dates.first,
-                    lastDate: dates.last.add(Duration(minutes: 1)),
-                    selectableDayPredicate: (DateTime date) => dates.contains(
-                      date.withoutMinAndSec(),
+            FlatButton.icon(
+              onPressed: () async {
+                final selected = await showDatePicker(
+                  context: context,
+                  initialDate: Provider.of<DateState>(context, listen: false)
+                      .selectedDate
+                      .withoutMinAndSec(),
+                  firstDate: dates.first,
+                  lastDate: dates.last.add(Duration(minutes: 1)),
+                  selectableDayPredicate: (DateTime date) => dates.contains(
+                    date.withoutMinAndSec(),
+                  ),
+                  // datepicker manual customization (it is aflutter bug:
+                  // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
+                  builder: (context, child) => Theme(
+                    data: ThemeData(
+                      colorScheme: ColorScheme(
+                        background: Colors.white,
+                        brightness: Brightness.light,
+                        error: accentColor,
+                        onBackground: Colors.black87,
+                        onError: Colors.white,
+                        onSurface: Colors.black87,
+                        onSecondary: Colors.black87,
+                        onPrimary: Colors.black,
+                        primary: accentColor, //  FLAT BUTTON COLOR
+                        primaryVariant: accentColor,
+                        secondary: Colors.black,
+                        secondaryVariant: Colors.black,
+                        surface: Colors.white,
+                      ),
+                      primaryColor: accentColor, //  HEADER COLOR
+                      accentColor: accentColor, // DATE COLOR
+                      buttonTheme: ButtonThemeData(
+                        textTheme: ButtonTextTheme.accent,
+                      ),
                     ),
-                  );
+                    child: child,
+                  ),
+                );
 
-                  if (selected == null) return;
-                  Provider.of<DateNotifier>(context, listen: false)
-                      .changeSelectedDate(selected);
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(16.0),
-                ),
-                icon: Icon(
-                  Icons.today,
-                  color: accentColor,
-                ),
-                label: Text(
-                    context.select((DateState value) =>
-                    value.isToday ? 'Oggi' : value.dateFormatted),
-                    style: TextStyle(
-                        color: accentColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold)),
-
+                if (selected == null) return;
+                Provider.of<DateNotifier>(context, listen: false)
+                    .changeSelectedDate(selected);
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(16.0),
+              ),
+              icon: Icon(
+                Icons.today,
+                color: accentColor,
+              ),
+              label: Text(
+                  context.select((DateState value) =>
+                      value.isToday ? 'Oggi' : value.dateFormatted),
+                  style: TextStyle(
+                      color: accentColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
             ),
 //          IconButton(
 //              icon: Icon(Icons.change_history),
