@@ -42,11 +42,12 @@ class Day {
   }
 
   copyWithNewAnnotation(Annotation annotation) {
-    annotations.add(annotation);
+    final list = List.from(annotations);
+    list.add(annotation);
     return Day(
         date: this.date,
         slices: this.slices,
-        annotations: this.annotations,
+        annotations: list,
         pointCount: this.pointCount);
   }
 

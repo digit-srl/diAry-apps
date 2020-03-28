@@ -59,9 +59,10 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
   }
 
   void addAnnotation(Annotation annotation) {
-    days[annotation.dateTime.withoutMinAndSec()].annotations.add(annotation);
+    final date = annotation.dateTime.withoutMinAndSec();
+    days[date] = days[date].copyWithNewAnnotation(annotation);
     if (state.day.date.isSameDay(annotation.dateTime)) {
-      state = DayState(days[annotation.dateTime.withoutMinAndSec()]);
+      state = DayState(days[date]);
     }
   }
 }
