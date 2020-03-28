@@ -94,21 +94,8 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                   // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
                   builder: (context, child) => Theme(
                     data: ThemeData(
-                      colorScheme: ColorScheme(
-                        background: Colors.white,
-                        brightness: Brightness.light,
-                        error: accentColor,
-                        onBackground: Colors.black87,
-                        onError: Colors.white,
-                        onSurface: Colors.black87,
-                        onSecondary: Colors.black87,
-                        onPrimary: Colors.black,
-                        primary: accentColor, //  FLAT BUTTON COLOR
-                        primaryVariant: accentColor,
-                        secondary: Colors.black,
-                        secondaryVariant: Colors.black,
-                        surface: Colors.white,
-                      ),
+                      fontFamily: "Nunito",
+                      primarySwatch: Colors.blueGrey,
                       primaryColor: accentColor, //  HEADER COLOR
                       accentColor: accentColor, // DATE COLOR
                       buttonTheme: ButtonThemeData(
