@@ -4,6 +4,7 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -31,6 +32,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Circle place;
   BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
+  bg.Location newLocation;
 
   Set<Marker> markers = {};
   Set<Circle> circles = {};
@@ -38,9 +40,10 @@ class _AddPlacePageState extends State<AddPlacePage> {
   double zoom = 19.0;
   Widget fab = Container();
   bool isHomeEnabled;
+  final GlobalKey _key = GlobalKey();
 
   Size get _size => _key?.currentContext?.size;
-
+  String error;
   double _top;
 
   @override
@@ -54,8 +57,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
     if (locations.isNotEmpty) {
       final coords = locations.last.coords;
       lastLocation = LatLng(coords.latitude, coords.longitude);
-      addCircle(lastLocation);
-      return;
     }
     getCurrentLocationAndUpdateMap();
   }
@@ -66,21 +67,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
       super.setState(fn);
     }
   }
-
-  addCircle(LatLng location) {
-    circles.clear();
-
-    Circle place = Circle(
-      circleId: CircleId('place'),
-      center: location,
-      fillColor: currentColor.withOpacity(0.3),
-      radius: radius,
-      strokeWidth: 0,
-    );
-    circles.add(place);
-  }
-
-  final GlobalKey _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +130,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                   labelStyle: TextStyle(color: secondaryText),
                                 ),
                                 onChanged: (text) {
-                                  if (text.trim().length >= 3) {
+                                  if (text.trim().length >= 3 &&
+                                      newLocation != null) {
                                     _top = _size.height - 30;
                                   } else {
                                     _top = null;
@@ -262,13 +249,18 @@ class _AddPlacePageState extends State<AddPlacePage> {
                       markers: markers,
                       circles: circles,
                     ),
-//                Positioned(
-//                  top: -10,
-//                  right: 0.0,
-//                  child: FloatingActionButton(
-//                    onPressed: () {},
-//                  ),
-//                ),
+                    newLocation == null
+                        ? Container(
+                            color: Colors.black.withOpacity(0.5),
+                            child: Center(
+                              child: Text(
+                                'Acquisizione Posizione...',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 30),
+                              ),
+                            ),
+                          )
+                        : Container(),
                     Positioned(
                       top: 30,
                       right: 10.0,
@@ -329,32 +321,17 @@ class _AddPlacePageState extends State<AddPlacePage> {
     });
   }
 
-  void getCurrentLocationAndUpdateMap() {
-    bg.BackgroundGeolocation.getCurrentPosition(
-      persist: true,
-      maximumAge: 5000,
-      timeout: 10,
-      samples: 5,
-      desiredAccuracy: 5,
-    ).then((bg.Location location) {
-      lastLocation =
-          LatLng(location.coords.latitude, location.coords.longitude);
-      markers.clear();
-      markers.add(
-        Marker(
-          markerId: MarkerId('current'),
-          icon: _currentPositionMarkerIcon,
-          position: lastLocation,
-        ),
-      );
-
-      addCircle(lastLocation);
-      _goToLocation(lastLocation);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {});
-      });
-    });
-  }
+//  void getCurrentLocationAndUpdateMap() {
+//    bg.BackgroundGeolocation.getCurrentPosition(
+//      persist: true,
+//      maximumAge: 5000,
+//      timeout: 10,
+//      samples: 5,
+//      desiredAccuracy: 5,
+//    ).then((bg.Location location) {
+//
+//    });
+//  }
 
   void _addGeofence() {
     final geofence = bg.Geofence(
@@ -469,5 +446,52 @@ class _AddPlacePageState extends State<AddPlacePage> {
         ),
       ],
     ).show();
+  }
+
+  void getCurrentLocationAndUpdateMap() {
+    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
+      newLocation = location;
+      lastLocation =
+          LatLng(location.coords.latitude, location.coords.longitude);
+      _goToLocation(lastLocation);
+      addPin(lastLocation);
+      addCircle(lastLocation);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          if (placeEditingController.text.trim().length >= 3 &&
+              newLocation != null) {
+            _top = _size.height - 30;
+          } else {
+            _top = null;
+          }
+        });
+      });
+    }, (ex) {
+      error = ex.toString();
+    });
+  }
+
+  addCircle(LatLng location) {
+    circles.clear();
+
+    Circle place = Circle(
+      circleId: CircleId('place'),
+      center: location,
+      fillColor: currentColor.withOpacity(0.3),
+      radius: radius,
+      strokeWidth: 0,
+    );
+    circles.add(place);
+  }
+
+  addPin(LatLng location) {
+    markers.clear();
+    markers.add(
+      Marker(
+        markerId: MarkerId('current'),
+        icon: _currentPositionMarkerIcon,
+        position: location,
+      ),
+    );
   }
 }

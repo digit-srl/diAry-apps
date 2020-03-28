@@ -3,6 +3,8 @@ import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 
+import 'location_notifier.dart';
+
 class GeofenceEventState {
   final bg.GeofenceEvent geofenceEvent;
 
@@ -17,10 +19,19 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
     bg.BackgroundGeolocation.onGeofence(_onGeofence);
   }
 
-  addGeofence() {}
-
   void _onGeofence(bg.GeofenceEvent geofenceEvent) {
     Hive.box<String>('logs').add('[onGeofence] $geofenceEvent');
+    final location = bg.Location(geofenceEvent.location.map);
+    final event = bg.GeofenceEvent({
+      'identifier': geofenceEvent.identifier,
+      'action': geofenceEvent.action,
+      'extras': geofenceEvent.extras,
+    });
+    location.geofence = event;
+    print('[GeofenceEventNotifier] location $location');
+    if (location != null) {
+      read<LocationNotifier>().addLocation(location);
+    }
     state = GeofenceEventState(geofenceEvent);
   }
 }
