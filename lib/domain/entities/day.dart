@@ -42,7 +42,7 @@ class Day {
   }
 
   copyWithNewAnnotation(Annotation annotation) {
-    final list = List.from(annotations);
+    final list = List<Annotation>.from(annotations);
     list.add(annotation);
     return Day(
         date: this.date,
