@@ -37,6 +37,7 @@ class _BetaCardState extends State<BetaCard> {
           'Scheda viene mostrata solo ai beta tester; contiene funzioni per il test.',
           bottomButtons: <Widget>[
 
+            /* todo decommentare per gps fittizio e altra funzione debug
             IconButton(
                 icon: Icon(Icons.change_history),
                 onPressed: () {
@@ -54,11 +55,12 @@ class _BetaCardState extends State<BetaCard> {
                     isMoving = !isMoving;
                   });
                 }),
-
+         */
             IconButton(
               icon: Icon(Icons.bug_report),
               color: accentColor,
               iconSize: 28,
+              tooltip: "Log report",
               onPressed: () {
                 Navigator.push(
                   context,
@@ -71,6 +73,7 @@ class _BetaCardState extends State<BetaCard> {
 
             IconButton(
               icon: Icon(Icons.format_list_bulleted),
+              tooltip: "Spicchi giornalieri",
               onPressed: () {
                 Navigator.push(
                   context,
@@ -79,7 +82,14 @@ class _BetaCardState extends State<BetaCard> {
                   ),
                 );
               },
-            )
+            ),
+
+            GenericButton(
+              text: "Changelog",
+              onPressed: (){
+                // todo link a changelog
+              },
+            ),
           ],
         );
       },

@@ -53,7 +53,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
         return Future.value(true);
       },
       child: Container(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withOpacity(0.85),
 
         // todo esperimento: appbar con sfondo gradiente
         //decoration: BoxDecoration(
