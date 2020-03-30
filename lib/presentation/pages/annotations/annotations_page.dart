@@ -109,6 +109,8 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                   );
                 }
                 return ListView.separated(
+                  // draw below statusbar and appbar
+                  padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top + kToolbarHeight),
                   itemCount: annotations.length,
                   itemBuilder: (context, index) {
                     final annotation = annotations[index];

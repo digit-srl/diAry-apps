@@ -130,6 +130,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                 ],
               ),
 
+              actions: <Widget>[
 //          IconButton(
 //              icon: Icon(Icons.change_history),
 //              onPressed: () {
@@ -148,7 +149,6 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //
 //                  });
 //                }),
-              actions: <Widget>[
                 IconButton(
                   color: accentColor,
                   icon: Icon(_currentPage == 0
