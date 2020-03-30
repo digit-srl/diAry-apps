@@ -6,6 +6,7 @@ class Slice {
   MotionActivity activity;
   Set<String> places;
   int minutes;
+  int placeRecords;
 
   DateTime get endTime => startTime.add(minutesToHourAndMinutes(minutes));
 
@@ -15,6 +16,7 @@ class Slice {
     this.startTime,
     this.activity,
     this.places = const {},
+    this.placeRecords = 0,
   });
 
   Duration minutesToHourAndMinutes(int minutes) {

@@ -128,7 +128,7 @@ class SlicesPage extends StatelessWidget {
                     .map(
                       (slice) => Card(
                         child: ListTile(
-                            leading: Text(slice.id.toString()),
+                            leading: Text(slice.placeRecords.toString()),
                             title: Row(
                               children: <Widget>[
                                 Text(

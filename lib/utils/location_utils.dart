@@ -147,17 +147,20 @@ class LocationUtils {
             activity: action == Action.Unknown
                 ? currentActivity
                 : MotionActivity.Still,
+            placeRecords: 1,
           ),
         );
       } else if (loc.geofence == null) {
         places.last.minutes += partialPlaceMinutes;
         if (lastAction == Action.Enter) {
           //ultima azione = Enter
+          places.last.placeRecords += 1;
         } else if (lastAction == Action.Unknown) {
           //ultima azione = Unknown
           if (places.last.places.isEmpty) {
             if (places.last.activity == currentActivity ||
                 places.last.activity == MotionActivity.Unknown) {
+              places.last.placeRecords += 1;
             } else {
               places.add(
                 Slice(
@@ -166,29 +169,36 @@ class LocationUtils {
                   activity: currentActivity,
                   startTime: currentDate,
                   places: {},
+                  placeRecords: 1,
                 ),
               );
             }
           }
         } else {
           // ultima azione = EXIT
-
           Set<String> newPlaces = Set.from(places.last.places);
           if (newPlaces.contains(lastWhere)) {
             newPlaces.remove(lastWhere);
           }
-          if (places.last.activity == currentActivity ||
-              places.last.activity == MotionActivity.Unknown) {
-            places.last.activity = currentActivity;
-          } else {
-            places.add(
-              Slice(
+          if (places.last.places.isEmpty) {
+            if (places.last.activity == currentActivity ||
+                places.last.activity == MotionActivity.Unknown) {
+              places.last.activity = currentActivity;
+              places.last.placeRecords += 1;
+            } else {
+              places.add(
+                Slice(
                   id: 0,
                   minutes: 0,
                   startTime: currentDate,
                   places: newPlaces,
-                  activity: currentActivity),
-            );
+                  activity: currentActivity,
+                  placeRecords: 1,
+                ),
+              );
+            }
+          } else {
+            places.last.placeRecords += 1;
           }
         }
       } else {
@@ -206,10 +216,14 @@ class LocationUtils {
                 startTime: currentDate,
                 places: newPlaces,
                 activity: MotionActivity.Still,
+                placeRecords: 1,
               ),
             );
+          } else {
+            places.last.placeRecords += 1;
           }
         } else if (action == Action.Exit) {
+          places.last.placeRecords += 1;
           //situazione di primo EXIT della giornata visto che ol luogo non è contenuto nel precedente spicchio
           if (isFirstGeofence) {
             places.last.places.add(where);
@@ -226,7 +240,10 @@ class LocationUtils {
               minutes: 0,
               startTime: currentDate,
               places: newPlaces,
-              activity: MotionActivity.Unknown,
+              activity: newPlaces.isEmpty
+                  ? MotionActivity.Unknown
+                  : MotionActivity.Still,
+              placeRecords: 0,
             ),
           );
         }
