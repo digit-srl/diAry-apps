@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
           child: ListView(
             children: <Widget>[
               SizedBox(
-                height: 48,
+                height: MediaQuery.of(context).padding.top + 20,
               ),
               DailyStats(),
 
