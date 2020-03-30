@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 class Day {
   final DateTime date;
   final List<Slice> slices;
+  final List<Slice> places;
   final List<Annotation> annotations;
 
 //  final List<Location> notes;
@@ -15,6 +16,7 @@ class Day {
       {this.annotations = const [],
       @required this.date,
       this.slices = const [],
+      this.places = const [],
       this.pointCount = 0});
 
   List<double> get annotationSlices {
@@ -33,10 +35,11 @@ class Day {
     return list;
   }
 
-  copyWith(List<Slice> slices, [int newPoints = 0]) {
+  copyWith(List<Slice> slices, List<Slice> places, [int newPoints = 0]) {
     return Day(
         date: this.date,
         slices: slices ?? this.slices,
+        places: places ?? this.places,
         annotations: this.annotations,
         pointCount: this.pointCount + newPoints);
   }

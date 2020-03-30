@@ -47,7 +47,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
           ? partialSlices.sublist(0, partialSlices.length - 1)
           : partialSlices,
     );
-    days[date] = days[date].copyWith(newSlices, 1);
+    days[date] = days[date].copyWith(newSlices[0], newSlices[1], 1);
 
     if (state.day.date.isSameDay(openAppDate)) {
       if (date.isAfter(openAppDate)) {

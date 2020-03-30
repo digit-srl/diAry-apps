@@ -1,4 +1,5 @@
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
@@ -144,20 +145,9 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
   }
 
   getCurrentLoc() {
-    bg.BackgroundGeolocation.getCurrentPosition(
-        persist: true,
-        // <-- do not persist this location
-        desiredAccuracy: 5,
-        // <-- desire an accuracy of 40 meters or less
-        maximumAge: 10000,
-        // <-- Up to 10s old is fine.
-        timeout: 10,
-        // <-- wait 30s before giving up.
-        samples: 10,
-        // <-- sample just 1 location
-        extras: {"getCurrentPosition": true}).then((bg.Location location) {
+    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
       print('[getCurrentPosition] - $location');
-    }).catchError((error) {
+    }, (error) {
       print('[getCurrentPosition] ERROR: $error');
     });
   }
