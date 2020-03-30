@@ -173,6 +173,8 @@ class LocationUtils {
                 ),
               );
             }
+          } else {
+            places.last.placeRecords += 1;
           }
         } else {
           // ultima azione = EXIT
