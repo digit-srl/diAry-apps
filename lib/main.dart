@@ -23,15 +23,15 @@ void main() async {
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ),
-  );
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
 
 //  final List<bg.Location> locations = List<bg.Location>.unmodifiable(
 //      (await bg.BackgroundGeolocation.locations)
@@ -91,11 +91,23 @@ void main() async {
   }
 
   runApp(
-    MyDayApp(locationsPerDate: locationsPerDate, days: days),
+      // i campi di status e navigation bar a volte diventano bianchi.
+      // annotatedRegion in questa configurazione risolve il bug
+      // https://github.com/flutter/flutter/issues/21265#issuecomment-500142587
+      AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.white,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+        child: MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    DevicePreview(
 //      enabled: !kReleaseMode,
 //      builder: (context) =>
 //          MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    ),
+      ),
   );
 }
