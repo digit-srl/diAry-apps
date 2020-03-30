@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/domain/entities/loc.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -70,11 +71,11 @@ class LocationUtils {
         final bg.Location loc = bg.Location(map);
         final speed = loc?.coords?.speed ?? 0.0;
         if (speed < 0.5) {
-          final currentAvtivity = loc.activity.type;
+          final currentActivity = loc.activity.type;
           loc.activity.type = 'still';
           print('Set to STILL record with speed < 1.0 m/s');
           print(
-              'Before was $currentAvtivity with speed: ${loc.coords.speed} m/s');
+              'Before was $currentActivity with speed: ${loc.coords.speed} m/s');
         }
         final date =
             DateTime.tryParse(loc.timestamp).toLocal().withoutMinAndSec();
@@ -111,6 +112,8 @@ class LocationUtils {
     final List<Slice> places = [];
     int cumulativePlacesMinutes = 0;
     Action lastAction = Action.Unknown;
+    bool isFirstGeofence = true;
+    String lastWhere;
     slices.addAll(partialDaySlices);
     final maxMinutes = 1440;
     int cumulativeMinutes = partialDaySlices.isNotEmpty
@@ -147,16 +150,15 @@ class LocationUtils {
           ),
         );
       } else if (loc.geofence == null) {
+        places.last.minutes += partialPlaceMinutes;
         if (lastAction == Action.Enter) {
           //ultima azione = Enter
-          places.last.minutes += partialPlaceMinutes;
         } else if (lastAction == Action.Unknown) {
           //ultima azione = Unknown
           if (places.last.places.isEmpty) {
-            if (places.last.activity == currentActivity) {
-              places.last.minutes += partialPlaceMinutes;
+            if (places.last.activity == currentActivity ||
+                places.last.activity == MotionActivity.Unknown) {
             } else {
-              places.last.minutes += partialPlaceMinutes;
               places.add(
                 Slice(
                   id: 0,
@@ -167,48 +169,51 @@ class LocationUtils {
                 ),
               );
             }
-          } else {
-            places.last.minutes += partialPlaceMinutes;
           }
         } else {
           // ultima azione = EXIT
-          places.last.minutes += partialPlaceMinutes;
+
           Set<String> newPlaces = Set.from(places.last.places);
-          if (newPlaces.contains(where)) {
-            newPlaces.remove(where);
+          if (newPlaces.contains(lastWhere)) {
+            newPlaces.remove(lastWhere);
           }
-          places.add(
-            Slice(
-                id: 0,
-                minutes: 0,
-                startTime: currentDate,
-                places: newPlaces,
-                activity: currentActivity),
-          );
+          if (places.last.activity == currentActivity ||
+              places.last.activity == MotionActivity.Unknown) {
+            places.last.activity = currentActivity;
+          } else {
+            places.add(
+              Slice(
+                  id: 0,
+                  minutes: 0,
+                  startTime: currentDate,
+                  places: newPlaces,
+                  activity: currentActivity),
+            );
+          }
         }
       } else {
         //Geofence presente
-        if (action == Action.Enter) {
-          if (places.last.places.contains(where)) {
-            places.last.minutes += partialPlaceMinutes;
-          } else {
-            places.last.minutes += partialPlaceMinutes;
+        places.last.minutes += partialPlaceMinutes;
 
+        if (action == Action.Enter) {
+          if (!places.last.places.contains(where)) {
             Set<String> newPlaces = Set.from(places.last.places);
             newPlaces.add(where);
-
             places.add(
               Slice(
                 id: 0,
                 minutes: 0,
                 startTime: currentDate,
                 places: newPlaces,
-                activity: currentActivity,
+                activity: MotionActivity.Still,
               ),
             );
           }
         } else if (action == Action.Exit) {
-          places.last.minutes += partialPlaceMinutes;
+          //situazione di primo EXIT della giornata visto che ol luogo non è contenuto nel precedente spicchio
+          if (isFirstGeofence) {
+            places.last.places.add(where);
+          }
 
           Set<String> newPlaces = Set.from(places.last.places);
           if (newPlaces.contains(where)) {
@@ -221,13 +226,15 @@ class LocationUtils {
               minutes: 0,
               startTime: currentDate,
               places: newPlaces,
-              activity: currentActivity,
+              activity: MotionActivity.Unknown,
             ),
           );
         }
+        isFirstGeofence = false;
       }
 
       lastAction = action;
+      lastWhere = where;
       cumulativePlacesMinutes = currentMinutes;
 
       if (slices.isEmpty) {

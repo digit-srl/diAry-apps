@@ -3,8 +3,8 @@ import 'motion_activity.dart';
 class Slice {
   final int id;
   final DateTime startTime;
-  final MotionActivity activity;
-  final Set<String> places;
+  MotionActivity activity;
+  Set<String> places;
   int minutes;
 
   DateTime get endTime => startTime.add(minutesToHourAndMinutes(minutes));
