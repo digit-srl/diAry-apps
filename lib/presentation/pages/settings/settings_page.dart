@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:diary/utils/export_utils.dart';
+import 'package:diary/utils/import_export_utils.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
@@ -223,7 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
         .getCurrentDayLocations;
 
     final List<File> files =
-        await ExportUtils.saveFilesOnLocalStorage(locations, currentDate);
+        await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);
     if (files == null || files.isEmpty) return;
     final csvFile = files[0];
     final jsonFile = files[1];

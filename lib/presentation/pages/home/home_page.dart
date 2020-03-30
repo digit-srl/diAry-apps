@@ -94,7 +94,7 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (BuildContext context) => SlicesPage(),
+                          builder: (BuildContext context) => TabBarDemo(),
                         ),
                       );
                     },
