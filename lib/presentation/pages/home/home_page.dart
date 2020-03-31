@@ -1,3 +1,4 @@
+import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -24,13 +25,11 @@ class HomePage extends StatelessWidget {
           behavior: NoRippleOnScrollBehavior(),
           child: ListView(
             children: <Widget>[
-              //SizedBox(
-              //  height: MediaQuery.of(context).padding.top + 20,
-              //),
-              DailyStats(),
               SizedBox(
-                height: 5,
+                height: kToolbarHeight - 16, // toolbarHeight = appBar+statusbar height; a questo viene tolto parte del padding naturale del grafico
               ),
+              DailyStats(),
+
 //              CarCard(),
               GpsCard(),
               ActivationCard(),
@@ -44,7 +43,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
       bottomNavigationBar: Material(
-        elevation: 4,
+        elevation: 16,
         color: Colors.white,
         child: Container(
           height: 60 + MediaQuery.of(context).padding.bottom,
@@ -90,18 +89,7 @@ class HomePage extends StatelessWidget {
                     onPressed: () {},
                     tooltip: "Coming soon!",
                   ),
-                  IconButton(
-                    icon: Icon(Icons.list),
-                    color: accentColor,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => TabBarDemo(),
-                        ),
-                      );
-                    },
-                  ),
+
                   IconButton(
                     icon: Icon(Icons.settings),
                     color: accentColor,
@@ -116,19 +104,7 @@ class HomePage extends StatelessWidget {
                       );
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.bug_report),
-                    color: accentColor,
-                    iconSize: 30,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => LogsPage(),
-                        ),
-                      );
-                    },
-                  ),
+
                 ],
               ),
               SizedBox(

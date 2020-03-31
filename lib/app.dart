@@ -34,6 +34,7 @@ class MyDayApp extends StatefulWidget {
 
 class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
+  UserRepository userRepository;
   // todo final GlobalKey<UnicornDialerState> dialerKey =
   // todo GlobalKey<UnicornDialerState>(debugLabel: 'prova');
   @override

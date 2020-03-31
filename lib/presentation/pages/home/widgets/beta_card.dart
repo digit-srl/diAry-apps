@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/motion_activity_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
+import '../../slices_page.dart';
 import 'generic_card.dart';
 
 // import necessari pre funzionalità di debug aggiuntive e gps fittizio
@@ -22,6 +24,13 @@ class BetaCard extends StatefulWidget {
 
 class _BetaCardState extends State<BetaCard> {
   bool isMoving = false;
+  String version = "v.0.0.0";
+
+  @override
+  void initState() {
+    super.initState();
+    readVersion();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +41,7 @@ class _BetaCardState extends State<BetaCard> {
           enabled: true,
           iconData: Icons.developer_mode,
           iconColor: accentColor,
-          title: 'diAry v.0.0.5 Beta',
+          title: 'diAry ' + version,
           description:
           'Scheda mostrata solo ai beta tester. Contiene funzioni per il test.',
           bottomButtons: <Widget>[
@@ -58,7 +67,7 @@ class _BetaCardState extends State<BetaCard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => SlicesPage(),
+                    builder: (BuildContext context) => TabBarDemo(),
                   ),
                 );
               },
@@ -74,5 +83,16 @@ class _BetaCardState extends State<BetaCard> {
         );
       },
     );
+  }
+
+  void readVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        if (mounted) {
+          version = 'v.' + packageInfo.version;
+        }
+      });
+    });
   }
 }
