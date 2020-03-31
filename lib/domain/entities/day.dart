@@ -1,4 +1,6 @@
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/domain/entities/place.dart';
+import 'package:hive/hive.dart';
 
 import 'slice.dart';
 import 'package:meta/meta.dart';
@@ -42,6 +44,21 @@ class Day {
         places: places ?? this.places,
         annotations: this.annotations,
         pointCount: this.pointCount + newPoints);
+  }
+
+  Set<Place> get geofences {
+    final Set<Place> list = {};
+    final box = Hive.box<Place>('places');
+    this.places.forEach(
+      (place) {
+        place.places.forEach(
+          (identifier) {
+            list.add(box.get(identifier));
+          },
+        );
+      },
+    );
+    return list;
   }
 
   copyWithNewAnnotation(Annotation annotation) {

@@ -200,8 +200,18 @@ class Extras {
   int radius;
   String event;
   bool enabled;
+  String name;
+  int color;
+  bool isHome;
 
-  Extras({this.center, this.radius, this.event, this.enabled});
+  Extras(
+      {this.center,
+      this.radius,
+      this.event,
+      this.enabled,
+      this.name,
+      this.color,
+      this.isHome});
 
   Extras.fromJson(Map<String, dynamic> json) {
     center = json['center'] != null
@@ -209,6 +219,9 @@ class Extras {
         : null;
     radius = json['radius'];
     event = json['event'];
+    name = json['name'];
+    color = json['color'];
+    isHome = json['isHome'];
     enabled = json['enabled'];
   }
 
@@ -217,30 +230,14 @@ class Extras {
     data['center'] = this.center?.toJson();
     data['radius'] = this.radius;
     data['enabled'] = this.enabled;
+    data['name'] = this.name;
+    data['color'] = this.color;
+    data['isHome'] = this.isHome;
     data['event'] = this.event;
     data.removeWhere((key, element) => element == null);
     return data;
   }
 }
-//
-//class Event {
-//  String event;
-//  bool enabled;
-//
-//  Event({this.event, this.enabled});
-//
-//  Event.fromJson(Map<String, dynamic> json) {
-//    event = json['event'];
-//    enabled = json['enabled'];
-//  }
-//
-//  Map<String, dynamic> toJson() {
-//    final Map<String, dynamic> data = new Map<String, dynamic>();
-//    data['event'] = this.event;
-//    data['enabled'] = this.enabled;
-//    return data;
-//  }
-//}
 
 class Center {
   double latitude;

@@ -18,7 +18,7 @@ import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-as bg show Location;
+    as bg show Location;
 
 import 'domain/entities/day.dart';
 
@@ -34,11 +34,12 @@ class MyDayApp extends StatefulWidget {
 
 class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
-  //final GlobalKey<UnicornDialerState> dialerKey =
-  //GlobalKey<UnicornDialerState>(debugLabel: 'prova');
+  // todo final GlobalKey<UnicornDialerState> dialerKey =
+  // todo GlobalKey<UnicornDialerState>(debugLabel: 'prova');
   @override
   void initState() {
     super.initState();
+    userRepository = UserRepositoryImpl(Hive.box('user'));
     serviceNotifier = ServiceNotifier();
   }
 
@@ -50,11 +51,14 @@ class _MyDayAppState extends State<MyDayApp> {
           create: (BuildContext context) => AppProvider(serviceNotifier),
           lazy: false,
         ),
-        Provider<UserRepositoryImpl>(
-          create: (_) => UserRepositoryImpl(Hive.box('user')),
+        Provider<UserRepositoryImpl>.value(
+          value: userRepository,
         ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
+        ),
+        StateNotifierProvider.value(
+          value: serviceNotifier,
         ),
         StateNotifierProvider<DayNotifier, DayState>(
           create: (_) => DayNotifier(widget.days),
@@ -62,14 +66,12 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
         ),
-        StateNotifierProvider.value(
-          value: serviceNotifier,
-        ),
+
         StateNotifierProvider<MotionActivityNotifier, MotionActivityState>(
           create: (_) => MotionActivityNotifier(),
         ),
         StateNotifierProvider<GeofenceNotifier, GeofenceState>(
-          create: (_) => GeofenceNotifier(),
+          create: (_) => GeofenceNotifier(userRepository),
         ),
         StateNotifierProvider<GeofenceEventNotifier, GeofenceEventState>(
           create: (_) => GeofenceEventNotifier(),
@@ -104,16 +106,16 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         home: WillPopScope(
           onWillPop: () {
-            //final wasOpened = dialerKey.currentState.close();
-            //print(wasOpened);
-            //return Future.value(!wasOpened);
-            return null; // todo uncomment
+            // todo final wasOpened = dialerKey.currentState.close();
+            // todo print(wasOpened);
+            // todo return Future.value(!wasOpened);
+            return null; // todo restore dialerKey
           },
           child: Scaffold(
             body: RootPage(),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             floatingActionButton: MainFabButton(
-             // dialerKey: dialerKey, todo uncomment
+             // todo dialerKey: dialerKey, todo uncomment
             ),
           ),
         ),

@@ -42,7 +42,9 @@ class LocationUtils {
       Map<DateTime, List<bg.Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
     for (DateTime key in locationsPerDay.keys) {
-      final tmp = aggregateLocationsInSlices(locationsPerDay[key]);
+      final tmp = aggregateLocationsInSlices(locationsPerDay[key],
+          box:
+              Map<String, bool>.from(Hive.box<bool>('enabled_change').toMap()));
       days[key] = Day(
           date: key,
           slices: tmp[0],
@@ -103,18 +105,29 @@ class LocationUtils {
 
   static List<List<Slice>> aggregateLocationsInSlices(
       List<bg.Location> locations,
-      {List<Slice> partialDaySlices = const []}) {
-    if (locations.isEmpty) return [];
+      {Map<String, bool> box,
+      List<Slice> partialDaySlices = const [],
+      List<Slice> partialDayPlaces = const []}) {
+    if (locations.isEmpty) return [[], []];
 
     final currentDay = DateTime.tryParse(locations.first.timestamp).toLocal();
 
+    // on/off config
+    final List<DateTime> enablingHistory =
+        List<DateTime>.from(box.keys.map((el) => DateTime.parse(el)));
+    enablingHistory.sort((DateTime a, DateTime b) => a.compareTo(b));
+    final currentEnablingDayHistory =
+        enablingHistory.where((a) => a.isSameDay(currentDay)).toList();
+
     final List<Slice> slices = [];
     final List<Slice> places = [];
-    int cumulativePlacesMinutes = 0;
+
     Action lastAction = Action.Unknown;
     bool isFirstGeofence = true;
     String lastWhere;
     slices.addAll(partialDaySlices);
+    places.addAll(partialDayPlaces);
+
     final maxMinutes = 1440;
     int cumulativeMinutes = partialDaySlices.isNotEmpty
         ? partialDaySlices.last.startTime.hour * 60 +
@@ -122,19 +135,89 @@ class LocationUtils {
             partialDaySlices.last.minutes
         : 0;
 
+    int cumulativePlacesMinutes = partialDayPlaces.isNotEmpty
+        ? partialDayPlaces.last.startTime.hour * 60 +
+            partialDayPlaces.last.startTime.minute +
+            partialDayPlaces.last.minutes
+        : 0;
+
+    int abilitationIndex = 0;
+
     for (bg.Location loc in locations) {
       final currentDate = DateTime.tryParse(loc.timestamp).toLocal();
       final currentMinutes = currentDate.hour * 60 + currentDate.minute;
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
-      final partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
+      int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
+
+      //gofence data
       final geofence = loc.geofence;
       final action = geofence?.action == null
           ? Action.Unknown
           : geofence?.action == 'EXIT' ? Action.Exit : Action.Enter;
       final where = geofence?.identifier;
       print('uuid: ${loc.uuid}, identifier: $where, action: $action');
+
+      final d = currentEnablingDayHistory.isEmpty
+          ? null
+          : abilitationIndex >= currentEnablingDayHistory.length
+              ? null
+              : currentEnablingDayHistory[abilitationIndex];
+      if (d != null && d.isBefore(currentDate)) {
+        final dCurrent = d.hour * 60 + d.minute;
+        if (box[d.toIso8601String()]) {
+          places.add(
+            Slice(
+              id: 0,
+              minutes: partialPlaceMinutes - (currentMinutes - dCurrent),
+              startTime: currentDate.withoutMinAndSec(),
+              places: {},
+              activity: MotionActivity.Off,
+            ),
+          );
+          cumulativePlacesMinutes += dCurrent;
+          partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
+
+//          if (places.isEmpty) {
+//          } else {}
+//          if (places.last.activity == MotionActivity.Off) {
+//            places.last.minutes += partialPlaceMinutes;
+//          } else {
+//            places.last.minutes += partialPlaceMinutes;
+//            places.add(
+//              Slice(
+//                id: 0,
+//                minutes: dCurrent,
+//                startTime: currentDate.withoutMinAndSec(),
+//                places: {},
+//                activity: MotionActivity.Off,
+//              ),
+//            );
+//          }
+
+        } else {
+          places.last.minutes += dCurrent - cumulativePlacesMinutes;
+          cumulativePlacesMinutes += places.last.minutes;
+          abilitationIndex++;
+          final c = currentEnablingDayHistory[abilitationIndex];
+          final cCurrent = c.hour * 60 + c.minute;
+          if (box[c.toIso8601String()]) {
+            places.add(
+              Slice(
+                id: 0,
+                minutes: 0,
+                startTime: d,
+                places: {},
+                activity: MotionActivity.Off,
+              ),
+            );
+//            cumulativePlacesMinutes += cCurrent - dCurrent;
+            partialPlaceMinutes = cCurrent - dCurrent;
+          }
+        }
+        abilitationIndex++;
+      }
 
       //se places è vuoto aggiungo slice con place nullo o meno in base al geofence se exit o action
       if (places.isEmpty) {
@@ -147,17 +230,20 @@ class LocationUtils {
             activity: action == Action.Unknown
                 ? currentActivity
                 : MotionActivity.Still,
+            placeRecords: 1,
           ),
         );
       } else if (loc.geofence == null) {
         places.last.minutes += partialPlaceMinutes;
         if (lastAction == Action.Enter) {
           //ultima azione = Enter
+          places.last.placeRecords += 1;
         } else if (lastAction == Action.Unknown) {
           //ultima azione = Unknown
           if (places.last.places.isEmpty) {
             if (places.last.activity == currentActivity ||
                 places.last.activity == MotionActivity.Unknown) {
+              places.last.placeRecords += 1;
             } else {
               places.add(
                 Slice(
@@ -166,29 +252,38 @@ class LocationUtils {
                   activity: currentActivity,
                   startTime: currentDate,
                   places: {},
+                  placeRecords: 1,
                 ),
               );
             }
+          } else {
+            places.last.placeRecords += 1;
           }
         } else {
           // ultima azione = EXIT
-
           Set<String> newPlaces = Set.from(places.last.places);
           if (newPlaces.contains(lastWhere)) {
             newPlaces.remove(lastWhere);
           }
-          if (places.last.activity == currentActivity ||
-              places.last.activity == MotionActivity.Unknown) {
-            places.last.activity = currentActivity;
-          } else {
-            places.add(
-              Slice(
+          if (places.last.places.isEmpty) {
+            if (places.last.activity == currentActivity ||
+                places.last.activity == MotionActivity.Unknown) {
+              places.last.activity = currentActivity;
+              places.last.placeRecords += 1;
+            } else {
+              places.add(
+                Slice(
                   id: 0,
                   minutes: 0,
                   startTime: currentDate,
                   places: newPlaces,
-                  activity: currentActivity),
-            );
+                  activity: currentActivity,
+                  placeRecords: 1,
+                ),
+              );
+            }
+          } else {
+            places.last.placeRecords += 1;
           }
         }
       } else {
@@ -206,14 +301,19 @@ class LocationUtils {
                 startTime: currentDate,
                 places: newPlaces,
                 activity: MotionActivity.Still,
+                placeRecords: 1,
               ),
             );
+          } else {
+            places.last.placeRecords += 1;
           }
         } else if (action == Action.Exit) {
+          places.last.placeRecords += 1;
           //situazione di primo EXIT della giornata visto che ol luogo non è contenuto nel precedente spicchio
           if (isFirstGeofence) {
             places.last.places.add(where);
           }
+          //TODO potrebbe anche uscire da 2 posti di fila
 
           Set<String> newPlaces = Set.from(places.last.places);
           if (newPlaces.contains(where)) {
@@ -226,7 +326,10 @@ class LocationUtils {
               minutes: 0,
               startTime: currentDate,
               places: newPlaces,
-              activity: MotionActivity.Unknown,
+              activity: newPlaces.isEmpty
+                  ? MotionActivity.Unknown
+                  : MotionActivity.Still,
+              placeRecords: 0,
             ),
           );
         }
@@ -274,8 +377,25 @@ class LocationUtils {
             places: {},
           ),
         );
-      } else {
-        places.last.minutes = maxMinutes - cumulativePlacesMinutes;
+      } else if (currentEnablingDayHistory != null &&
+          currentEnablingDayHistory.isNotEmpty) {
+        final last = currentEnablingDayHistory?.last;
+        if (last != null &&
+            last.isAfter(DateTime.parse(locations.last.timestamp))) {
+          if (!box[currentEnablingDayHistory.last.toIso8601String()]) {
+            places.add(
+              Slice(
+                id: 0,
+                minutes: maxMinutes - cumulativePlacesMinutes,
+                startTime: places.last.endTime,
+                places: {},
+                activity: MotionActivity.Off,
+              ),
+            );
+          }
+        } else {
+          places.last.minutes = maxMinutes - cumulativePlacesMinutes;
+        }
       }
       cumulativePlacesMinutes += maxMinutes - cumulativePlacesMinutes;
     }

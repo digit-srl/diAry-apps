@@ -123,7 +123,7 @@ class ImportExportUtils {
         loc.activity.type = 'still';
       }
     });
-    return LocationUtils.aggregateLocationsInSlices(locations);
+    return LocationUtils.aggregateLocationsInSlices(locations, box: {});
   }
 
   static Future<List<bg.Location>> importJSON() async {

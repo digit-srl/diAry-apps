@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
@@ -178,6 +179,7 @@ class _MapPageState extends State<MapPage>
 
   _onGeofenceTap(ColoredGeofence coloredGeofence) {
     print('[MapPage] _onGeofenceTap');
+//    final color = Color(coloredGeofence.color);
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -198,9 +200,19 @@ class _MapPageState extends State<MapPage>
                       ),
                     ),
                     Text(
-                      coloredGeofence.geofence.identifier,
+                      coloredGeofence.name,
                       style: TextStyle(fontSize: 30),
                     ),
+//                    coloredGeofence.isHome
+//                        ? Padding(
+//                            padding: const EdgeInsets.all(8.0),
+//                            child: Icon(
+//                              Icons.person_pin,
+//                              size: 35,
+//                              color: color,
+//                            ),
+//                          )
+//                        : Container(),
                   ],
                 ),
                 Row(
@@ -249,9 +261,17 @@ class _MapPageState extends State<MapPage>
 
   void _onGeofence(List<ColoredGeofence> geofences) {
     _geofences.clear();
-    geofences.forEach((ColoredGeofence coloredGeofence) {
-      _geofences.add(GeofenceMarker(coloredGeofence, _onGeofenceTap));
-    });
+    try {
+      geofences.forEach((ColoredGeofence coloredGeofence) {
+        final t = GeofenceMarker(coloredGeofence, _onGeofenceTap);
+
+        print('[MapPage] _onGeofence add identifier ${t.geofence.identifier}');
+        print('[MapPage] _onGeofence color ${t.fillColor}');
+        _geofences.add(t);
+      });
+    } catch (ex) {
+      print('[MapPage] _onGeofence error $ex');
+    }
     setState(() {
       updateAllCircles();
     });

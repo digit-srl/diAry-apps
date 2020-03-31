@@ -1,14 +1,12 @@
-import 'package:diary/presentation/pages/home/widgets/activation_card.dart';
-import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
-import 'package:diary/presentation/pages/home/widgets/car_card.dart';
-import 'package:diary/presentation/pages/home/widgets/daily_stats.dart';
-import 'package:diary/presentation/pages/home/widgets/gps_card.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import '../logs_page.dart';
 import '../slices_page.dart';
+import 'widgets/activation_card.dart';
+import 'widgets/daily_stats.dart';
+import 'widgets/gps_card.dart';
+import 'widgets/place_legend.dart';
 
 class NoRippleOnScrollBehavior extends ScrollBehavior {
   @override
@@ -26,17 +24,19 @@ class HomePage extends StatelessWidget {
           behavior: NoRippleOnScrollBehavior(),
           child: ListView(
             children: <Widget>[
-              SizedBox(
-                height: MediaQuery.of(context).padding.top + 20,
-              ),
+              //SizedBox(
+              //  height: MediaQuery.of(context).padding.top + 20,
+              //),
               DailyStats(),
-
-              // CarCard(),
+              SizedBox(
+                height: 5,
+              ),
+//              CarCard(),
               GpsCard(),
               ActivationCard(),
               BetaCard(),
               // WomCard(),
-              PlaceLegend(),
+//              PlaceLegend(),
               SizedBox(
                 height: 16,
               ),

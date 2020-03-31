@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
@@ -11,56 +13,66 @@ import 'package:provider/provider.dart';
 class PlaceLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StateNotifierBuilder<GeofenceState>(
-        stateNotifier: context.watch<GeofenceNotifier>(),
-        builder: (BuildContext context, value, Widget child) {
-          if (value.geofences.isEmpty) {
-            return Container();
-          }
-          return Card(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            color: baseCard,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  AutoSizeText("I tuoi luoghi",
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: titleCardStyle),
-
-                  AutoSizeText("Vengono qua visualizzati tutti i luoghi che hai deciso di memorizzare.",
-                      textAlign: TextAlign.start,
-                      maxLines: 2,
-                      style: secondaryStyle),
-
-                  Container(
-                    height: 8,
-                  ),
-
-                  for (ColoredGeofence coloredGeofence in value.geofences)
-                    PlaceRowLegend(
-                      title: coloredGeofence.geofence.identifier,
-                      pinColor: coloredGeofence.color,
-
-                      geoRadius: "Raggio: " +  coloredGeofence.geofence.radius.toInt().toString() + " metri",
-                      location: 'Lat: ${coloredGeofence.geofence.latitude.toStringAsFixed(2)} Long: ${coloredGeofence.geofence.longitude.toStringAsFixed(2)}',
-
-                      lastLine: coloredGeofence == value.geofences.last,
-                      onRemove: () {
-                        PlaceUtils.removePlace(
-                            context, coloredGeofence.geofence.identifier);
-                      },
-                    ),
-                ],
-              ),
-            ),
+    return StateNotifierBuilder<DayState>(
+      stateNotifier: context.watch<DayNotifier>(),
+      builder: (BuildContext context, value, Widget child) {
+        final Set<Place> places = value.day.geofences;
+        if (places.isEmpty) {
+          return Container(
+            height: 150,
+            child: Center(
+                child: Text('Non ci sono luoghi salvati per questo giorno')),
           );
-        });
+        }
+        return Container(
+//      height: 200,
+          margin: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            color: Color(0xFFEFF2F7),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+//          mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Luoghi',
+                style: titleCardStyle,
+              ),
+//              Text(
+//                'Descrizione',
+//                style: secondaryStyle,
+//              ),
+              SizedBox(
+                height: 10,
+              ),
+              for (Place place in places)
+                PlaceRowLegend(
+                  title: place.name,
+                  pinColor: Color(place.color),
+                  location:
+                      'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
+                  onRemove: () {
+                    PlaceUtils.removePlace(context, place.identifier);
+                  },
+                ),
+//              Align(
+//                alignment: Alignment.centerRight,
+//                child: Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: GenericButton(
+//                    onPressed: () {},
+//                    text: 'AGGIUNGI LUOGO',
+//                  ),
+//                ),
+//              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
 //  _onRemove(BuildContext context, String identifier) {
@@ -99,19 +111,11 @@ class PlaceLegend extends StatelessWidget {
 class PlaceRowLegend extends StatelessWidget {
   final String title;
   final String location;
-  final String geoRadius;
   final Color pinColor;
   final Function onRemove;
-  final bool lastLine;
 
   const PlaceRowLegend(
-      {Key key,
-      this.title,
-      this.pinColor,
-      this.location,
-      this.geoRadius,
-      this.onRemove,
-      this.lastLine})
+      {Key key, this.title, this.pinColor, this.location, this.onRemove})
       : super(key: key);
 
   @override
@@ -120,28 +124,20 @@ class PlaceRowLegend extends StatelessWidget {
       children: <Widget>[
         Container(
 //            color: Colors.green,
-          padding: const EdgeInsets.fromLTRB(0,16, 0, 16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Container(
-                width: 48,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: pinColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.place,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
+              Icon(
+                Icons.person_pin,
+                color: pinColor,
+                size: 50,
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.only(left: 16),
+//                    height: 20,
+//                    color: Colors.yellow,
+                  padding: const EdgeInsets.only(left: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -156,8 +152,7 @@ class PlaceRowLegend extends StatelessWidget {
                       Container(
 //                          color: Colors.blue,
                         child: AutoSizeText(
-                          //location,
-                          geoRadius,
+                          location,
                           maxLines: 1,
                           style: secondaryStyle,
                         ),
@@ -174,10 +169,10 @@ class PlaceRowLegend extends StatelessWidget {
             ],
           ),
         ),
-        if (!lastLine)
-          Divider(
-            height: 1,
-          )
+        Container(
+          color: Colors.black,
+          height: 1,
+        ),
       ],
     );
   }
