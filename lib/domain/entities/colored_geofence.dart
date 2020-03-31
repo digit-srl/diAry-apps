@@ -6,6 +6,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 class ColoredGeofence {
   final bg.Geofence geofence;
   final Color color;
+  final String name;
 
-  ColoredGeofence(this.geofence, this.color);
+  ColoredGeofence(this.geofence, this.color, this.name);
 }

@@ -7,6 +7,7 @@ import 'package:state_notifier/state_notifier.dart';
 
 class AppProvider with LocatorMixin {
   final ServiceNotifier serviceNotifier;
+
   AppProvider(this.serviceNotifier) {
     print('AppProvider()');
     _initPlatformState();
@@ -47,8 +48,8 @@ class AppProvider with LocatorMixin {
 
   _onEnabledChange(bool enabled) {
     Hive.box<String>('logs').add('[onEnabledChange] $enabled');
-    Hive.box<bool>('enabled_change')
-        .put(DateTime.now().toIso8601String(), enabled);
-    serviceNotifier.setEnabled(enabled);
+    final dateTime = DateTime.now().toIso8601String();
+    Hive.box<bool>('enabled_change').put(dateTime, enabled);
+    serviceNotifier.setEnabled(enabled, dateTime: dateTime);
   }
 }

@@ -1,9 +1,11 @@
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart' as pro;
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -21,8 +23,8 @@ class TabBarDemo extends StatefulWidget {
 }
 
 class _TabBarDemoState extends State<TabBarDemo> {
-  List<Slice> places;
-  List<Slice> slices;
+  List<Slice> places = [];
+  List<Slice> slices = [];
   DateTime date;
 
   @override
@@ -36,13 +38,13 @@ class _TabBarDemoState extends State<TabBarDemo> {
       slices = List.from(day.slices);
       places = List.from(day.places);
     }
-    date = slices?.first?.startTime ?? DateTime.now();
+    date = slices.isNotEmpty ? slices?.first?.startTime : DateTime.now();
   }
 
   updateSlices() async {
-    final output = LocationUtils.aggregateLocationsInSlices(widget.locations);
-    slices = output[0];
-    places = output[1];
+//    final output = LocationUtils.aggregateLocationsInSlices(widget.locations, );
+//    slices = output[0];
+//    places = output[1];
   }
 
   @override
@@ -163,7 +165,11 @@ class SlicesPage extends StatelessWidget {
 
   getText(Slice slice) {
     if (isPlace) {
-      return slice.places.toString();
+      Set<String> list = {};
+      slice.places.forEach((identifier) {
+        list.add(Hive.box<Place>('places').get(identifier).name);
+      });
+      return list.toString();
     }
 
     return slice.activity.toString().replaceFirst('MotionActivity.', '');

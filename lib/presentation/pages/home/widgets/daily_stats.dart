@@ -1,10 +1,12 @@
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 
@@ -228,18 +230,48 @@ class DailyStats extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              AnimatedCircularChart(
-                key: GlobalKey(),
-                size: _chartSize,
-                initialChartData: data,
-                edgeStyle: SegmentEdgeStyle.flat,
-                chartType: CircularChartType.Radial,
-                labelStyle: TextStyle(
-                    fontSize: 30,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-                holeLabel:
-                    value.isToday ? dateFormat.format(DateTime.now()) : null,
+              Container(
+                height: _chartSize.height,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.center,
+                      child: AnimatedCircularChart(
+                        key: GlobalKey(),
+                        size: _chartSize,
+                        initialChartData: data,
+                        edgeStyle: SegmentEdgeStyle.flat,
+                        chartType: CircularChartType.Radial,
+                        labelStyle: TextStyle(
+                            fontSize: 30,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
+                        holeLabel: value.isToday
+                            ? dateFormat.format(DateTime.now())
+                            : null,
+                      ),
+                    ),
+                    Positioned(
+//                      alignment: Alignment.bottomCenter,
+                      bottom: 0,
+                      right: (MediaQuery.of(context).size.width / 2) -
+                          (_chartSize.width / 2) -
+                          16,
+                      child: IconButton(
+                          icon: Text(
+                            '?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            _showPlaceLegend(context);
+                          }),
+                    ),
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -327,5 +359,42 @@ class DailyStats extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showPlaceLegend(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              PlaceLegend(),
+            ],
+          );
+        });
+    /* Alert(
+      context: context,
+      title: 'Legenda del grafico',
+      content: Container(
+          width: MediaQuery.of(context).size.width - 32,
+          height: MediaQuery.of(context).size.height / 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              PlaceLegend(),
+            ],
+          )),
+      buttons: [
+        DialogButton(
+          child: Text(
+            'Ok',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ).show();*/
   }
 }

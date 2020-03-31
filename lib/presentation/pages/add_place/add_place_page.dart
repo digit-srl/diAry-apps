@@ -363,9 +363,10 @@ class _AddPlacePageState extends State<AddPlacePage> {
     bg.BackgroundGeolocation.addGeofence(geofence).then(
       (bool success) {
         if (success) {
+          final newPlace = Place(uuid, name, color, _isHome,
+              lastLocation.latitude, lastLocation.latitude, geofence.radius);
           Provider.of<GeofenceNotifier>(context, listen: false)
-              .addGeofence(geofence, currentColor);
-          final newPlace = Place(uuid, name, color, _isHome);
+              .addGeofence(geofence, currentColor, name);
           Hive.box<Place>('places').put(geofence.identifier, newPlace);
           if (_isHome) {
             Provider.of<UserRepositoryImpl>(context, listen: false)
@@ -388,7 +389,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
     if (!mounted) return;
     final GoogleMapController controller = await _controller.future;
     try {
-      controller.moveCamera(
+      controller?.moveCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             zoom: zoom,

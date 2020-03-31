@@ -34,11 +34,13 @@ class MyDayApp extends StatefulWidget {
 
 class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
+  UserRepository userRepository;
   final GlobalKey<UnicornDialerState> dialerKey =
       GlobalKey<UnicornDialerState>(debugLabel: 'prova');
   @override
   void initState() {
     super.initState();
+    userRepository = UserRepositoryImpl(Hive.box('user'));
     serviceNotifier = ServiceNotifier();
   }
 
@@ -50,11 +52,14 @@ class _MyDayAppState extends State<MyDayApp> {
           create: (BuildContext context) => AppProvider(serviceNotifier),
           lazy: false,
         ),
-        Provider<UserRepositoryImpl>(
-          create: (_) => UserRepositoryImpl(Hive.box('user')),
+        Provider<UserRepositoryImpl>.value(
+          value: userRepository,
         ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
+        ),
+        StateNotifierProvider.value(
+          value: serviceNotifier,
         ),
         StateNotifierProvider<DayNotifier, DayState>(
           create: (_) => DayNotifier(widget.days),
@@ -62,14 +67,12 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
         ),
-        StateNotifierProvider.value(
-          value: serviceNotifier,
-        ),
+
         StateNotifierProvider<MotionActivityNotifier, MotionActivityState>(
           create: (_) => MotionActivityNotifier(),
         ),
         StateNotifierProvider<GeofenceNotifier, GeofenceState>(
-          create: (_) => GeofenceNotifier(),
+          create: (_) => GeofenceNotifier(userRepository),
         ),
         StateNotifierProvider<GeofenceEventNotifier, GeofenceEventState>(
           create: (_) => GeofenceEventNotifier(),

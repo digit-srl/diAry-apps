@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
 //              CarCard(),
               GpsCard(),
               ActivationCard(),
-              PlaceLegend(),
+//              PlaceLegend(),
               SizedBox(
                 height: 20,
               ),

@@ -21,6 +21,9 @@ class PlaceAdapter extends TypeAdapter<Place> {
       fields[1] as String,
       fields[2] as int,
       fields[3] as bool,
+      fields[5] as double,
+      fields[6] as double,
+      fields[7] as double,
       enabled: fields[4] as bool,
     );
   }
@@ -28,7 +31,7 @@ class PlaceAdapter extends TypeAdapter<Place> {
   @override
   void write(BinaryWriter writer, Place obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.identifier)
       ..writeByte(1)
@@ -38,6 +41,12 @@ class PlaceAdapter extends TypeAdapter<Place> {
       ..writeByte(3)
       ..write(obj.isHome)
       ..writeByte(4)
-      ..write(obj.enabled);
+      ..write(obj.enabled)
+      ..writeByte(5)
+      ..write(obj.latitude)
+      ..writeByte(6)
+      ..write(obj.longitude)
+      ..writeByte(7)
+      ..write(obj.radius);
   }
 }

@@ -7,14 +7,21 @@ class Place extends HiveObject {
   @HiveField(0)
   final String identifier;
   @HiveField(1)
-  final String name;
+  String name;
   @HiveField(2)
-  final int color;
+  int color;
   @HiveField(3)
-  final bool isHome;
+  bool isHome;
   @HiveField(4)
   bool enabled;
+  @HiveField(5)
+  double latitude;
+  @HiveField(6)
+  double longitude;
+  @HiveField(7)
+  double radius;
 
-  Place(this.identifier, this.name, this.color, this.isHome,
+  Place(this.identifier, this.name, this.color, this.isHome, this.latitude,
+      this.longitude, this.radius,
       {this.enabled = true});
 }

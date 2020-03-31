@@ -42,7 +42,9 @@ class LocationUtils {
       Map<DateTime, List<bg.Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
     for (DateTime key in locationsPerDay.keys) {
-      final tmp = aggregateLocationsInSlices(locationsPerDay[key]);
+      final tmp = aggregateLocationsInSlices(locationsPerDay[key],
+          box:
+              Map<String, bool>.from(Hive.box<bool>('enabled_change').toMap()));
       days[key] = Day(
           date: key,
           slices: tmp[0],
@@ -103,12 +105,14 @@ class LocationUtils {
 
   static List<List<Slice>> aggregateLocationsInSlices(
       List<bg.Location> locations,
-      {List<Slice> partialDaySlices = const []}) {
+      {Map<String, bool> box,
+      List<Slice> partialDaySlices = const [],
+      List<Slice> partialDayPlaces = const []}) {
     if (locations.isEmpty) return [[], []];
 
     final currentDay = DateTime.tryParse(locations.first.timestamp).toLocal();
-    final box = Hive.box<bool>('enabled_change');
 
+    // on/off config
     final List<DateTime> enablingHistory =
         List<DateTime>.from(box.keys.map((el) => DateTime.parse(el)));
     enablingHistory.sort((DateTime a, DateTime b) => a.compareTo(b));
@@ -117,16 +121,24 @@ class LocationUtils {
 
     final List<Slice> slices = [];
     final List<Slice> places = [];
-    int cumulativePlacesMinutes = 0;
+
     Action lastAction = Action.Unknown;
     bool isFirstGeofence = true;
     String lastWhere;
     slices.addAll(partialDaySlices);
+    places.addAll(partialDayPlaces);
+
     final maxMinutes = 1440;
     int cumulativeMinutes = partialDaySlices.isNotEmpty
         ? partialDaySlices.last.startTime.hour * 60 +
             partialDaySlices.last.startTime.minute +
             partialDaySlices.last.minutes
+        : 0;
+
+    int cumulativePlacesMinutes = partialDayPlaces.isNotEmpty
+        ? partialDayPlaces.last.startTime.hour * 60 +
+            partialDayPlaces.last.startTime.minute +
+            partialDayPlaces.last.minutes
         : 0;
 
     int abilitationIndex = 0;
@@ -138,6 +150,8 @@ class LocationUtils {
       final currentActivity = getActivityFromString(loc.activity.type);
 
       int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
+
+      //gofence data
       final geofence = loc.geofence;
       final action = geofence?.action == null
           ? Action.Unknown
@@ -152,7 +166,7 @@ class LocationUtils {
               : currentEnablingDayHistory[abilitationIndex];
       if (d != null && d.isBefore(currentDate)) {
         final dCurrent = d.hour * 60 + d.minute;
-        if (box.get(d.toIso8601String())) {
+        if (box[d.toIso8601String()]) {
           places.add(
             Slice(
               id: 0,
@@ -188,7 +202,7 @@ class LocationUtils {
           abilitationIndex++;
           final c = currentEnablingDayHistory[abilitationIndex];
           final cCurrent = c.hour * 60 + c.minute;
-          if (box.get(c.toIso8601String())) {
+          if (box[c.toIso8601String()]) {
             places.add(
               Slice(
                 id: 0,
@@ -368,7 +382,7 @@ class LocationUtils {
         final last = currentEnablingDayHistory?.last;
         if (last != null &&
             last.isAfter(DateTime.parse(locations.last.timestamp))) {
-          if (!box.get(currentEnablingDayHistory.last.toIso8601String())) {
+          if (!box[currentEnablingDayHistory.last.toIso8601String()]) {
             places.add(
               Slice(
                 id: 0,

@@ -1,8 +1,11 @@
+import 'package:diary/domain/entities/place.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LogsPage extends StatelessWidget {
+  bool isEmpty = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,10 +17,12 @@ class LogsPage extends StatelessWidget {
         builder: (BuildContext context, Box<String> value, Widget child) {
           final logs = value.values.toList().reversed.toList();
           if (logs.isEmpty) {
+            isEmpty = true;
             return Center(
               child: Text('Nessun log presente'),
             );
           }
+          isEmpty = false;
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView.separated(
@@ -43,7 +48,13 @@ class LogsPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.clear),
         onPressed: () {
-          Hive.box<String>('logs').clear();
+//          Hive.box<Place>('places').clear();
+          if (!isEmpty) {
+            GenericUtils.ask(context, 'Sicuro di voler eliminare tutti i log',
+                () {
+              Hive.box<String>('logs').clear();
+            }, () {});
+          }
         },
       ),
     );

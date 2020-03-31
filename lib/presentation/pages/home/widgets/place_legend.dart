@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
@@ -11,11 +13,16 @@ import 'package:provider/provider.dart';
 class PlaceLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StateNotifierBuilder<GeofenceState>(
-      stateNotifier: context.watch<GeofenceNotifier>(),
+    return StateNotifierBuilder<DayState>(
+      stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        if (value.geofences.isEmpty) {
-          return Container();
+        final Set<Place> places = value.day.geofences;
+        if (places.isEmpty) {
+          return Container(
+            height: 150,
+            child: Center(
+                child: Text('Non ci sono luoghi salvati per questo giorno')),
+          );
         }
         return Container(
 //      height: 200,
@@ -34,22 +41,21 @@ class PlaceLegend extends StatelessWidget {
                 'Luoghi',
                 style: titleCardStyle,
               ),
-              Text(
-                'Descrizione',
-                style: secondaryStyle,
-              ),
+//              Text(
+//                'Descrizione',
+//                style: secondaryStyle,
+//              ),
               SizedBox(
                 height: 10,
               ),
-              for (ColoredGeofence coloredGeofence in value.geofences)
+              for (Place place in places)
                 PlaceRowLegend(
-                  title: coloredGeofence.geofence.identifier,
-                  pinColor: coloredGeofence.color,
+                  title: place.name,
+                  pinColor: Color(place.color),
                   location:
-                      'Lat: ${coloredGeofence.geofence.latitude.toStringAsFixed(2)} Long: ${coloredGeofence.geofence.longitude.toStringAsFixed(2)}',
+                      'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
                   onRemove: () {
-                    PlaceUtils.removePlace(
-                        context, coloredGeofence.geofence.identifier);
+                    PlaceUtils.removePlace(context, place.identifier);
                   },
                 ),
 //              Align(
