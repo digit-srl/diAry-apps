@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -13,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
@@ -33,7 +36,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
-
+  Color currentColor = Colors.orange;
   Set<Marker> markers = {};
   Set<Circle> circles = {};
   Completer<GoogleMapController> _controller = Completer();
@@ -334,14 +337,20 @@ class _AddPlacePageState extends State<AddPlacePage> {
 //  }
 
   void _addGeofence() {
+    final uuid = Uuid().v1();
+    final name = placeEditingController.text.trim().toUpperCase();
+    final int color = currentColor.value;
     final geofence = bg.Geofence(
-      identifier: placeEditingController.text.trim().toUpperCase(),
+      identifier: uuid,
       radius: radius,
       latitude: lastLocation.latitude,
       longitude: lastLocation.longitude,
       notifyOnEntry: true,
       notifyOnExit: true,
       extras: {
+        'name': name,
+        'color': color,
+        'isHome': _isHome,
         'radius': radius,
         'center': {
           'latitude': lastLocation.latitude,
@@ -356,18 +365,21 @@ class _AddPlacePageState extends State<AddPlacePage> {
         if (success) {
           Provider.of<GeofenceNotifier>(context, listen: false)
               .addGeofence(geofence, currentColor);
-          Hive.box<int>('geofences_color')
-              .put(geofence.identifier, currentColor.value);
+          final newPlace = Place(uuid, name, color, _isHome);
+          Hive.box<Place>('places').put(geofence.identifier, newPlace);
           if (_isHome) {
             Provider.of<UserRepositoryImpl>(context, listen: false)
-                .setHomeGeofenceIdentifier(geofence.identifier);
+                .setHomeGeofenceIdentifier(uuid);
           }
           Navigator.of(context).pop();
+        } else {
+          GenericUtils.showError(context);
         }
       },
     ).catchError(
       (error) {
         print('[addGeofence] ERROR: $error');
+        GenericUtils.showError(context, error: error.toString());
       },
     );
   }
@@ -392,8 +404,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
       print(ex);
     }
   }
-
-  Color currentColor = Colors.orange;
 
   void _selectColor() async {
     Color tmpColor = currentColor;

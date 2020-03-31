@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'domain/entities/annotation.dart';
 import 'domain/entities/day.dart';
+import 'domain/entities/place.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,10 +78,11 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(AnnotationAdapter());
+  Hive.registerAdapter(PlaceAdapter());
   await Hive.openBox<String>('logs');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
-  await Hive.openBox<int>('geofences_color');
+  await Hive.openBox<Place>('places');
   final box = await Hive.openBox<bool>('enabled_change');
 //  await box.clear();
 //  box.put(DateTime(2020, 3, 29, 11, 40).toIso8601String(), true);
