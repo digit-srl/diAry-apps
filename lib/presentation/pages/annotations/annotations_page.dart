@@ -110,7 +110,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                 }
                 return ListView.separated(
                   // draw below statusbar and appbar
-                  padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top + kToolbarHeight),
+                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + kToolbarHeight),
                   itemCount: annotations.length,
                   itemBuilder: (context, index) {
                     final annotation = annotations[index];
@@ -119,6 +119,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                           annotation.title,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
+                        onLongPress: (){},
                         leading: Icon(Icons.bookmark_border),
                         subtitle: Text(
                           'Ore: ${format.format(annotation.dateTime)}',

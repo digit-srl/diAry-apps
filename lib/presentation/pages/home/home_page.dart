@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
           child: ListView(
             children: <Widget>[
               SizedBox(
-                height: kToolbarHeight - 16, // toolbarHeight = appBar+statusbar height; a questo viene tolto parte del padding naturale del grafico
+                height: MediaQuery.of(context).padding.top + 20, // top padding calcolato in relazione alla dimensione della srtatusbar (che può variare)
               ),
               DailyStats(),
 
