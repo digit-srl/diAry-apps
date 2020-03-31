@@ -165,7 +165,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                 }
               },
             ),
-          ],
+
 //            IconButton(
 //                color: isMoving ? Colors.green : Colors.red,
 //                icon: Icon(Icons.directions_walk),
@@ -175,23 +175,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                  setState(() {
 //
 //                  });
-//                }),
-                IconButton(
-                  color: accentColor,
-                  icon: Icon(_currentPage == 0
-                      ? Icons.collections_bookmark
-                      : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
-                  onPressed: () {
-                    if (_currentPage == 1) {
-                      getCurrentLoc();
-                    } else {
-                      widget.changePage(2);
-                      setState(() {
-                        _currentPage = 2;
-                      });
-                    }
-                  },
-                ),
+//                }
               ]),
         ),
       ),
