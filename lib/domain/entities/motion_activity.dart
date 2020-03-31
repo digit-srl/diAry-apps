@@ -9,6 +9,7 @@ enum MotionActivity {
   OnBicycle,
   InVehicle,
   Unknown,
+  Off,
 }
 
 MotionActivity getActivityFromString(String activity) {

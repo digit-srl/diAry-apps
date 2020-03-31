@@ -39,7 +39,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
     date = slices?.first?.startTime ?? DateTime.now();
   }
 
-  updateSlices() {
+  updateSlices() async {
     final output = LocationUtils.aggregateLocationsInSlices(widget.locations);
     slices = output[0];
     places = output[1];
@@ -127,6 +127,9 @@ class SlicesPage extends StatelessWidget {
                 children: slices
                     .map(
                       (slice) => Card(
+                        color: slice.activity == MotionActivity.Off
+                            ? Colors.red
+                            : null,
                         child: ListTile(
                             leading: Text(slice.placeRecords.toString()),
                             title: Row(

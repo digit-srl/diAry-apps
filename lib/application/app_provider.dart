@@ -47,6 +47,8 @@ class AppProvider with LocatorMixin {
 
   _onEnabledChange(bool enabled) {
     Hive.box<String>('logs').add('[onEnabledChange] $enabled');
+    Hive.box<bool>('enabled_change')
+        .put(DateTime.now().toIso8601String(), enabled);
     serviceNotifier.setEnabled(enabled);
   }
 }
