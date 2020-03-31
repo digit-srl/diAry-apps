@@ -1,5 +1,6 @@
 import 'package:diary/presentation/pages/home/widgets/activation_card.dart';
 import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
+import 'package:diary/presentation/pages/home/widgets/car_card.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats.dart';
 import 'package:diary/presentation/pages/home/widgets/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
@@ -35,7 +36,6 @@ class HomePage extends StatelessWidget {
               ActivationCard(),
               BetaCard(),
               // WomCard(),
-              //PlaceLegend(),
               PlaceLegend(),
               SizedBox(
                 height: 16,
