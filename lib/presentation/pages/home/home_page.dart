@@ -90,7 +90,18 @@ class HomePage extends StatelessWidget {
                     onPressed: () {},
                     tooltip: "Coming soon!",
                   ),
-
+                  IconButton(
+                    icon: Icon(Icons.list),
+                    color: accentColor,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => TabBarDemo(),
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Icons.settings),
                     color: accentColor,
@@ -105,7 +116,19 @@ class HomePage extends StatelessWidget {
                       );
                     },
                   ),
-
+                  IconButton(
+                    icon: Icon(Icons.bug_report),
+                    color: accentColor,
+                    iconSize: 30,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => LogsPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
               SizedBox(

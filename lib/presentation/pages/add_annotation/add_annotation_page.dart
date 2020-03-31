@@ -202,8 +202,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       latitude: newLocation.coords.latitude,
       longitude: newLocation.coords.longitude,
     );
-    final result = await box.add(annotation);
     Provider.of<DayNotifier>(context, listen: false).addAnnotation(annotation);
+    final result = await box.add(annotation);
     print('[AddAnnotationPage] add annotation $result');
     Navigator.of(context).pop();
   }

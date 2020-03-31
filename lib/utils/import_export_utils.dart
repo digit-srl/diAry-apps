@@ -3,13 +3,16 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:csv/csv.dart';
+import 'package:diary/domain/entities/slice.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/loc.dart';
+import 'location_utils.dart';
 
-class ExportUtils {
+class ImportExportUtils {
   static Future<List<File>> saveFilesOnLocalStorage(
       List<bg.Location> locations, DateTime currentDate) async {
     List<Map<String, dynamic>> result = [];
@@ -99,5 +102,46 @@ class ExportUtils {
     return converter.convert(<List>[]
       ..add(keys)
       ..addAll(data));
+  }
+
+  static Future<List<List<Slice>>> importAndProcessJSON() async {
+    final File file =
+        await FilePicker.getFile(type: FileType.custom, fileExtension: 'json');
+    final String data = await file.readAsString();
+    final map = json.decode(data);
+    final locations = List<Map<String, dynamic>>.from(map)
+        .map((element) => bg.Location(element))
+        .toList();
+//    final list = List<Map<String, dynamic>>.from(map)
+//        .map((element) => Loc.fromJson(element))
+//        .toList();
+    print(locations.length);
+
+    locations.forEach((loc) {
+      final speed = loc?.coords?.speed ?? 0.0;
+      if (speed < 0.5) {
+        loc.activity.type = 'still';
+      }
+    });
+    return LocationUtils.aggregateLocationsInSlices(locations);
+  }
+
+  static Future<List<bg.Location>> importJSON() async {
+    final File file =
+        await FilePicker.getFile(type: FileType.custom, fileExtension: 'json');
+    final String data = await file.readAsString();
+    final map = json.decode(data);
+    final locations = List<Map<String, dynamic>>.from(map)
+        .map((element) => bg.Location(element))
+        .toList();
+    print(locations.length);
+
+    locations.forEach((loc) {
+      final speed = loc?.coords?.speed ?? 0.0;
+      if (speed < 0.5) {
+        loc.activity.type = 'still';
+      }
+    });
+    return locations;
   }
 }

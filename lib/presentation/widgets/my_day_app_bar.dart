@@ -1,4 +1,5 @@
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -105,25 +106,25 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                         ),
                       );
 
-                      if (selected == null) return;
-                      Provider.of<DateNotifier>(context, listen: false)
-                          .changeSelectedDate(selected);
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(16.0),
-                    ),
-                    icon: Icon(
-                      Icons.today,
-                      color: accentColor,
-                    ),
-                    label: Text(
-                        context.select((DateState value) =>
-                            value.isToday ? 'Oggi' : value.dateFormatted),
-                        style: TextStyle(
-                            color: accentColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
-                  ),
+                if (selected == null) return;
+                Provider.of<DayNotifier>(context, listen: false)
+                    .changeDay(selected);
+              },
+    shape: RoundedRectangleBorder(
+    borderRadius: new BorderRadius.circular(16.0),
+    ),
+    icon: Icon(
+    Icons.today,
+    color: accentColor,
+    ),
+    label: Text(
+    context.select((DateState value) =>
+    value.isToday ? 'Oggi' : value.dateFormatted),
+    style: TextStyle(
+    color: accentColor,
+    fontSize: 20,
+    fontWeight: FontWeight.bold)),
+    ),
                   Expanded(
                     child: Container(),
                   ),
@@ -139,6 +140,32 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                Provider.of<LocationNotifier>(context, listen: false)
 //                    .addLocation(null);
 //              }),
+//            IconButton(
+//                color: isMoving ? Colors.green : Colors.red,
+//                icon: Icon(Icons.directions_walk),
+//                onPressed: () {
+//                  bg.BackgroundGeolocation.changePace(!isMoving);
+//                  isMoving = !isMoving;
+////                  setState(() {
+////
+////                  });
+//                }),
+            IconButton(
+              icon: Icon(_currentPage == 0
+                  ? Icons.collections_bookmark
+                  : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
+              onPressed: () {
+                if (_currentPage == 1) {
+                  getCurrentLoc();
+                } else {
+                  widget.changePage(2);
+                  setState(() {
+                    _currentPage = 2;
+                  });
+                }
+              },
+            ),
+          ],
 //            IconButton(
 //                color: isMoving ? Colors.green : Colors.red,
 //                icon: Icon(Icons.directions_walk),
@@ -172,20 +199,9 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
   }
 
   getCurrentLoc() {
-    bg.BackgroundGeolocation.getCurrentPosition(
-        persist: true,
-        // <-- do not persist this location
-        desiredAccuracy: 5,
-        // <-- desire an accuracy of 40 meters or less
-        maximumAge: 10000,
-        // <-- Up to 10s old is fine.
-        timeout: 10,
-        // <-- wait 30s before giving up.
-        samples: 10,
-        // <-- sample just 1 location
-        extras: {"getCurrentPosition": true}).then((bg.Location location) {
+    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
       print('[getCurrentPosition] - $location');
-    }).catchError((error) {
+    }, (error) {
       print('[getCurrentPosition] ERROR: $error');
     });
   }

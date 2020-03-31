@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/domain/entities/loc.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -6,6 +7,8 @@ import 'package:hive/hive.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
+
+enum Action { Enter, Exit, Unknown }
 
 class LocationUtils {
 //  static Future<Map<DateTime, Day>> aggregateLocationRecords() async {
@@ -31,6 +34,7 @@ class LocationUtils {
       timeout: 10,
       samples: 5,
       desiredAccuracy: 5,
+      extras: {"getCurrentPosition": true},
     ).then(onDone, onError: onError);
   }
 
@@ -38,9 +42,11 @@ class LocationUtils {
       Map<DateTime, List<bg.Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
     for (DateTime key in locationsPerDay.keys) {
+      final tmp = aggregateLocationsInSlices(locationsPerDay[key]);
       days[key] = Day(
           date: key,
-          slices: aggregateLocationsInSlices(locationsPerDay[key]),
+          slices: tmp[0],
+          places: tmp[1],
           annotations: Hive.box<Annotation>('annotations')
               .values
               .where((annotation) => annotation.dateTime.isSameDay(key))
@@ -65,11 +71,11 @@ class LocationUtils {
         final bg.Location loc = bg.Location(map);
         final speed = loc?.coords?.speed ?? 0.0;
         if (speed < 0.5) {
-          final currentAvtivity = loc.activity.type;
+          final currentActivity = loc.activity.type;
           loc.activity.type = 'still';
           print('Set to STILL record with speed < 1.0 m/s');
           print(
-              'Before was $currentAvtivity with speed: ${loc.coords.speed} m/s');
+              'Before was $currentActivity with speed: ${loc.coords.speed} m/s');
         }
         final date =
             DateTime.tryParse(loc.timestamp).toLocal().withoutMinAndSec();
@@ -95,13 +101,19 @@ class LocationUtils {
     DateTime(2020, 3, 27, 17, 25): true,
   };
 
-  static List<Slice> aggregateLocationsInSlices(List<bg.Location> locations,
+  static List<List<Slice>> aggregateLocationsInSlices(
+      List<bg.Location> locations,
       {List<Slice> partialDaySlices = const []}) {
     if (locations.isEmpty) return [];
 
     final currentDay = DateTime.tryParse(locations.first.timestamp).toLocal();
 
     final List<Slice> slices = [];
+    final List<Slice> places = [];
+    int cumulativePlacesMinutes = 0;
+    Action lastAction = Action.Unknown;
+    bool isFirstGeofence = true;
+    String lastWhere;
     slices.addAll(partialDaySlices);
     final maxMinutes = 1440;
     int cumulativeMinutes = partialDaySlices.isNotEmpty
@@ -115,6 +127,116 @@ class LocationUtils {
       final currentMinutes = currentDate.hour * 60 + currentDate.minute;
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
+
+      final partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
+      final geofence = loc.geofence;
+      final action = geofence?.action == null
+          ? Action.Unknown
+          : geofence?.action == 'EXIT' ? Action.Exit : Action.Enter;
+      final where = geofence?.identifier;
+      print('uuid: ${loc.uuid}, identifier: $where, action: $action');
+
+      //se places è vuoto aggiungo slice con place nullo o meno in base al geofence se exit o action
+      if (places.isEmpty) {
+        places.add(
+          Slice(
+            id: 0,
+            minutes: partialPlaceMinutes,
+            startTime: currentDate.withoutMinAndSec(),
+            places: action == Action.Unknown ? {} : {where},
+            activity: action == Action.Unknown
+                ? currentActivity
+                : MotionActivity.Still,
+          ),
+        );
+      } else if (loc.geofence == null) {
+        places.last.minutes += partialPlaceMinutes;
+        if (lastAction == Action.Enter) {
+          //ultima azione = Enter
+        } else if (lastAction == Action.Unknown) {
+          //ultima azione = Unknown
+          if (places.last.places.isEmpty) {
+            if (places.last.activity == currentActivity ||
+                places.last.activity == MotionActivity.Unknown) {
+            } else {
+              places.add(
+                Slice(
+                  id: 0,
+                  minutes: 0,
+                  activity: currentActivity,
+                  startTime: currentDate,
+                  places: {},
+                ),
+              );
+            }
+          }
+        } else {
+          // ultima azione = EXIT
+
+          Set<String> newPlaces = Set.from(places.last.places);
+          if (newPlaces.contains(lastWhere)) {
+            newPlaces.remove(lastWhere);
+          }
+          if (places.last.activity == currentActivity ||
+              places.last.activity == MotionActivity.Unknown) {
+            places.last.activity = currentActivity;
+          } else {
+            places.add(
+              Slice(
+                  id: 0,
+                  minutes: 0,
+                  startTime: currentDate,
+                  places: newPlaces,
+                  activity: currentActivity),
+            );
+          }
+        }
+      } else {
+        //Geofence presente
+        places.last.minutes += partialPlaceMinutes;
+
+        if (action == Action.Enter) {
+          if (!places.last.places.contains(where)) {
+            Set<String> newPlaces = Set.from(places.last.places);
+            newPlaces.add(where);
+            places.add(
+              Slice(
+                id: 0,
+                minutes: 0,
+                startTime: currentDate,
+                places: newPlaces,
+                activity: MotionActivity.Still,
+              ),
+            );
+          }
+        } else if (action == Action.Exit) {
+          //situazione di primo EXIT della giornata visto che ol luogo non è contenuto nel precedente spicchio
+          if (isFirstGeofence) {
+            places.last.places.add(where);
+          }
+
+          Set<String> newPlaces = Set.from(places.last.places);
+          if (newPlaces.contains(where)) {
+            newPlaces.remove(where);
+          }
+
+          places.add(
+            Slice(
+              id: 0,
+              minutes: 0,
+              startTime: currentDate,
+              places: newPlaces,
+              activity: MotionActivity.Unknown,
+            ),
+          );
+        }
+        isFirstGeofence = false;
+      }
+
+      lastAction = action;
+      lastWhere = where;
+      cumulativePlacesMinutes = currentMinutes;
+
       if (slices.isEmpty) {
         slices.add(
           Slice(
@@ -142,6 +264,22 @@ class LocationUtils {
 
     print('cumulative minutes before last = $cumulativeMinutes');
 
+    if (cumulativePlacesMinutes < maxMinutes) {
+      if (currentDay.isToday()) {
+        places.add(
+          Slice(
+            id: 0,
+            minutes: maxMinutes - cumulativePlacesMinutes,
+            startTime: places.last.endTime,
+            places: {},
+          ),
+        );
+      } else {
+        places.last.minutes = maxMinutes - cumulativePlacesMinutes;
+      }
+      cumulativePlacesMinutes += maxMinutes - cumulativePlacesMinutes;
+    }
+
     if (cumulativeMinutes < maxMinutes) {
       if (currentDay.isToday()) {
         slices.add(
@@ -160,7 +298,7 @@ class LocationUtils {
 
     print('cumulative minutes complete = $cumulativeMinutes');
 
-    return slices;
+    return [slices, places];
   }
 
 //  static List<Day> aggregateLocationRecords(List<bg.Location> locations) {
