@@ -1,4 +1,3 @@
-import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';

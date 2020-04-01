@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
-import 'package:diary/domain/entities/place.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +51,10 @@ class _MapPageState extends State<MapPage>
   Set<GeofenceMarker> _geofences = {};
   Set<Marker> _currentPosition = {};
 
-  Set<Marker> _annotations = {};
-  bg.Location _stationaryLocation;
+//  Set<Marker> _annotations = {};
+//  bg.Location _stationaryLocation;
+//  List<GeofenceMarker> _geofenceEvents = [];
 
-  List<GeofenceMarker> _geofenceEvents = [];
   Set<Circle> _geofenceEventEdges = {};
   Set<Circle> _geofenceEventLocations = {};
   Set<Circle> _stationaryMarker = {};
@@ -263,11 +262,11 @@ class _MapPageState extends State<MapPage>
     _geofences.clear();
     try {
       geofences.forEach((ColoredGeofence coloredGeofence) {
-        final t = GeofenceMarker(coloredGeofence, _onGeofenceTap);
-
-        print('[MapPage] _onGeofence add identifier ${t.geofence.identifier}');
-        print('[MapPage] _onGeofence color ${t.fillColor}');
-        _geofences.add(t);
+        final geofenceMarker = GeofenceMarker(coloredGeofence, _onGeofenceTap);
+        print(
+            '[MapPage] _onGeofence add identifier ${coloredGeofence.geofence.identifier}');
+        print('[MapPage] _onGeofence color ${geofenceMarker.fillColor}');
+        _geofences.add(geofenceMarker);
       });
     } catch (ex) {
       print('[MapPage] _onGeofence error $ex');
@@ -281,7 +280,7 @@ class _MapPageState extends State<MapPage>
     print('[MapPage] [_onGeofenceEvent]');
     GeofenceMarker marker = _geofences.firstWhere(
         (GeofenceMarker marker) =>
-            marker.geofence.identifier == event.identifier,
+            marker.coloredGeofence.geofence.identifier == event.identifier,
         orElse: () => null);
     if (marker == null) {
       print(
@@ -507,6 +506,7 @@ class _MapPageState extends State<MapPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
     return Scaffold(
