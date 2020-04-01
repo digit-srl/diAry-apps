@@ -29,7 +29,7 @@ class Location {
       this.geofence});
 
   Location.fromJson(Map<String, dynamic> json) {
-    event = json['event'];
+    event = json['event'] ?? '';
     isMoving = json['is_moving'];
     isMoving = json['sample'];
     uuid = json['uuid'];

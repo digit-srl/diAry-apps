@@ -37,14 +37,10 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     }
   }
 
-  updateDay(Location location, DateTime date) {
+  void updateDay(Location location, DateTime date) {
     if (!days.containsKey(date)) {
       days[date] = Day(date: date);
     }
-    final partialOnOff = read<ServiceNotifier>().onOff;
-//        Map<String, bool>.from(Hive.box<bool>('enabled_change').toMap());
-    partialOnOff.removeWhere((key, value) =>
-        DateTime.parse(key).isAfter(DateTime.tryParse(location.timestamp)));
     final partialSlices = days[date]?.slices ?? [];
     final partialPlaces = days[date]?.places ?? [];
     final newSlices = LocationUtils.aggregateLocationsInSlices3(

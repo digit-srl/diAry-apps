@@ -5,6 +5,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:diary/application/service_notifier.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
+import 'package:diary/utils/extensions.dart';
+import 'day_notifier.dart';
 
 class AppProvider with LocatorMixin {
   final ServiceNotifier serviceNotifier;
@@ -22,7 +24,6 @@ class AppProvider with LocatorMixin {
 //    bg.BackgroundGeolocation.onHeartbeat(_onHeartbeat);
 //    bg.BackgroundGeolocation.onActivityChange(_onActivityChange);
 //    bg.BackgroundGeolocation.onProviderChange(_onProviderChange);
-    bg.BackgroundGeolocation.onEnabledChange(_onEnabledChange);
 
     bg.BackgroundGeolocation.ready(bg.Config(
       reset: false,
@@ -45,14 +46,5 @@ class AppProvider with LocatorMixin {
     }).catchError((error) {
       print('[ready] ERROR: $error');
     });
-  }
-
-  _onEnabledChange(bool enabled) async {
-    await Hive.box<String>('logs').add('[onEnabledChange] $enabled');
-    final dateTime = DateTime.now();
-    await Hive.box<bool>('enabled_change')
-        .put(dateTime.toIso8601String(), enabled);
-    await LocationUtils.insertOnOffOnDb(dateTime, enabled);
-    serviceNotifier.setEnabled(enabled, dateTime: dateTime.toIso8601String());
   }
 }

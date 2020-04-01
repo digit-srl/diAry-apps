@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
@@ -24,7 +25,7 @@ class TabBarDemo extends StatefulWidget {
 class _TabBarDemoState extends State<TabBarDemo> {
   List<Slice> places = [];
   List<Slice> slices = [];
-  List<Slice> onOff = [];
+//  List<Slice> onOff = [];
   DateTime date;
 
   @override
@@ -39,11 +40,11 @@ class _TabBarDemoState extends State<TabBarDemo> {
       places = List.from(day.places);
     }
     date = slices.isNotEmpty ? slices?.first?.startTime : DateTime.now();
-    final map = Hive.box<bool>('enabled_change').toMap();
-    map.removeWhere(
-        (stringDate, bool) => !DateTime.parse(stringDate).isSameDay(date));
-    onOff = LocationUtils.buildOnOffSlices(Map<String, bool>.from(map),
-        slices: places);
+//    final map = Hive.box<bool>('enabled_change').toMap();
+//    map.removeWhere(
+//        (stringDate, bool) => !DateTime.parse(stringDate).isSameDay(date));
+//    onOff = LocationUtils.buildOnOffSlices(Map<String, bool>.from(map),
+//        slices: places);
   }
 
   updateSlices() async {
@@ -57,14 +58,14 @@ class _TabBarDemoState extends State<TabBarDemo> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           bottom: TabBar(
             tabs: [
               Tab(icon: Icon(Icons.timelapse)),
               Tab(icon: Icon(Icons.place)),
-              Tab(icon: Icon(Icons.extension)),
+//              Tab(icon: Icon(Icons.extension))
             ],
           ),
           title: Text('Spicchi giornalieri ${date.day}'),
@@ -91,10 +92,10 @@ class _TabBarDemoState extends State<TabBarDemo> {
               slices: places ?? widget.places,
               isPlace: true,
             ),
-            SlicesPage(
-              slices: onOff,
-              isPlace: true,
-            )
+//            SlicesPage(
+//              slices: onOff,
+//              isPlace: true,
+//            )
           ],
         ),
       ),
@@ -179,8 +180,8 @@ class SlicesPage extends StatelessWidget {
     if (isPlace) {
       Set<String> list = {};
       slice.places.forEach((identifier) {
-        list.add(identifier);
-//        list.add(Hive.box<Place>('places').get(identifier).name);
+//        list.add(identifier);
+        list.add(Hive.box<Place>('places').get(identifier).name);
       });
       return list.toString();
     }

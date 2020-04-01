@@ -450,14 +450,16 @@ class LocationUtils {
             partialDayPlaces.last.minutes
         : 0;
 
-    for (Location loc in locations) {
+    for (int i = 0; i < locations.length; i++) {
+      final Location loc = locations[i];
+
       final currentDate = DateTime.tryParse(loc.timestamp).toLocal();
       final currentMinutes = currentDate.toMinutes();
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
       int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
-
+      final event = loc.event;
       //gofence data
       final geofence = loc.geofence;
       final action = geofence?.action == null
@@ -466,6 +468,41 @@ class LocationUtils {
       final where = geofence?.identifier;
       print('uuid: ${loc.uuid}, identifier: $where, action: $action');
 
+      if (i == 0 && event == 'ON') {
+        places.add(
+          Slice(
+            startTime: partialDayPlaces.isEmpty
+                ? currentDate.withoutMinAndSec()
+                : currentDate,
+            minutes: partialPlaceMinutes,
+            activity: MotionActivity.Off,
+          ),
+        );
+      } else if (i == locations.length - 1 && event == 'OFF') {
+        places.last.minutes += partialPlaceMinutes;
+        places.add(
+          Slice(
+            startTime: currentDate,
+            minutes: 0,
+            activity: MotionActivity.Off,
+          ),
+        );
+        cumulativePlacesMinutes += maxMinutes - currentMinutes;
+      } else if (event == 'OFF' && locations[i + 1].event == 'ON') {
+        places.last.minutes += partialPlaceMinutes;
+        final nextDate =
+            DateTime.tryParse(locations[i + 1].timestamp).toLocal();
+        final minutes = nextDate.toMinutes() - currentMinutes;
+        places.add(
+          Slice(
+            startTime: currentDate,
+            minutes: minutes,
+            activity: MotionActivity.Off,
+          ),
+        );
+        cumulativePlacesMinutes += minutes;
+        i++;
+      } else
       //se places è vuoto aggiungo slice con place nullo o meno in base al geofence se exit o action
       if (places.isEmpty) {
         places.add(
@@ -616,11 +653,16 @@ class LocationUtils {
 
     if (cumulativePlacesMinutes < maxMinutes) {
       if (currentDay.isToday()) {
+        final nowMinutes = DateTime.now().toMinutes();
+        final currentPartialTime = nowMinutes - cumulativePlacesMinutes;
+        places.last.minutes += currentPartialTime;
+        cumulativePlacesMinutes += currentPartialTime;
         places.add(
           Slice(
             id: 0,
             minutes: maxMinutes - cumulativePlacesMinutes,
             startTime: places.last.endTime,
+            activity: MotionActivity.Unknown,
             places: {},
           ),
         );
@@ -957,56 +999,24 @@ class LocationUtils {
     return output;
   }
 
-  static insertFakeLocationInDb() async {
-    final map = <String, dynamic>{
-      "event": "geofence",
-      "is_moving": false,
-      "uuid": "a6f77fd0-7438-11ea-cde6-3530e872af08",
-      "timestamp": "2020-04-01T17:01:04.000Z",
-      "odometer": 0,
-      "coords": {
-        "latitude": 42.8126475,
-        "longitude": 13.7261683,
-        "accuracy": 15,
-        "speed": 0,
-        "heading": 257.03,
-        "altitude": 287.7
-      },
-      "activity": {"type": "still", "confidence": 100},
-      "battery": {"is_charging": true, "level": 0.66},
-      "geofence": {
-        "identifier": "CASA",
-        "action": "ENTER",
-        "extras": {
-          "center": {"latitude": 42.8126787, "longitude": 13.726352899999995},
-          "radius": 20
-        }
-      },
-      "extras": {}
-    };
-
-    try {
-      final location = await bg.BackgroundGeolocation.insertLocation(map);
-      print(location);
-    } catch (ex) {
-      print(ex);
-    }
-  }
-
-  static insertExitFromGeofenceOnDb(String identifier, DateTime dateTime,
-      double latitude, double longitude, double radius) async {
+  static Future<Location> insertExitFromGeofenceOnDb(
+      String identifier,
+      DateTime dateTime,
+      double latitude,
+      double longitude,
+      double radius) async {
     final map = <String, dynamic>{
       "event": "geofence",
       "is_moving": false,
       "uuid": Uuid().v1(),
       "timestamp": dateTime.toUtc().toIso8601String(),
-      "odometer": 0,
+      "odometer": 0.0,
       "coords": {
         "latitude": latitude,
         "longitude": longitude,
-        "accuracy": 0,
-        "speed": 0,
-        "heading": 0,
+        "accuracy": 0.0,
+        "speed": 0.0,
+        "heading": 0.0,
         "altitude": 0.0
       },
       "activity": {},
@@ -1023,15 +1033,18 @@ class LocationUtils {
     };
 
     try {
-      final location = await bg.BackgroundGeolocation.insertLocation(map);
-      print(location);
+      await bg.BackgroundGeolocation.insertLocation(map);
+      print('[EXIT] location inserted');
     } catch (ex) {
-      print(ex);
+      print('[EXIT] $ex');
     }
+    print('[EXIT] return location');
+    return Location.fromJson(map);
   }
 
-  static insertOnOffOnDb(DateTime dateTime, bool enabled) async {
-    final map = <String, dynamic>{
+  static Future<Location> insertOnOffOnDb(
+      DateTime dateTime, bool enabled) async {
+    final Map<String, dynamic> map = <String, dynamic>{
       "event": enabled ? 'ON' : 'OFF',
       "is_moving": false,
       "uuid": Uuid().v1(),
@@ -1053,10 +1066,12 @@ class LocationUtils {
     };
 
     try {
-      final location = await bg.BackgroundGeolocation.insertLocation(map);
-      print(location);
+      await bg.BackgroundGeolocation.insertLocation(map);
+      print('[ON/OFF] location inserted');
     } catch (ex) {
-      print(ex);
+      print('[ON/OFF] $ex');
     }
+    print('[ON/OFF] return location');
+    return Location.fromJson(map);
   }
 }

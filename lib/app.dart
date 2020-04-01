@@ -33,6 +33,7 @@ class MyDayApp extends StatefulWidget {
 
 class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
+//  DayNotifier dayNotifier;
   UserRepository userRepository;
   final GlobalKey<UnicornDialerState> dialerKey =
       GlobalKey<UnicornDialerState>(debugLabel: 'prova');
@@ -41,6 +42,7 @@ class _MyDayAppState extends State<MyDayApp> {
     super.initState();
     userRepository = UserRepositoryImpl(Hive.box('user'));
     serviceNotifier = ServiceNotifier();
+//    dayNotifier = DayNotifier(widget.days);
   }
 
   @override
@@ -57,16 +59,16 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
         ),
-        StateNotifierProvider.value(
-          value: serviceNotifier,
-        ),
         StateNotifierProvider<DayNotifier, DayState>(
           create: (_) => DayNotifier(widget.days),
+          lazy: false,
+        ),
+        StateNotifierProvider<ServiceNotifier, ServiceState>.value(
+          value: serviceNotifier,
         ),
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
         ),
-
         StateNotifierProvider<MotionActivityNotifier, MotionActivityState>(
           create: (_) => MotionActivityNotifier(),
         ),
@@ -125,6 +127,7 @@ class _MyDayAppState extends State<MyDayApp> {
   @override
   void dispose() {
     serviceNotifier.dispose();
+//    dayNotifier.dispose();
     super.dispose();
   }
 }

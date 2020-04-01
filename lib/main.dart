@@ -83,11 +83,6 @@ void main() async {
   await Hive.openBox<Annotation>('annotations');
   final box = await Hive.openBox<Place>('places');
   box.values.forEach(print);
-  await Hive.openBox<bool>('enabled_change');
-//  await box.clear();
-//  box.put(DateTime(2020, 3, 29, 11, 40).toIso8601String(), true);
-//  box.put(DateTime(2020, 3, 29, 16, 10).toIso8601String(), false);
-//  box.put(DateTime(2020, 3, 29, 16, 50).toIso8601String(), true);
   final Map<DateTime, List<Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);

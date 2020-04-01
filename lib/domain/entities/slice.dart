@@ -14,7 +14,7 @@ class Slice {
 
   Slice({
     this.id,
-    this.minutes,
+    this.minutes = 0,
     this.startTime,
     this.activity,
     this.places = const {},
