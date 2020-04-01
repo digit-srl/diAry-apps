@@ -3,7 +3,6 @@ import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart' as pro;

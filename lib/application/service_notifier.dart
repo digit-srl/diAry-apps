@@ -22,13 +22,11 @@ class ServiceNotifier extends StateNotifier<ServiceState> with LocatorMixin {
   }
 
   invertEnabled() async {
-    bg.State serviceState;
     if (state.isEnabled) {
-      serviceState = await _disableService();
+      await _disableService();
     } else {
-      serviceState = await _enableService();
+      await _enableService();
     }
-//   state = ServiceState(serviceState.enabled);
   }
 
   Future<bg.State> _enableService() async {

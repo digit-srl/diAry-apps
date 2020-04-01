@@ -83,7 +83,7 @@ void main() async {
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox<Place>('places');
-  final box = await Hive.openBox<bool>('enabled_change');
+  await Hive.openBox<bool>('enabled_change');
 //  await box.clear();
 //  box.put(DateTime(2020, 3, 29, 11, 40).toIso8601String(), true);
 //  box.put(DateTime(2020, 3, 29, 16, 10).toIso8601String(), false);

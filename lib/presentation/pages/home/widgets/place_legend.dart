@@ -1,14 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/day_notifier.dart';
-import 'package:diary/application/geofence_notifier.dart';
-import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:diary/utils/extensions.dart';
 
 class PlaceLegend extends StatelessWidget {
   @override
@@ -16,7 +16,15 @@ class PlaceLegend extends StatelessWidget {
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        final Set<Place> places = value.day.geofences;
+        Set<Place> places;
+        if (value.day.date.isToday()) {
+          places = Hive.box<Place>('places')
+              .values
+              .where((place) => place.enabled == true)
+              .toSet();
+        } else {
+          places = value.day.geofences;
+        }
         if (places.isEmpty) {
           return Container(
             height: 150,
@@ -51,6 +59,7 @@ class PlaceLegend extends StatelessWidget {
               for (Place place in places)
                 PlaceRowLegend(
                   title: place.name,
+                  isHome: place.isHome,
                   pinColor: Color(place.color),
                   location:
                       'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
@@ -113,9 +122,15 @@ class PlaceRowLegend extends StatelessWidget {
   final String location;
   final Color pinColor;
   final Function onRemove;
+  final bool isHome;
 
   const PlaceRowLegend(
-      {Key key, this.title, this.pinColor, this.location, this.onRemove})
+      {Key key,
+      this.title,
+      this.pinColor,
+      this.location,
+      this.onRemove,
+      this.isHome = false})
       : super(key: key);
 
   @override
@@ -129,7 +144,7 @@ class PlaceRowLegend extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Icon(
-                Icons.person_pin,
+                isHome ? Icons.home : Icons.person_pin,
                 color: pinColor,
                 size: 50,
               ),

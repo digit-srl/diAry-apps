@@ -1,19 +1,20 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 
 class DailyStats extends StatelessWidget {
-  DateFormat dateFormat = DateFormat('HH:mm');
+  final DateFormat dateFormat = DateFormat('HH:mm');
 
   @override
   Widget build(BuildContext context) {
@@ -153,31 +154,55 @@ class DailyStats extends StatelessWidget {
 //        }
 
         if (day != null) {
-          stationarySliceSegments = day.slices
+          stationarySliceSegments = day.places
 //            .where((element) => element.activity == MotionActivity.Still)
-              .map<CircularSegmentEntry>((e) => CircularSegmentEntry(
-                  e.minutes.toDouble(),
-                  e.activity == MotionActivity.Still
-                      ? Colors.orange
-                      : e.activity == MotionActivity.Inactive
-                          ? Colors.grey[100]
-                          : Colors.orange[100]))
-              .toList();
+              .map<CircularSegmentEntry>((e) {
+            Color color;
+            if (e.places.isNotEmpty) {
+              final String where = e.places.first;
+              color = Color(Hive.box<Place>('places').get(where).color);
+            } else {
+              switch (e.activity) {
+                case MotionActivity.Off:
+                  color = Colors.black;
+                  break;
+                case MotionActivity.Inactive:
+                  color = Colors.grey[100];
+                  break;
+                case MotionActivity.Still:
+                  color = Colors.orange;
+                  break;
+                default:
+                  color = Colors.orange[100];
+              }
+            }
 
-          movementSliceSegments = day.slices
+            /* e.activity == MotionActivity.Still
+                    ? Colors.orange
+                    : e.activity == MotionActivity.Inactive
+                        ? Colors.grey[100]
+                        : Colors.orange[100])*/
+            return CircularSegmentEntry(
+              e.minutes.toDouble(),
+              color,
+            );
+          }).toList();
+
+          movementSliceSegments = day.places
 //            .where((element) => element.activity == MotionActivity.OnFoot)
-              .map<CircularSegmentEntry>((e) => CircularSegmentEntry(
-                  e.minutes.toDouble(),
-                  (e.activity == MotionActivity.OnFoot ||
-                          e.activity == MotionActivity.Walking ||
-                          e.activity == MotionActivity.Running ||
-                          e.activity == MotionActivity.InVehicle ||
-                          e.activity == MotionActivity.OnBicycle)
-                      ? Colors.blue
-                      : e.activity == MotionActivity.Inactive
-                          ? Colors.grey[100]
-                          : Colors.blue[100]))
-              .toList();
+              .map<CircularSegmentEntry>((e) {
+            return CircularSegmentEntry(
+                e.minutes.toDouble(),
+                (e.activity == MotionActivity.OnFoot ||
+                        e.activity == MotionActivity.Walking ||
+                        e.activity == MotionActivity.Running ||
+                        e.activity == MotionActivity.InVehicle ||
+                        e.activity == MotionActivity.OnBicycle)
+                    ? Colors.blue
+                    : e.activity == MotionActivity.Inactive
+                        ? Colors.grey[100]
+                        : Colors.blue[100]);
+          }).toList();
 
           final annotationSlices = day.annotationSlices;
 //        final annotationSlices = <double>[660, 340, 140, 300];
@@ -367,13 +392,9 @@ class DailyStats extends StatelessWidget {
   void _showPlaceLegend(BuildContext context) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              PlaceLegend(),
-            ],
-          );
+          return PlaceLegend();
         });
     /* Alert(
       context: context,

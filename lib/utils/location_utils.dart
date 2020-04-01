@@ -1,5 +1,4 @@
 import 'package:diary/domain/entities/annotation.dart';
-import 'package:diary/domain/entities/loc.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
