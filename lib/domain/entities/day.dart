@@ -67,6 +67,7 @@ class Day {
     return Day(
         date: this.date,
         slices: this.slices,
+        places: this.places,
         annotations: list,
         pointCount: this.pointCount);
   }
