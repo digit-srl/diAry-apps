@@ -63,9 +63,9 @@ class PlaceLegend extends StatelessWidget {
                   pinColor: Color(place.color),
                   location:
                       'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
-                  onRemove: () {
-                    PlaceUtils.removePlace(context, place.identifier);
-                  },
+//                  onRemove: () {
+//                    PlaceUtils.removePlace(context, place.identifier);
+//                  },
                 ),
 //              Align(
 //                alignment: Alignment.centerRight,
@@ -176,11 +176,11 @@ class PlaceRowLegend extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.delete),
-                color: accentColor,
-                onPressed: onRemove,
-              ),
+//              IconButton(
+//                icon: Icon(Icons.delete),
+//                color: accentColor,
+//                onPressed: onRemove,
+//              ),
             ],
           ),
         ),
