@@ -1,4 +1,5 @@
 import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
@@ -21,24 +22,21 @@ class AnnotationsPage extends StatefulWidget {
 class _AnnotationsPageState extends State<AnnotationsPage> {
   DateFormat format = DateFormat('HH : mm');
 
-  final double targetElevation = 4;
-  double _elevation = 0;
   ScrollController _controller;
+  final double elevationOn = 4;
+  final double elevationOff = 0;
 
   @override
   void initState() {
+    super.initState();
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
-    super.initState();
+    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(2, 0);
   }
 
   void _scrollListener() {
-    double newElevation = _controller.offset > 1 ? targetElevation : 0;
-    if (_elevation != newElevation) {
-      setState(() {
-        _elevation = newElevation;
-      });
-    }
+    double newElevation = _controller.offset > 1 ? elevationOn : elevationOff;
+    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(2, newElevation);
   }
 
   @override
@@ -52,8 +50,8 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StateNotifierBuilder<DateState>(
-          stateNotifier: context.watch<DateNotifier>(),
-          builder: (BuildContext context, dateState, Widget child) {
+        stateNotifier: context.watch<DateNotifier>(),
+        builder: (BuildContext context, dateState, Widget child) {
 /*           final day =
             Provider.of<LocationNotifier>(context, listen: false).getDay();
 
@@ -95,45 +93,51 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
               },
             );
             */
-            return ValueListenableBuilder(
-              valueListenable: Hive.box<Annotation>('annotations').listenable(),
-              builder:
-                  (BuildContext context, Box<Annotation> value, Widget child) {
-                final annotations = value.values
-                    .where((annotation) =>
-                        annotation.dateTime.isSameDay(dateState.selectedDate))
-                    .toList();
-                if (annotations.isEmpty) {
-                  return Center(
-                    child: Text('Nessuna annotazione'),
-                  );
-                }
-                return ListView.separated(
-                  // draw below statusbar and appbar
-                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + kToolbarHeight),
-                  itemCount: annotations.length,
-                  itemBuilder: (context, index) {
-                    final annotation = annotations[index];
-                    return ListTile(
-                        title: Text(
-                          annotation.title,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        onLongPress: (){},
-                        leading: Icon(Icons.bookmark_border),
-                        subtitle: Text(
-                          'Ore: ${format.format(annotation.dateTime)}',
-                          style: TextStyle(color: secondaryText),
-                        ));
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider();
-                  },
+          return ValueListenableBuilder(
+            valueListenable: Hive.box<Annotation>('annotations').listenable(),
+            builder:
+                (BuildContext context, Box<Annotation> value, Widget child) {
+              final annotations = value.values
+                  .where((annotation) =>
+                      annotation.dateTime.isSameDay(dateState.selectedDate))
+                  .toList();
+              if (annotations.isEmpty) {
+                return Center(
+                  child: Text('Nessuna annotazione'),
                 );
-              },
-            );
-          },
-        ),
+              }
+              return ListView.separated(
+                // draw below statusbar and appbar
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + kToolbarHeight),
+                itemCount: annotations.length,
+                controller: _controller,
+                itemBuilder: (context, index) {
+                  final annotation = annotations[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                      title: Text(
+                        annotation.title,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      onLongPress: () {},
+                      leading: Icon(Icons.bookmark_border, color: accentColor,),
+                      subtitle: Text(
+                        'Ore: ${format.format(annotation.dateTime)}',
+                        style: TextStyle(color: secondaryText),
+                      ));
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Divider()
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

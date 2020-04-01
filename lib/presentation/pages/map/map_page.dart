@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
@@ -77,6 +78,7 @@ class _MapPageState extends State<MapPage>
         target: ll,
         zoom: 16,
       );
+      Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(1, 4);
     }
   }
 

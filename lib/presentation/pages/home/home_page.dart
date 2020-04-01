@@ -1,9 +1,11 @@
 import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
+import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import '../logs_page.dart';
 import '../slices_page.dart';
+import 'package:provider/provider.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
 import 'widgets/gps_card.dart';
@@ -17,13 +19,45 @@ class NoRippleOnScrollBehavior extends ScrollBehavior {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  ScrollController _controller;
+  final double elevationOn = 4;
+  final double elevationOff = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
+    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(0, 0);
+  }
+
+  void _scrollListener() {
+    double newElevation = _controller.offset > 1 ? elevationOn : elevationOff;
+    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(0, newElevation);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller?.removeListener(_scrollListener);
+    _controller?.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ScrollConfiguration(
           behavior: NoRippleOnScrollBehavior(),
           child: ListView(
+            controller: _controller,
             children: <Widget>[
               SizedBox(
                 height: MediaQuery.of(context).padding.top + 20, // top padding calcolato in relazione alla dimensione della srtatusbar (che può variare)

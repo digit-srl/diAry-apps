@@ -2,6 +2,7 @@ import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
+import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
@@ -82,6 +83,9 @@ class _MyDayAppState extends State<MyDayApp> {
 //        ),
         StateNotifierProvider<GpsNotifier, GpsState>(
           create: (_) => GpsNotifier(),
+        ),
+        StateNotifierProvider<RootElevationNotifier, ElevationState>(
+          create: (_) => RootElevationNotifier(),
         ),
       ],
       child: MaterialApp(
