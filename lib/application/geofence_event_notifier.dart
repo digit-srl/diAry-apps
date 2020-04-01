@@ -1,3 +1,4 @@
+import 'package:diary/domain/entities/location.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -21,8 +22,8 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
 
   void _onGeofence(bg.GeofenceEvent geofenceEvent) {
     Hive.box<String>('logs').add('[onGeofence] $geofenceEvent');
-    final location = bg.Location(geofenceEvent.location.map);
-    final event = bg.GeofenceEvent({
+    final location = Location.fromJson(geofenceEvent.location.map);
+    final event = Geofence.fromJson({
       'identifier': geofenceEvent.identifier,
       'action': geofenceEvent.action,
       'extras': geofenceEvent.extras,

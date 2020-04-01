@@ -1,20 +1,22 @@
-class Loc {
-  String event;
-  bool isMoving;
+class Location {
   String uuid;
+  String event;
   String timestamp;
-  double odometer;
+  bool isMoving;
+  bool sample;
   bool mock;
+  double odometer;
   Coords coords;
   Activity activity;
   Battery battery;
   Extras extras;
-  Provider provider;
+  NetworkProvider provider;
   Geofence geofence;
 
-  Loc(
+  Location(
       {this.event,
       this.isMoving,
+      this.sample,
       this.uuid,
       this.timestamp,
       this.odometer,
@@ -26,9 +28,10 @@ class Loc {
       this.provider,
       this.geofence});
 
-  Loc.fromJson(Map<String, dynamic> json) {
+  Location.fromJson(Map<String, dynamic> json) {
     event = json['event'];
     isMoving = json['is_moving'];
+    isMoving = json['sample'];
     uuid = json['uuid'];
     timestamp = json['timestamp'];
     odometer = json['odometer']?.toDouble();
@@ -46,7 +49,8 @@ class Loc {
         ? new Extras.fromJson(Map<String, dynamic>.from(json['extras']))
         : null;
     provider = json['provider'] != null
-        ? new Provider.fromJson(Map<String, dynamic>.from(json['provider']))
+        ? new NetworkProvider.fromJson(
+            Map<String, dynamic>.from(json['provider']))
         : null;
     geofence = json['geofence'] != null
         ? new Geofence.fromJson(Map<String, dynamic>.from(json['geofence']))
@@ -57,6 +61,7 @@ class Loc {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['event'] = this.event;
     data['is_moving'] = this.isMoving;
+    data['sample'] = this.sample;
     data['uuid'] = this.uuid;
     data['timestamp'] = this.timestamp;
     data['odometer'] = this.odometer;
@@ -69,15 +74,23 @@ class Loc {
     data['geofence'] = this.geofence?.toJson();
     return data;
   }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return 'uuid: $uuid';
+  }
 }
 
 class Coords {
+  int floor;
   double latitude;
   double longitude;
   double accuracy;
-  double speed;
+  double altitude;
   double heading;
-  int altitude;
+  double speed;
+  double altitudeAccuracy;
 
   Coords(
       {this.latitude,
@@ -88,12 +101,16 @@ class Coords {
       this.altitude});
 
   Coords.fromJson(Map<String, dynamic> json) {
-    latitude = json['latitude'];
-    longitude = json['longitude'];
+    latitude = json['latitude']?.toDouble();
+    longitude = json['longitude']?.toDouble();
     accuracy = json['accuracy']?.toDouble();
     speed = json['speed']?.toDouble();
     heading = json['heading']?.toDouble();
-    altitude = json['altitude']?.toInt();
+    altitude = json['altitude']?.toDouble();
+    if (json['altitude_accuracy'] != null) {
+      this.altitudeAccuracy = json['altitude_accuracy'] * 1.0;
+    }
+    floor = json['floor'];
   }
 
   Map<String, dynamic> toJson() {
@@ -104,19 +121,20 @@ class Coords {
     data['speed'] = this.speed;
     data['heading'] = this.heading;
     data['altitude'] = this.altitude;
+    data['floor'] = this.floor;
     return data;
   }
 }
 
 class Activity {
   String type;
-  int confidence;
+  double confidence;
 
   Activity({this.type, this.confidence});
 
   Activity.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    confidence = json['confidence'];
+    confidence = json['confidence']?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -146,15 +164,15 @@ class Battery {
   }
 }
 
-class Provider {
+class NetworkProvider {
   bool network;
   bool gps;
   bool enabled;
   int status;
 
-  Provider({this.network, this.gps, this.enabled, this.status});
+  NetworkProvider({this.network, this.gps, this.enabled, this.status});
 
-  Provider.fromJson(Map<String, dynamic> json) {
+  NetworkProvider.fromJson(Map<String, dynamic> json) {
     network = json['network'];
     gps = json['gps'];
     enabled = json['enabled'];
@@ -196,8 +214,8 @@ class Geofence {
 }
 
 class Extras {
-  Center center;
-  int radius;
+  CenterCoords center;
+  double radius;
   String event;
   bool enabled;
   String name;
@@ -215,9 +233,9 @@ class Extras {
 
   Extras.fromJson(Map<String, dynamic> json) {
     center = json['center'] != null
-        ? new Center.fromJson(Map<String, dynamic>.from(json['center']))
+        ? new CenterCoords.fromJson(Map<String, dynamic>.from(json['center']))
         : null;
-    radius = json['radius'];
+    radius = json['radius']?.toDouble();
     event = json['event'];
     name = json['name'];
     color = json['color'];
@@ -239,15 +257,15 @@ class Extras {
   }
 }
 
-class Center {
+class CenterCoords {
   double latitude;
   double longitude;
 
-  Center({this.latitude, this.longitude});
+  CenterCoords({this.latitude, this.longitude});
 
-  Center.fromJson(Map<String, dynamic> json) {
-    latitude = json['latitude'];
-    longitude = json['longitude'];
+  CenterCoords.fromJson(Map<String, dynamic> json) {
+    latitude = json['latitude']?.toDouble();
+    longitude = json['longitude']?.toDouble();
   }
 
   Map<String, dynamic> toJson() {

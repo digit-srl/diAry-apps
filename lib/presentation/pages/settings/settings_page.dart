@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
@@ -219,8 +220,9 @@ class _SettingsPageState extends State<SettingsPage> {
     final currentDate =
         Provider.of<DateState>(context, listen: false).selectedDate;
 
-    final locations = Provider.of<LocationNotifier>(context, listen: false)
-        .getCurrentDayLocations;
+    final List<Location> locations =
+        Provider.of<LocationNotifier>(context, listen: false)
+            .getCurrentDayLocations;
 
     final List<File> files =
         await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);

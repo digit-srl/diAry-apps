@@ -14,16 +14,15 @@ import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
+import 'domain/entities/location.dart';
 import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg show Location;
 
 import 'domain/entities/day.dart';
 
 class MyDayApp extends StatefulWidget {
-  final Map<DateTime, List<bg.Location>> locationsPerDate;
+  final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
 
   const MyDayApp({Key key, this.locationsPerDate, this.days}) : super(key: key);

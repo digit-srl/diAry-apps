@@ -5,8 +5,6 @@ import 'dart:math';
 import 'package:csv/csv.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/location.dart';
@@ -14,11 +12,11 @@ import 'location_utils.dart';
 
 class ImportExportUtils {
   static Future<List<File>> saveFilesOnLocalStorage(
-      List<bg.Location> locations, DateTime currentDate) async {
+      List<Location> locations, DateTime currentDate) async {
     List<Map<String, dynamic>> result = [];
 //  final locations = await bg.BackgroundGeolocation.locations;
-    for (bg.Location loc in locations) {
-      result.add(Loc.fromJson(Map<String, dynamic>.from(loc.map)).toJson());
+    for (Location loc in locations) {
+      result.add(loc.toJson());
     }
     var csv = mapListToCsv(result);
     var jsonEncoded = json.encode(result);
@@ -110,7 +108,7 @@ class ImportExportUtils {
     final String data = await file.readAsString();
     final map = json.decode(data);
     final locations = List<Map<String, dynamic>>.from(map)
-        .map((element) => bg.Location(element))
+        .map((element) => Location.fromJson(element))
         .toList();
 //    final list = List<Map<String, dynamic>>.from(map)
 //        .map((element) => Loc.fromJson(element))
@@ -123,16 +121,16 @@ class ImportExportUtils {
         loc.activity.type = 'still';
       }
     });
-    return LocationUtils.aggregateLocationsInSlices(locations, box: {});
+    return LocationUtils.aggregateLocationsInSlices3(locations);
   }
 
-  static Future<List<bg.Location>> importJSON() async {
+  static Future<List<Location>> importJSON() async {
     final File file =
         await FilePicker.getFile(type: FileType.custom, fileExtension: 'json');
     final String data = await file.readAsString();
     final map = json.decode(data);
     final locations = List<Map<String, dynamic>>.from(map)
-        .map((element) => bg.Location(element))
+        .map((element) => Location.fromJson(element))
         .toList();
     print(locations.length);
 

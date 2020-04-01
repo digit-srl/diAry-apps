@@ -24,4 +24,8 @@ class Place extends HiveObject {
   Place(this.identifier, this.name, this.color, this.isHome, this.latitude,
       this.longitude, this.radius,
       {this.enabled = true});
+
+  @override
+  String toString() =>
+      'Identifier: $identifier, name: $name, isHome: $isHome, color: $color, enabled: $enabled';
 }

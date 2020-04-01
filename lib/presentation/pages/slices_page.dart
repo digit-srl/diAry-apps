@@ -1,4 +1,4 @@
-import 'package:diary/domain/entities/place.dart';
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
@@ -7,14 +7,12 @@ import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart' as pro;
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 import 'package:diary/utils/extensions.dart';
 
 class TabBarDemo extends StatefulWidget {
   final List<Slice> places;
   final List<Slice> slices;
-  final List<bg.Location> locations;
+  final List<Location> locations;
 
   const TabBarDemo({Key key, this.places, this.slices, this.locations})
       : super(key: key);
@@ -49,7 +47,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
   }
 
   updateSlices() async {
-    final output = LocationUtils.aggregateLocationsInSlices2(
+    final output = LocationUtils.aggregateLocationsInSlices3(
       widget.locations,
     );
     slices = output[0];

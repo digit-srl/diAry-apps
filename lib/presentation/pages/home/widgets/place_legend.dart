@@ -1,9 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:hive/hive.dart';

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
@@ -154,13 +155,13 @@ class _MapPageState extends State<MapPage>
     );
   }
 
-  void _onLocation(bg.Location location) {
+  void _onLocation(Location location) {
     print('[MapPage] [onLocation]');
     LatLng ll = LatLng(location.coords.latitude, location.coords.longitude);
     _goToLocation(ll);
     _updateCurrentPositionMarker(ll);
 
-    if (location.sample) {
+    if (location.sample ?? false) {
       return;
     }
     addMarker(location);
@@ -375,7 +376,7 @@ class _MapPageState extends State<MapPage>
 //    });
 //  }
 
-  void addMarker(bg.Location location, {double hue}) {
+  void addMarker(Location location, {double hue}) {
     final MarkerId markerId = MarkerId(location.uuid);
     final Marker marker = Marker(
       markerId: markerId,
@@ -532,7 +533,7 @@ class _MapPageState extends State<MapPage>
     final dailyLocations = Provider.of<LocationNotifier>(context, listen: false)
         .locationsPerDate[_currentDate];
     if (dailyLocations?.isNotEmpty ?? false) {
-      for (bg.Location location in dailyLocations) {
+      for (Location location in dailyLocations) {
 //      final icon = boxNotes.containsKey(loc.uuid)
 //          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
 //          : BitmapDescriptor.defaultMarker;

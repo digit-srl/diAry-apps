@@ -1,8 +1,8 @@
 import 'package:diary/application/service_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/day.dart';
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/location_utils.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import 'package:intl/intl.dart';
@@ -47,9 +47,8 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
         DateTime.parse(key).isAfter(DateTime.tryParse(location.timestamp)));
     final partialSlices = days[date]?.slices ?? [];
     final partialPlaces = days[date]?.places ?? [];
-    final newSlices = LocationUtils.aggregateLocationsInSlices(
+    final newSlices = LocationUtils.aggregateLocationsInSlices3(
       [location],
-      box: partialOnOff,
       partialDaySlices: date.isSameDay(openAppDate) && partialSlices.isNotEmpty
           ? partialSlices.sublist(0, partialSlices.length - 1)
           : partialSlices,
