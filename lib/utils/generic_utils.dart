@@ -74,4 +74,26 @@ class GenericUtils {
 //      ),
 //    );
   }
+
+  static List<int> minutesToHourAndMinutes(int minutes) {
+    final x = minutes / 60.0;
+    int hours = x.toInt();
+    String minString = x.toStringAsFixed(2).split('.')[1];
+    int min = (int.parse(minString) / 100 * 60).truncate();
+    return [hours, min];
+  }
+
+  static Duration minutesToDuration(int minutes) {
+    final list = minutesToHourAndMinutes(minutes);
+    return Duration(hours: list[0], minutes: list[1]);
+  }
+
+  static String minutesToString(int minutes) {
+    if (minutes <= 60) return '$minutes min';
+    final list = GenericUtils.minutesToHourAndMinutes(minutes);
+    final hour = list[0];
+    final min = list[1];
+    if (min == 0) return '$hour h';
+    return '$hour h : $min m';
+  }
 }
