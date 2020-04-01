@@ -59,6 +59,7 @@ class PlaceLegend extends StatelessWidget {
               for (Place place in places)
                 PlaceRowLegend(
                   title: place.name,
+                  isHome: place.isHome,
                   pinColor: Color(place.color),
                   location:
                       'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
@@ -121,9 +122,15 @@ class PlaceRowLegend extends StatelessWidget {
   final String location;
   final Color pinColor;
   final Function onRemove;
+  final bool isHome;
 
   const PlaceRowLegend(
-      {Key key, this.title, this.pinColor, this.location, this.onRemove})
+      {Key key,
+      this.title,
+      this.pinColor,
+      this.location,
+      this.onRemove,
+      this.isHome = false})
       : super(key: key);
 
   @override
@@ -137,7 +144,7 @@ class PlaceRowLegend extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Icon(
-                Icons.person_pin,
+                isHome ? Icons.home : Icons.person_pin,
                 color: pinColor,
                 size: 50,
               ),
