@@ -9,7 +9,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
     as bg;
 import 'package:path_provider/path_provider.dart';
 
-import '../domain/entities/loc.dart';
+import '../domain/entities/location.dart';
 import 'location_utils.dart';
 
 class ImportExportUtils {
