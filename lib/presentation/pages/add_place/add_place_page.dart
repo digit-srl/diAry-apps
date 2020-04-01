@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
     as bg;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../utils/colors.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
@@ -43,11 +46,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
   double zoom = 19.0;
   Widget fab = Container();
   bool isHomeEnabled;
-  final GlobalKey _key = GlobalKey();
-
-  Size get _size => _key?.currentContext?.size;
   String error;
-  double _top;
+  bool _canSave = false;
 
   @override
   void initState() {
@@ -77,231 +77,216 @@ class _AddPlacePageState extends State<AddPlacePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: accentColor),
         title: Text(
           'Aggiungi luogo',
           style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
-        elevation: 0.0,
+        elevation: 4,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(260.0),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: _selectColor,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 16, 20),
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: currentColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Theme(
+                        data: themeData,
+                        child: TextField(
+                          cursorColor: accentColor,
+                          controller: placeEditingController,
+                          expands: false,
+                          maxLines: 1,
+                          maxLength: 20,
+                          style: TextStyle(fontFamily: "Nunito"),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.black12,
+                            hintText: "Inserisci qui il nome del luogo",
+                          ),
+                          onChanged: (text) {
+                            _canSave = (text.trim().length >= 3 &&
+                                newLocation != null);
+                            setState(() {});
+                          },
+                          onSubmitted: (text) {
+                            if (_canSave) _addGeofence();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  height: 8,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Abitazione principale",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          AutoSizeText(
+                            "Puoi impostare un solo luogo.",
+                            maxLines: 1,
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch(
+                      value: _isHome,
+                      onChanged: isHomeEnabled
+                          ? (bool value) {
+                              setState(() {
+                                this._isHome = value;
+                              });
+                            }
+                          : null,
+                    ),
+                  ],
+                ),
+                Container(height: 16),
+                Text(
+                  "Raggio",
+                  textAlign: TextAlign.left,
+                ),
+                Slider(
+                  min: 10.0,
+                  max: 50.0,
+                  divisions: 4,
+                  label: '${radius.toInt()} metri',
+                  value: radius,
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        this.radius = value;
+                        addCircle(lastLocation);
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _canSave
+            ? () {
+                _addGeofence();
+              }
+            : null,
+        backgroundColor: _canSave ? accentColor : Colors.grey,
+        child: Icon(Icons.check),
       ),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Column(
-            children: <Widget>[
-              Flexible(
-                key: _key,
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 0.0),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-//                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Flexible(
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: GestureDetector(
-                                onTap: _selectColor,
-                                child: Container(
-                                  margin: const EdgeInsets.all(12.0),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: currentColor,
-//                                    border: Border.all(
-//                                      color: Colors.grey,
-//                                      width: 2.0,
-//                                      style: BorderStyle.solid,
-//                                    ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 5,
-                            child: Theme(
-                              data: themeData,
-                              child: TextField(
-                                controller: placeEditingController,
-                                maxLength: 20,
-                                decoration: InputDecoration(
-                                  hintText: 'Nome luogo',
-                                  labelText: 'Nome luogo',
-                                  labelStyle: TextStyle(color: secondaryText),
-                                ),
-                                onChanged: (text) {
-                                  if (text.trim().length >= 3 &&
-                                      newLocation != null) {
-                                    _top = _size.height - 30;
-                                  } else {
-                                    _top = null;
-                                  }
-                                  setState(() {});
-                                },
-                                onSubmitted: (text) {},
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-//                    padding: const EdgeInsets.only(top: 16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Flexible(
-                              child: Container(),
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: Row(
-                                children: <Widget>[
-                                  Text(
-                                    'Abitazione principale',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  Spacer(),
-                                  Switch(
-                                    value: _isHome,
-                                    onChanged: isHomeEnabled
-                                        ? (bool value) {
-                                            setState(() {
-                                              this._isHome = value;
-                                            });
-                                          }
-                                        : null,
-                                  ),
-                                ],
-                              ),
-//                              child: Theme(
-//                                data: themeData,
-//                                child: TextField(
-//                                  controller: descPlaceEditingController,
-//                                  decoration: InputDecoration(
-//                                    hintText: 'Descrizione luogo',
-//                                    labelText: 'Descrizione',
-//                                  ),
-//                                ),
-//                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-//                    padding: const EdgeInsets.only(top: 16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Flexible(
-                              child: Container(),
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: Slider(
-                                min: 10.0,
-                                max: 50.0,
-                                divisions: 4,
-                                label: '${radius.toInt()} m',
-                                value: radius,
-                                onChanged: (value) {
-                                  setState(
-                                    () {
-                                      this.radius = value;
-                                      addCircle(lastLocation);
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Flexible(
-                flex: 5,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: lastLocation ?? LatLng(0.0, 0.0),
-                        zoom: zoom,
-                      ),
+          GoogleMap(
+            myLocationButtonEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: lastLocation ?? LatLng(0.0, 0.0),
+              zoom: zoom,
+            ),
 //                  onCameraMove: (cameraPosition) {
 //                    setState(() {
 //                      addCircle(cameraPosition.target);
 //                    });
 //                  },
-                      onMapCreated: (controller) {
-                        _controller.complete(controller);
-                      },
-                      onTap: (location) {
-                        setState(() {
-                          lastLocation = location;
-                          addCircle(location);
-                        });
-                      },
-                      markers: markers,
-                      circles: circles,
-                    ),
-                    newLocation == null
-                        ? Container(
-                            color: Colors.black.withOpacity(0.5),
-                            child: Center(
-                              child: Text(
-                                'Acquisizione Posizione...',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 30),
-                              ),
-                            ),
-                          )
-                        : Container(),
-                    Positioned(
-                      top: 30,
-                      right: 10.0,
-                      child: Container(
-                        width: 35,
-                        height: 35,
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(color: accentColor, blurRadius: 3),
-                          ],
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            icon: Icon(Icons.gps_fixed),
-                            iconSize: 17,
-                            color: accentColor,
-                            onPressed: getCurrentLocationAndUpdateMap,
-                          ),
-                        ),
-                      ),
-                    )
+            onMapCreated: (controller) {
+              _controller.complete(controller);
+            },
+            onTap: (location) {
+              setState(() {
+                lastLocation = location;
+                addCircle(location);
+              });
+            },
+            markers: markers,
+            circles: circles,
+          ),
+          if (newLocation == null)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                  Container(
+                    height: 16,
+                  ),
+                  Text(
+                    'Acquisendo la tua posizione corrente...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+          Positioned(
+            child: Container(
+              height: 40.0,
+              width: 40.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 4),
                   ],
                 ),
+                child: Center(
+                  child: IconButton(
+                    icon: Icon(Icons.gps_fixed),
+                    iconSize: 16,
+                    color: accentColor,
+                    onPressed: getCurrentLocationAndUpdateMap,
+                  ),
+                ),
               ),
-            ],
-          ),
-          Positioned(
-            top: _top ?? 0.0,
-            right: 10.0,
-            child: _top != null
-                ? FloatingActionButton(
-                    onPressed: _addGeofence,
-                    child: Icon(Icons.check),
-                  )
-                : Container(),
+            ),
+            top: 42,
+            right: 25,
           ),
         ],
       ),
@@ -469,12 +454,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
       addCircle(lastLocation);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          if (placeEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
-            _top = _size.height - 30;
-          } else {
-            _top = null;
-          }
+          _canSave = placeEditingController.text.trim().length >= 3 &&
+              newLocation != null;
         });
       });
     }, (ex) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
@@ -11,6 +12,11 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+
+import '../../../utils/colors.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/colors.dart';
 
 class AddAnnotationPage extends StatefulWidget {
   final LatLng location;
@@ -30,16 +36,16 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
-  final GlobalKey _key = GlobalKey();
+  //final GlobalKey _key = GlobalKey();
   Set<Marker> markers = {};
   Completer<GoogleMapController> _controller = Completer();
   double zoom = 19.0;
   Widget fab = Container();
   bool isHomeEnabled;
 
-  Size get _size => _key?.currentContext?.size;
+  //Size get _size => _key?.currentContext?.size;
   String error;
-  double _top;
+  bool _canSave = false;
 
   DateTime selectedDate;
 
@@ -64,129 +70,126 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(
-          'Aggiungi segnalazione',
-          style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        elevation: 0.0,
+          title: Text(
+            'Aggiungi segnalazione',
+            style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: false,
+          elevation: 4,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(260.0),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+              child: Column(
+                children: <Widget>[
+                  Theme(
+                    data: themeData,
+                    child: TextField(
+                      cursorColor: accentColor,
+                      controller: annotationEditingController,
+                      expands: false,
+                      maxLines: 5,
+                      minLines: 5,
+                      style: TextStyle(fontFamily: "Nunito"),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.black12,
+                        hintText:
+                            "Che episodio desideri segnalare? Descrivilo in questo box.",
+                      ),
+                      onChanged: (text) {
+                        _canSave = (text.trim().length >= 3 && newLocation != null);
+                        setState(() {});
+                      },
+                      onSubmitted: (text) {},
+                    ),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                  AutoSizeText(
+                    "La segnalazione verrà associata alla tua posizione corrente. Deve avere una lunghezza minima di 3 caratteri.",
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+            ),
+          )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _canSave ? () { _addAnnotation(); }
+            : null,
+        backgroundColor: _canSave ? accentColor : Colors.grey,
+        child: Icon(Icons.check),
       ),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Column(
-            children: <Widget>[
-              Flexible(
-                key: _key,
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 0.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Flexible(
-                        child: Container(),
-                      ),
-                      Flexible(
-                        flex: 5,
-                        child: Theme(
-                          data: themeData,
-                          child: TextField(
-                            controller: annotationEditingController,
-//                            expands: true,
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: InputDecoration(
-                                hintText: 'Nome segnalazione',
-                                labelText: 'Nome segnalazione',
-                                labelStyle: TextStyle(color: secondaryText)),
-                            onChanged: (text) {
-                              if (text.trim().length >= 3 &&
-                                  newLocation != null) {
-                                _top = _size.height - 30;
-                              } else {
-                                _top = null;
-                              }
-                              setState(() {});
-                            },
-                            onSubmitted: (text) {},
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Container(),
-                      ),
-                    ],
+          GoogleMap(
+                myLocationButtonEnabled: false,
+                initialCameraPosition: CameraPosition(
+              target: lastLocation ?? LatLng(0.0, 0.0),
+              zoom: zoom,
+            ),
+            onMapCreated: (controller) {
+              _controller.complete(controller);
+            },
+            markers: markers,
+          ),
+          if (newLocation == null)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                  Container(
+                    height: 16,
+                  ),
+                  Text(
+                    'Acquisendo la tua posizione corrente...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+
+          Positioned(
+            child: Container(
+              height: 40.0,
+              width: 40.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 4),
+                  ],
+                ),
+                child: Center(
+                  child: IconButton(
+                    icon: Icon(Icons.gps_fixed),
+                    iconSize: 16,
+                    color: accentColor,
+                    onPressed: getCurrentLocationAndUpdateMap,
                   ),
                 ),
               ),
-              Flexible(
-                flex: 5,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: lastLocation ?? LatLng(0.0, 0.0),
-                        zoom: zoom,
-                      ),
-                      onMapCreated: (controller) {
-                        _controller.complete(controller);
-                      },
-                      markers: markers,
-                    ),
-                    newLocation == null
-                        ? Container(
-                            color: Colors.black.withOpacity(0.5),
-                            child: Center(
-                              child: Text(
-                                'Acquisizione Posizione...',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 30),
-                              ),
-                            ),
-                          )
-                        : Container(),
-                    error != null
-                        ? Positioned(
-                            top: 30,
-                            right: 10.0,
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              margin: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(color: accentColor, blurRadius: 3),
-                                ],
-                              ),
-                              child: Center(
-                                child: IconButton(
-                                  icon: Icon(Icons.gps_fixed),
-                                  iconSize: 17,
-                                  color: accentColor,
-                                  onPressed: getCurrentLocationAndUpdateMap,
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            top: _top ?? 0.0,
-            right: 10.0,
-            child: _top != null
-                ? FloatingActionButton(
-                    onPressed: _addAnnotation,
-                    child: Icon(Icons.check),
-                  )
-                : Container(),
+            ),
+            top: 42,
+            right: 25,
           ),
         ],
       ),
@@ -213,7 +216,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/my_position_pin.png')
+              imageConfiguration, 'assets/annotation_pin.png')
           .then(_updateCurrentBitmap);
     }
   }
@@ -233,12 +236,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       addPin(lastLocation);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          if (annotationEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
-            _top = _size.height - 30;
-          } else {
-            _top = null;
-          }
+          _canSave = annotationEditingController.text.trim().length >= 3 && newLocation != null;
         });
       });
     }, (ex) {
