@@ -3,6 +3,7 @@ import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
@@ -726,116 +727,107 @@ class LocationUtils {
     }
     return output;
   }
-//  static List<Day> aggregateLocationRecords(List<bg.Location> locations) {
-//    if (locations.isEmpty) return [];
-//
-//    final List<Day> days = [];
-//
-//    var endTime = DateTime.tryParse(locations.first.timestamp).toLocal();
-//    var startTime = DateTime(endTime.year, endTime.month, endTime.day);
-//    var totalMinutes = endTime.minute + (endTime.hour * 60);
-//    int id = 0;
-//    final currentActivity =
-//        getActivityFromString(locations.first.activity.type);
-//
-//    final cloves = <Slice>[
-//      Slice(
-//        id: id,
-//        minutes: totalMinutes,
-////        activity: totalMinutes > 30 ? Activity.Inactive : currentActivity,
-//        activity: currentActivity,
-//        confidence: locations.first.activity.confidence,
-//        isMoving: locations.first.isMoving,
-//        startTime: startTime,
-//        endTime: endTime,
-//      ),
-//    ];
-//
-//    id++;
-//    final newLocs = locations.sublist(1);
-//
-//    for (bg.Location loc in newLocs) {
-//      final newDate = DateTime.tryParse(loc.timestamp).toLocal();
-//      final currentMinutes = newDate.minute + (newDate.hour * 60);
-//      final delta = currentMinutes - totalMinutes;
-//      final activity = getActivityFromString(loc.activity.type);
-//      cloves.last.endTime = newDate;
-//      if (cloves.last.activity == activity) {
-//        cloves.last.minutes += delta;
-//      } else {
-//        cloves.last.minutes += delta;
-//        cloves.add(
-//          Slice(
-//              id: id,
-//              minutes: 0,
-//              activity: getActivityFromString(loc.activity.type),
-//              confidence: loc.activity.confidence,
-//              isMoving: loc.isMoving,
-//              startTime: newDate,
-//              endTime: newDate),
-//        );
-//      }
-//
-////      if (cloves.last.minutes == 0) {
-////        final endTime = cloves.last.endTime;
-////      }
-//      totalMinutes = newDate.minute + (newDate.hour * 60);
-//      id++;
-//    }
-//
-//
-//    if (isToday) {
-//      final now = DateTime.now();
-//      final nowTotalMinutes = now.minute + (now.hour * 60);
-//      final difference = nowTotalMinutes - totalMinutes;
-//      cloves.last.minutes += difference;
-//      cloves.last.isMoving = difference > 30
-//          ? null
-//          : difference < 5 ? cloves.last.isMoving : false;
-//      cloves.last.endTime = now;
-////      final newCl = CloveModel(
-////        id: id,
-////        minutes: difference,
-//////        activity: difference > 30 ? Activity.Inactive : cloves.last.activity,
-////        activity: cloves.last.activity,
-////        confidence: 100,
-////        isMoving: difference > 30
-////            ? null
-////            : difference < 5 ? cloves.last.isMoving : false,
-////        startTime: cloves.last.endTime,
-////        endTime: now,
-////      );
-////      cloves.add(newCl);
-//      totalMinutes = nowTotalMinutes;
-//    }
-//
-//    final endOfThisDay = DateTime(
-//        currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-//    if (cloves.last.endTime.isBefore(endOfThisDay)) {
-//      //TODO essendo l ultimo spicchio lo basiamo su ciò che faceva nel penultimo?
-//      cloves.add(
-//        CloveModel(
-//          id: ++id,
-//          minutes: 1440 - totalMinutes,
-//          activity: isToday ? MotionActivity.Unknown : cloves.last.activity,
-//          confidence: 100,
-//          isMoving: isToday ? null : cloves.last.isMoving,
-//          startTime: cloves.last.endTime,
-//          endTime: DateTime(
-//              currentDate.year, currentDate.month, currentDate.day, 23, 59, 59),
-//        ),
-//      );
-//    }
-//
-//    final tmp = <Slice>[];
-//    var t = 0;
-//    for (int i = 0; i < cloves.length; i++) {
-//      t += cloves[i].minutes;
-//      print(cloves[i]);
-//    }
-//    print('--------------');
-//    for (Slice t in tmp) print(t);
-//    print('total minutes: $t');
-//    return days;
-//  }
+
+  static insertFakeLocationInDb() async {
+    final map = <String, dynamic>{
+      "event": "geofence",
+      "is_moving": false,
+      "uuid": "a6f77fd0-7438-11ea-cde6-3530e872af08",
+      "timestamp": "2020-04-01T17:01:04.000Z",
+      "odometer": 0,
+      "coords": {
+        "latitude": 42.8126475,
+        "longitude": 13.7261683,
+        "accuracy": 15,
+        "speed": 0,
+        "heading": 257.03,
+        "altitude": 287.7
+      },
+      "activity": {"type": "still", "confidence": 100},
+      "battery": {"is_charging": true, "level": 0.66},
+      "geofence": {
+        "identifier": "CASA",
+        "action": "ENTER",
+        "extras": {
+          "center": {"latitude": 42.8126787, "longitude": 13.726352899999995},
+          "radius": 20
+        }
+      },
+      "extras": {}
+    };
+
+    try {
+      final location = await bg.BackgroundGeolocation.insertLocation(map);
+      print(location);
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
+  static insertExitFromGeofenceOnDb(String identifier, DateTime dateTime,
+      double latitude, double longitude, double radius) async {
+    final map = <String, dynamic>{
+      "event": "geofence",
+      "is_moving": false,
+      "uuid": Uuid().v1(),
+      "timestamp": dateTime.toUtc().toIso8601String(),
+      "odometer": 0,
+      "coords": {
+        "latitude": latitude,
+        "longitude": longitude,
+        "accuracy": 0,
+        "speed": 0,
+        "heading": 0,
+        "altitude": 0.0
+      },
+      "activity": {},
+      "battery": {},
+      "geofence": {
+        "identifier": identifier,
+        "action": "EXIT",
+        "extras": {
+          "center": {"latitude": latitude, "longitude": longitude},
+          "radius": radius
+        }
+      },
+      "extras": {}
+    };
+
+    try {
+      final location = await bg.BackgroundGeolocation.insertLocation(map);
+      print(location);
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
+  static insertOnOffOnDb(DateTime dateTime, bool enabled) async {
+    final map = <String, dynamic>{
+      "event": enabled ? 'ON' : 'OFF',
+      "is_moving": false,
+      "uuid": Uuid().v1(),
+      "timestamp": dateTime.toUtc().toIso8601String(),
+      "odometer": 0,
+      "coords": {
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "accuracy": 0,
+        "speed": 0,
+        "heading": 0,
+        "altitude": 0.0
+      },
+      "activity": {},
+      "battery": {},
+      "extras": {
+        'enabled': enabled,
+      }
+    };
+
+    try {
+      final location = await bg.BackgroundGeolocation.insertLocation(map);
+      print(location);
+    } catch (ex) {
+      print(ex);
+    }
+  }
 }

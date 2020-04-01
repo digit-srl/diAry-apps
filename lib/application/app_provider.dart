@@ -1,3 +1,4 @@
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -46,10 +47,12 @@ class AppProvider with LocatorMixin {
     });
   }
 
-  _onEnabledChange(bool enabled) {
-    Hive.box<String>('logs').add('[onEnabledChange] $enabled');
-    final dateTime = DateTime.now().toIso8601String();
-    Hive.box<bool>('enabled_change').put(dateTime, enabled);
-    serviceNotifier.setEnabled(enabled, dateTime: dateTime);
+  _onEnabledChange(bool enabled) async {
+    await Hive.box<String>('logs').add('[onEnabledChange] $enabled');
+    final dateTime = DateTime.now();
+    await Hive.box<bool>('enabled_change')
+        .put(dateTime.toIso8601String(), enabled);
+    await LocationUtils.insertOnOffOnDb(dateTime, enabled);
+    serviceNotifier.setEnabled(enabled, dateTime: dateTime.toIso8601String());
   }
 }
