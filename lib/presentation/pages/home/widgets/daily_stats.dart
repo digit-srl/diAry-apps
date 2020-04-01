@@ -364,13 +364,9 @@ class DailyStats extends StatelessWidget {
   void _showPlaceLegend(BuildContext context) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              PlaceLegend(),
-            ],
-          );
+          return PlaceLegend();
         });
     /* Alert(
       context: context,

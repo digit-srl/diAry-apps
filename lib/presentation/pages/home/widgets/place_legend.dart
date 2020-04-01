@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:diary/utils/extensions.dart';
 
 class PlaceLegend extends StatelessWidget {
   @override
@@ -16,7 +18,15 @@ class PlaceLegend extends StatelessWidget {
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        final Set<Place> places = value.day.geofences;
+        Set<Place> places;
+        if (value.day.date.isToday()) {
+          places = Hive.box<Place>('places')
+              .values
+              .where((place) => place.enabled == true)
+              .toSet();
+        } else {
+          places = value.day.geofences;
+        }
         if (places.isEmpty) {
           return Container(
             height: 150,
