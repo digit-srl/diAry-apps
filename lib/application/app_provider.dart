@@ -1,12 +1,8 @@
-import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/application/service_notifier.dart';
-import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
-import 'package:diary/utils/extensions.dart';
-import 'day_notifier.dart';
 
 class AppProvider with LocatorMixin {
   final ServiceNotifier serviceNotifier;
