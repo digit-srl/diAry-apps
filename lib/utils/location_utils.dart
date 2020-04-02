@@ -81,8 +81,7 @@ class LocationUtils {
           print(
               'Before was $currentActivity with speed: ${loc.coords.speed} m/s');
         }
-        final date =
-            DateTime.tryParse(loc.timestamp).toLocal().withoutMinAndSec();
+        final date = loc.dateTime.withoutMinAndSec();
         if (!locationsPerDay.containsKey(date)) {
           locationsPerDay[date] = [];
         }
@@ -428,7 +427,7 @@ class LocationUtils {
       List<Slice> partialDayPlaces = const []}) {
     if (locations.isEmpty) return [[], []];
 
-    final currentDay = DateTime.tryParse(locations.first.timestamp).toLocal();
+    final currentDay = locations.first.dateTime;
 
     final List<Slice> slices = [];
     final List<Slice> places = [];
@@ -453,7 +452,7 @@ class LocationUtils {
     for (int i = 0; i < locations.length; i++) {
       final Location loc = locations[i];
 
-      final currentDate = DateTime.tryParse(loc.timestamp).toLocal();
+      final currentDate = loc.dateTime;
       final currentMinutes = currentDate.toMinutes();
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
@@ -468,7 +467,7 @@ class LocationUtils {
       final where = geofence?.identifier;
       print('uuid: ${loc.uuid}, identifier: $where, action: $action');
 
-      if (i == 0 && event == 'ON') {
+      if (i == 0 && event == Event.On) {
         places.add(
           Slice(
             startTime: partialDayPlaces.isEmpty
@@ -478,7 +477,7 @@ class LocationUtils {
             activity: MotionActivity.Off,
           ),
         );
-      } else if (i == locations.length - 1 && event == 'OFF') {
+      } else if (i == locations.length - 1 && event == Event.Off) {
         places.last.minutes += partialPlaceMinutes;
         places.add(
           Slice(
@@ -488,10 +487,9 @@ class LocationUtils {
           ),
         );
         cumulativePlacesMinutes += maxMinutes - currentMinutes;
-      } else if (event == 'OFF' && locations[i + 1].event == 'ON') {
+      } else if (event == Event.Off && locations[i + 1].event == Event.On) {
         places.last.minutes += partialPlaceMinutes;
-        final nextDate =
-            DateTime.tryParse(locations[i + 1].timestamp).toLocal();
+        final nextDate = locations[i + 1].dateTime;
         final minutes = nextDate.toMinutes() - currentMinutes;
         places.add(
           Slice(
@@ -576,18 +574,25 @@ class LocationUtils {
 
         if (action == Action.Enter) {
           if (!places.last.places.contains(where)) {
-            Set<String> newPlaces = Set.from(places.last.places);
-            newPlaces.add(where);
-            places.add(
-              Slice(
-                id: 0,
-                minutes: 0,
-                startTime: currentDate,
-                places: newPlaces,
-                activity: MotionActivity.Still,
-                placeRecords: 1,
-              ),
-            );
+            if (lastAction == Action.Exit &&
+                places.last.activity == MotionActivity.Unknown) {
+              places.last.places.add(where);
+              places.last.activity = MotionActivity.Still;
+              places.last.placeRecords += 1;
+            } else {
+              Set<String> newPlaces = Set.from(places.last.places);
+              newPlaces.add(where);
+              places.add(
+                Slice(
+                  id: 0,
+                  minutes: 0,
+                  startTime: currentDate,
+                  places: newPlaces,
+                  activity: MotionActivity.Still,
+                  placeRecords: 1,
+                ),
+              );
+            }
           } else {
             places.last.placeRecords += 1;
           }

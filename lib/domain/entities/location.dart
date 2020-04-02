@@ -1,7 +1,14 @@
+enum Event {
+  On,
+  Off,
+  Geofence,
+  MotionChange,
+}
+
 class Location {
   String uuid;
-  String event;
-  String timestamp;
+  Event event;
+  DateTime dateTime;
   bool isMoving;
   bool sample;
   bool mock;
@@ -18,7 +25,7 @@ class Location {
       this.isMoving,
       this.sample,
       this.uuid,
-      this.timestamp,
+//      this.timestamp,
       this.odometer,
       this.mock,
       this.coords,
@@ -28,12 +35,45 @@ class Location {
       this.provider,
       this.geofence});
 
+  Event eventFromString(String event) {
+    switch (event) {
+      case 'ON':
+        return Event.On;
+      case 'OFF':
+        return Event.Off;
+      case 'motionchange':
+        return Event.MotionChange;
+      case 'geofence':
+        return Event.Geofence;
+      default:
+        return null;
+    }
+  }
+
+  String eventToString(Event event) {
+    switch (event) {
+      case Event.On:
+        return 'ON';
+      case Event.Off:
+        return 'OFF';
+      case Event.MotionChange:
+        return 'motionchange';
+      case Event.Geofence:
+        return 'geofence';
+      default:
+        return null;
+    }
+  }
+
   Location.fromJson(Map<String, dynamic> json) {
-    event = json['event'] ?? '';
+    event = eventFromString(json['event']);
     isMoving = json['is_moving'];
     isMoving = json['sample'];
     uuid = json['uuid'];
-    timestamp = json['timestamp'];
+//    timestamp = json['timestamp'];
+    dateTime = json['timestamp'] != null
+        ? DateTime.parse(json['timestamp']).toLocal()
+        : null;
     odometer = json['odometer']?.toDouble();
     mock = json['mock'];
     coords = json['coords'] != null
@@ -59,11 +99,12 @@ class Location {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['event'] = this.event;
+    data['event'] = eventToString(this.event);
     data['is_moving'] = this.isMoving;
     data['sample'] = this.sample;
     data['uuid'] = this.uuid;
-    data['timestamp'] = this.timestamp;
+//    data['timestamp'] = this.timestamp;
+    data['timestamp'] = this.dateTime.toUtc().toIso8601String();
     data['odometer'] = this.odometer;
     data['mock'] = this.mock;
     data['coords'] = this.coords?.toJson();

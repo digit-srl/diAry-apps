@@ -87,8 +87,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 
     state = LocationState(location);
 
-    final date =
-        DateTime.tryParse(location.timestamp).toLocal().withoutMinAndSec();
+    final date = location.dateTime.withoutMinAndSec();
 
     //aggiorno la map
     if (!locationsPerDate.containsKey(date)) {
