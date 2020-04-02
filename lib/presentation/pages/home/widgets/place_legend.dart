@@ -54,6 +54,7 @@ class PlaceLegend extends StatelessWidget {
                 PlaceRowLegend(
                   title: place.name,
                   isHome: place.isHome,
+                  enabled: place.enabled,
                   pinColor: Color(place.color),
                   location:
                       'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
@@ -107,15 +108,17 @@ class PlaceRowLegend extends StatelessWidget {
   final Color pinColor;
   final Function onRemove;
   final bool isHome;
+  final bool enabled;
 
-  const PlaceRowLegend(
-      {Key key,
-      this.title,
-      this.pinColor,
-      this.location,
-      this.onRemove,
-      this.isHome = false})
-      : super(key: key);
+  const PlaceRowLegend({
+    Key key,
+    this.title,
+    this.pinColor,
+    this.location,
+    this.onRemove,
+    this.isHome = false,
+    this.enabled,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +159,13 @@ class PlaceRowLegend extends StatelessWidget {
                   ),
                 ),
               ),
+              enabled ?? false
+                  ? Icon(
+                      Icons.remove_red_eye,
+                      color: pinColor,
+                      size: 30,
+                    )
+                  : Container(),
             ],
           ),
         ),
