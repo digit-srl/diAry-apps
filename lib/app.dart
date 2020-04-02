@@ -1,3 +1,4 @@
+import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/infrastructure/user_repository.dart';
@@ -87,6 +88,9 @@ class _MyDayAppState extends State<MyDayApp> {
         StateNotifierProvider<RootElevationNotifier, ElevationState>(
           create: (_) => RootElevationNotifier(),
         ),
+        StateNotifierProvider<CurrentRootPageNotifier, CurrentRootPageState>(
+          create: (_) => CurrentRootPageNotifier(),
+        ),
       ],
       child: MaterialApp(
 //        locale: DevicePreview.of(context).locale, // <--- Add the locale
@@ -109,20 +113,19 @@ class _MyDayAppState extends State<MyDayApp> {
             valueIndicatorColor: accentColor,
           ),
         ),
-        home: WillPopScope(
-          onWillPop: () {
-            // todo final wasOpened = dialerKey.currentState.close();
-            // todo print(wasOpened);
-            // todo return Future.value(!wasOpened);
-            return null; // todo restore dialerKey
-          },
-          child: Scaffold(
-            body: RootPage(),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: MainFabButton(
-             // todo dialerKey: dialerKey, todo uncomment
-            ),
-          ),
+
+        // home: WillPopScope(
+        //  onWillPop: () {
+        //    final wasOpened = dialerKey.currentState.close();
+        //    print(wasOpened);
+        //    return Future.value(!wasOpened);
+        //  },
+        //  child: Scaffold(...)),
+
+        home: Scaffold(
+          body: RootPage(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          floatingActionButton: MainFabButton(/*dialerKey: dialerKey*/),
         ),
       ),
     );

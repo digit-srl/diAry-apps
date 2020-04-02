@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
@@ -259,7 +260,8 @@ class DailyStats extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                height: _chartSize.height + 16, // compensa il padding naturale del grafico
+                height: _chartSize.height +
+                    16, // compensa il padding naturale del grafico
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
@@ -267,7 +269,7 @@ class DailyStats extends StatelessWidget {
                       alignment: Alignment.center,
                       child: AnimatedCircularChart(
                         key: GlobalKey(),
-                        size:  _chartSize,
+                        size: _chartSize,
                         initialChartData: data,
                         edgeStyle: SegmentEdgeStyle.flat,
                         chartType: CircularChartType.Radial,
@@ -286,8 +288,8 @@ class DailyStats extends StatelessWidget {
                       bottom: 16,
                       right: (MediaQuery.of(context).size.width / 2) -
                           (_chartSize.width / 2)
-                          //- 16
-                        ,
+                      //- 16
+                      ,
                       child: IconButton(
                           icon: Icon(Icons.help_outline, color: Colors.black12),
                           /*Text(
@@ -303,6 +305,7 @@ class DailyStats extends StatelessWidget {
                   ],
                 ),
               ),
+              // todo change on click
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // 20
                 child: IntrinsicHeight(
@@ -312,33 +315,47 @@ class DailyStats extends StatelessWidget {
 //                  fit: FlexFit.loose,
                         child: Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'Campionamenti',
-                                maxLines: 1,
-                                style: secondaryStyle,
+                          child: ButtonTheme(
+                            minWidth: double.infinity,
+                            child: FlatButton(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(16.0),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(Icons.place),
-                                    SizedBox(
-                                      width: 4,
+                              onPressed: () {
+                                context
+                                    .read<CurrentRootPageNotifier>()
+                                    .changePage(1);
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    'Campionamenti',
+                                    maxLines: 1,
+                                    style: secondaryStyle,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Icon(Icons.place),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          day.pointCount.toString(),
+                                          style: numberStyle,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      day.pointCount.toString(),
-                                      style: numberStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -348,34 +365,48 @@ class DailyStats extends StatelessWidget {
                       Flexible(
                         child: Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text('Segnalazioni',
-                                  maxLines: 1, style: secondaryStyle),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.bookmark_border,
-                                      size: 25,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text(
-                                      (day?.annotations?.length ?? 0)
-                                          .toString(),
-                                      textAlign: TextAlign.center,
-                                      style: numberStyle,
-                                    ),
-                                  ],
-                                ),
+                          child: ButtonTheme(
+                            minWidth: double.infinity,
+                            child: FlatButton(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(16.0),
                               ),
-                            ],
+                              onPressed: () {
+                                context
+                                    .read<CurrentRootPageNotifier>()
+                                    .changePage(2);
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text('Segnalazioni',
+                                      maxLines: 1, style: secondaryStyle),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.bookmark_border,
+                                          size: 25,
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          (day?.annotations?.length ?? 0)
+                                              .toString(),
+                                          textAlign: TextAlign.center,
+                                          style: numberStyle,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),

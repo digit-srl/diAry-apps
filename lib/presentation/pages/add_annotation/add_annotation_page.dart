@@ -100,7 +100,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                           ),
                         ),
                         filled: true,
-                        fillColor: Colors.black12,
+                          fillColor: Colors.black12,
                         hintText:
                             "Che episodio desideri segnalare? Descrivilo in questo box.",
                       ),
