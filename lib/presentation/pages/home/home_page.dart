@@ -1,5 +1,6 @@
 import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -68,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               ActivationCard(),
               BetaCard(),
               // WomCard(),
-//              PlaceLegend(),
+              MyPlacesCard(),
               SizedBox(
                 height: 16,
               ),

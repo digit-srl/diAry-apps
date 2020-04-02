@@ -1,22 +1,31 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
+import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-class PlaceLegend extends StatelessWidget {
+class MyPlacesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateNotifierBuilder<GeofenceState>(
         stateNotifier: context.watch<GeofenceNotifier>(),
         builder: (BuildContext context, value, Widget child) {
-          if (value.geofences.isEmpty) {
+          Set<Place> places;
+          places = Hive.box<Place>('places')
+                .values
+                .where((place) => place.enabled == true)
+                .toSet();
+
+          if (places.isEmpty) {
             return Container();
           }
+
           return Card(
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             elevation: 2,
@@ -33,7 +42,7 @@ class PlaceLegend extends StatelessWidget {
                       maxLines: 1,
                       style: titleCardStyle),
 
-                  AutoSizeText("Vengono qua visualizzati tutti i luoghi che hai deciso di memorizzare.",
+                  AutoSizeText("Vengono qua visualizzati tutti i luoghi che hai aggiunto alla mappa.",
                       textAlign: TextAlign.start,
                       maxLines: 2,
                       style: secondaryStyle),
@@ -42,18 +51,19 @@ class PlaceLegend extends StatelessWidget {
                     height: 8,
                   ),
 
-                  for (ColoredGeofence coloredGeofence in value.geofences)
+                  for (Place place in places)
                     PlaceRowLegend(
-                      title: coloredGeofence.geofence.identifier,
-                      pinColor: coloredGeofence.color,
-
-                      geoRadius: "Raggio: " +  coloredGeofence.geofence.radius.toInt().toString() + " metri",
-                      location: 'Lat: ${coloredGeofence.geofence.latitude.toStringAsFixed(2)} Long: ${coloredGeofence.geofence.longitude.toStringAsFixed(2)}',
-
-                      lastLine: coloredGeofence == value.geofences.last,
+                      title: place.name,
+                      isHome: place.isHome,
+                      pinColor: Color(place.color),
+                      geoRadius: "Raggio: " +
+                          place.radius.toInt().toString() +
+                          " metri",
+                      lastLine: place == places.last,
+                      location:
+                      'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
                       onRemove: () {
-                        PlaceUtils.removePlace(
-                            context, coloredGeofence.geofence.identifier);
+                        PlaceUtils.removePlace(context, place.identifier);
                       },
                     ),
                 ],
@@ -103,15 +113,17 @@ class PlaceRowLegend extends StatelessWidget {
   final Color pinColor;
   final Function onRemove;
   final bool lastLine;
+  final bool isHome;
 
   const PlaceRowLegend(
       {Key key,
-      this.title,
-      this.pinColor,
-      this.location,
-      this.geoRadius,
-      this.onRemove,
-      this.lastLine})
+        this.title,
+        this.pinColor,
+        this.location,
+        this.geoRadius,
+        this.onRemove,
+        this.lastLine,
+        this.isHome = false})
       : super(key: key);
 
   @override
@@ -119,8 +131,7 @@ class PlaceRowLegend extends StatelessWidget {
     return Column(
       children: <Widget>[
         Container(
-//            color: Colors.green,
-          padding: const EdgeInsets.fromLTRB(0,16, 0, 16),
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
@@ -133,7 +144,7 @@ class PlaceRowLegend extends StatelessWidget {
                 ),
                 child: Center(
                   child: Icon(
-                    Icons.place,
+                    isHome ? Icons.home : Icons.place,
                     color: Colors.white,
                     size: 24,
                   ),
@@ -146,7 +157,6 @@ class PlaceRowLegend extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-//                          color: Colors.grey,
                         child: AutoSizeText(
                           title,
                           maxLines: 1,
@@ -154,10 +164,8 @@ class PlaceRowLegend extends StatelessWidget {
                         ),
                       ),
                       Container(
-//                          color: Colors.blue,
                         child: AutoSizeText(
-                          //location,
-                          geoRadius,
+                          geoRadius, // location,
                           maxLines: 1,
                           style: secondaryStyle,
                         ),
@@ -166,18 +174,18 @@ class PlaceRowLegend extends StatelessWidget {
                   ),
                 ),
               ),
+
               IconButton(
                 icon: Icon(Icons.delete),
                 color: accentColor,
                 onPressed: onRemove,
+                tooltip: "Elimina luogo",
               ),
+
             ],
           ),
         ),
-        if (!lastLine)
-          Divider(
-            height: 1,
-          )
+        if (!lastLine) Divider(height: 1)
       ],
     );
   }

@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
+import 'package:diary/presentation/pages/home/widgets/daily_stats_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -283,18 +283,19 @@ class DailyStats extends StatelessWidget {
                     ),
                     Positioned(
 //                      alignment: Alignment.bottomCenter,
-                      bottom: 0,
+                      bottom: 16,
                       right: (MediaQuery.of(context).size.width / 2) -
-                          (_chartSize.width / 2) -
-                          16,
+                          (_chartSize.width / 2)
+                          //- 16
+                        ,
                       child: IconButton(
-                          icon: Text(
+                          icon: Icon(Icons.help_outline, color: Colors.black12),
+                          /*Text(
                             '?',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 20,
-                            ),
-                          ),
+                            ),*/
                           onPressed: () {
                             _showPlaceLegend(context);
                           }),
@@ -394,7 +395,7 @@ class DailyStats extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         builder: (context) {
-          return PlaceLegend();
+          return DailyStatsLegend();
         });
     /* Alert(
       context: context,

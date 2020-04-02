@@ -10,13 +10,15 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:diary/utils/extensions.dart';
 
-class PlaceLegend extends StatelessWidget {
+class DailyStatsLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         Set<Place> places;
+        /*
+        essendo in questo modo la scheda di sola lettura, vengono mostrate tutte anche se si è nel giorno oggi
         if (value.day.date.isToday()) {
           places = Hive.box<Place>('places')
               .values
@@ -24,49 +26,94 @@ class PlaceLegend extends StatelessWidget {
               .toSet();
         } else {
           places = value.day.geofences;
-        }
-        if (places.isEmpty) {
+        }*/
+        places = value.day.geofences;
+
+        /*if (places.isEmpty) {
           return Container(
-            height: 150,
+            height: 160,
             child: Center(
                 child: Text('Non ci sono luoghi salvati per questo giorno')),
           );
-        }
+        }*/
         return Container(
-//      height: 200,
-          margin: const EdgeInsets.symmetric(vertical: 16.0),
           padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            color: Color(0xFFEFF2F7),
-          ),
+          color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-//          mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                'Luoghi',
+                'Legenda del grafico',
                 style: titleCardStyle,
               ),
-//              Text(
-//                'Descrizione',
-//                style: secondaryStyle,
-//              ),
               SizedBox(
-                height: 10,
+                height: 8,
               ),
-              for (Place place in places)
-                PlaceRowLegend(
-                  title: place.name,
-                  isHome: place.isHome,
-                  pinColor: Color(place.color),
-                  location:
-                      'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
-                  onRemove: () {
-                    PlaceUtils.removePlace(context, place.identifier);
-                  },
+              Text(
+                "L'anello più esterno del grafico mostra gli spostamenti della giornata. Il colore blu rappresenta un generico spostamento.",
+                style: secondaryStyle,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                "L'anello più interno mostra le segnalazioni piazzate durante la giornata.",
+                style: secondaryStyle,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                "L'anello centrale del grafico mostra gli i luoghi nei quali si è sostato. Nella giornata di riferimento, si è passato per i seguenti luoghi:",
+                style: secondaryStyle,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.0),
+                  color: baseCard,
                 ),
+                child: Center(
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    children: <Widget>[
+                      if (!places.isEmpty)
+                        for (Place place in places)
+                          PlaceRowDailyLegend(
+                            title: place.name,
+                            isHome: place.isHome,
+                            pinColor: Color(place.color),
+                            geoRadius: "Raggio: " +
+                                place.radius.toInt().toString() +
+                                " metri",
+                            lastLine: place == places.last,
+                            location:
+                                'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
+                            onRemove: () {
+                              PlaceUtils.removePlace(context, place.identifier);
+                            },
+                          )
+                      else
+                        Center(
+                            child: Text(
+                              "Non ci sono luoghi da visualizzare per questa giornata.",
+                              style: secondaryStyle,
+                              textAlign: TextAlign.center,
+                            ),
+                        ),
+
+                    ],
+                  ),
+                ),
+              ),
+
 //              Align(
 //                alignment: Alignment.centerRight,
 //                child: Padding(
@@ -117,19 +164,23 @@ class PlaceLegend extends StatelessWidget {
 //  }
 }
 
-class PlaceRowLegend extends StatelessWidget {
+class PlaceRowDailyLegend extends StatelessWidget {
   final String title;
   final String location;
+  final String geoRadius;
   final Color pinColor;
   final Function onRemove;
+  final bool lastLine;
   final bool isHome;
 
-  const PlaceRowLegend(
+  const PlaceRowDailyLegend(
       {Key key,
       this.title,
       this.pinColor,
       this.location,
+      this.geoRadius,
       this.onRemove,
+      this.lastLine,
       this.isHome = false})
       : super(key: key);
 
@@ -138,26 +189,32 @@ class PlaceRowLegend extends StatelessWidget {
     return Column(
       children: <Widget>[
         Container(
-//            color: Colors.green,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Icon(
-                isHome ? Icons.home : Icons.person_pin,
-                color: pinColor,
-                size: 50,
+              Container(
+                width: 48,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: pinColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(
+                    isHome ? Icons.home : Icons.place,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
               ),
               Expanded(
                 child: Container(
-//                    height: 20,
-//                    color: Colors.yellow,
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-//                          color: Colors.grey,
                         child: AutoSizeText(
                           title,
                           maxLines: 1,
@@ -165,9 +222,8 @@ class PlaceRowLegend extends StatelessWidget {
                         ),
                       ),
                       Container(
-//                          color: Colors.blue,
                         child: AutoSizeText(
-                          location,
+                          geoRadius, // location,
                           maxLines: 1,
                           style: secondaryStyle,
                         ),
@@ -176,18 +232,17 @@ class PlaceRowLegend extends StatelessWidget {
                   ),
                 ),
               ),
+              /*
               IconButton(
                 icon: Icon(Icons.delete),
                 color: accentColor,
                 onPressed: onRemove,
               ),
+              */
             ],
           ),
         ),
-        Container(
-          color: Colors.black,
-          height: 1,
-        ),
+        if (!lastLine) Divider(height: 1)
       ],
     );
   }

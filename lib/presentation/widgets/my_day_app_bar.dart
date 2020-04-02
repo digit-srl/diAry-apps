@@ -115,7 +115,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                               .changeDay(selected);
                         },
                         shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(16.0),
+                          borderRadius: new BorderRadius.circular(20.0),
                         ),
                         icon: Icon(
                           Icons.today,

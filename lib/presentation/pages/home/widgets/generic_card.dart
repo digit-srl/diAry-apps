@@ -29,7 +29,7 @@ class GenericCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.fromLTRB(16,8,16,8),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       color: enabled ? baseCard : deactivatedCard,
 
       child: Padding(
@@ -40,8 +40,8 @@ class GenericCard extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child:Padding(
+                      padding: EdgeInsets.only(right: 16, left: 8),
                     child: LayoutBuilder(
                       builder: (ctx, constraint) {
                         if (iconData != null) {
@@ -53,12 +53,13 @@ class GenericCard extends StatelessWidget {
                         }
                         return Image.asset('assets/diary_logo.png');
                       },
-                    ),
                   ),
+                    ),
                 ),
                 Flexible(
                   flex: 8,
                   child: Container(
+                    padding: EdgeInsets.only(right: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[

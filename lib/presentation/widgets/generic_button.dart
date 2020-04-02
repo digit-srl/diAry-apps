@@ -21,7 +21,7 @@ class GenericButton extends StatelessWidget {
       hoverColor: Colors.grey,
       splashColor:Colors.grey,
       shape: RoundedRectangleBorder(
-        borderRadius: new BorderRadius.circular(16.0),
+        borderRadius: new BorderRadius.circular(10.0),
       ),
       child: AutoSizeText(
         text,
@@ -32,7 +32,7 @@ class GenericButton extends StatelessWidget {
     )
 
         : FlatButton(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       onPressed: onPressed,
       hoverColor: Colors.white,
       splashColor: Colors.white,
