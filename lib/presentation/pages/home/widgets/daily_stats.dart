@@ -168,7 +168,11 @@ class DailyStats extends StatelessWidget {
                   color = Colors.grey[100];
                   break;
                 case MotionActivity.Still:
-                  color = Colors.orange;
+                  if (e.places.isEmpty) {
+                    color = Colors.grey;
+                  } else {
+                    color = Colors.orange;
+                  }
                   break;
                 default:
                   color = Colors.orange[100];
