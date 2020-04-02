@@ -226,7 +226,7 @@ class DailyStats extends StatelessWidget {
 
           for (int i = 0; i < annotationSlices.length; i++) {
             if (annotationSlices[i] == 0.0) {
-              annotationSegments.add(CircularSegmentEntry(5, Colors.black));
+              annotationSegments.add(CircularSegmentEntry(5, Colors.black87));
             } else {
               annotationSegments.add(
                   CircularSegmentEntry(annotationSlices[i], Colors.grey[100]));
@@ -259,7 +259,7 @@ class DailyStats extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                height: _chartSize.height,
+                height: _chartSize.height + 16, // compensa il padding naturale del grafico
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
@@ -267,7 +267,7 @@ class DailyStats extends StatelessWidget {
                       alignment: Alignment.center,
                       child: AnimatedCircularChart(
                         key: GlobalKey(),
-                        size: _chartSize,
+                        size:  _chartSize,
                         initialChartData: data,
                         edgeStyle: SegmentEdgeStyle.flat,
                         chartType: CircularChartType.Radial,

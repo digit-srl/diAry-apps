@@ -60,7 +60,10 @@ class _HomePageState extends State<HomePage> {
             controller: _controller,
             children: <Widget>[
               SizedBox(
-                height: MediaQuery.of(context).padding.top + 20, // top padding calcolato in relazione alla dimensione della srtatusbar (che può variare)
+                // top padding calcolato in relazione alla toolbar (non c'è
+                // bisogno di considerare la statusbar, grazie allo scaffold);
+                // -16 compensa il padding naturale del grafico
+                height: kToolbarHeight - 16,
               ),
               DailyStats(),
 
