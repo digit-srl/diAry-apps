@@ -46,6 +46,7 @@ dependencies:
   file_picker: ^1.5.1
   intl:
 
+
 dev_dependencies:
   hive_generator: ^0.7.0+2
   build_runner: ^1.8.0
@@ -96,3 +97,6 @@ flutter:
         - asset: fonts/Nunito-SemiBoldItalic.ttf
           style: italic
           weight: 600
+    - family: CustomIcons
+      fonts:
+        - asset: fonts/CustomIcons.ttf

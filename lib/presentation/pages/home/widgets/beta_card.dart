@@ -1,5 +1,6 @@
 import 'package:diary/presentation/pages/logs_page.dart';
 import 'package:diary/presentation/pages/slices_page.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -39,9 +40,9 @@ class _BetaCardState extends State<BetaCard> {
       builder: (BuildContext context, value, Widget child) {
         return GenericCard(
           enabled: true,
-          iconData: Icons.developer_mode,
+          iconData: CustomIcons.flask_outline,
           iconColor: accentColor,
-          title: 'diAry ' + version,
+          title: 'diAry ' + version + " Beta",
           description:
           'Scheda mostrata solo ai beta tester. Contiene funzioni per il test.',
           bottomButtons: <Widget>[

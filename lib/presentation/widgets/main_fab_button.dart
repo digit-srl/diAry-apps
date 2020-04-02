@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class MainFabButton extends StatelessWidget {
           backgroundColor: bgColor,
           foregroundColor: accentColor,
           mini: true,
-          child: Icon(Icons.add_location),
+          child: Icon(CustomIcons.map_marker_plus_outline),
           onPressed: () => _goToAddPlace(context),
         ),
       ),
@@ -65,9 +66,9 @@ class MainFabButton extends StatelessWidget {
           heroTag: "aggiungi segnalazione",
 //              heroTag: null,
           backgroundColor: bgColor,
-          foregroundColor: Colors.black,
+          foregroundColor: accentColor,
           mini: true,
-          child: Icon(Icons.bookmark_border),
+          child: Icon(CustomIcons.bookmark_plus_outline),
           onPressed: () => _goToAddAnnotation(context),
         ),
       ),

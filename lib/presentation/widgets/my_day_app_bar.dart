@@ -1,5 +1,6 @@
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
@@ -54,7 +55,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
               leading: (_currentPage == 0)
                   ? IconButton(
                       color: accentColor,
-                      icon: Icon(Icons.map),
+                      icon: Icon(CustomIcons.map_outline),
                       onPressed: () {
                         context.read<CurrentRootPageNotifier>().changePage(1);
                       })
@@ -110,7 +111,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                       borderRadius: new BorderRadius.circular(20.0),
                     ),
                     icon: Icon(
-                      Icons.today,
+                      CustomIcons.calendar_outline,
                       color: accentColor,
                     ),
                     label: Text(
@@ -148,7 +149,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                 if (_currentPage == 0)
                   IconButton(
                       color: accentColor,
-                      icon: Icon(Icons.collections_bookmark),
+                      icon: Icon(CustomIcons.bookmark_multiple_outline),
                       onPressed: () {
                         context.read<CurrentRootPageNotifier>().changePage(2);
                       })

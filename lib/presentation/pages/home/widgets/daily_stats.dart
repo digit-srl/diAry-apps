@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/current_root_page_notifier.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
@@ -341,7 +342,7 @@ class DailyStats extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        Icon(Icons.place),
+                                        Icon(CustomIcons.map_marker_outline),
                                         SizedBox(
                                           width: 4,
                                         ),
@@ -389,7 +390,7 @@ class DailyStats extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         Icon(
-                                          Icons.bookmark_border,
+                                          CustomIcons.bookmark_outline,
                                           size: 25,
                                         ),
                                         SizedBox(

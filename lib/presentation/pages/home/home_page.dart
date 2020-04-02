@@ -1,6 +1,7 @@
 import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -120,17 +121,22 @@ class _HomePageState extends State<HomePage> {
                     width: 8,
                   ),
                   IconButton(
-                    icon: Icon(Icons.cloud_upload),
+                    icon: Icon(CustomIcons.hospital_box_outline),
                     color: accentColor,
-                    iconSize: 28,
                     onPressed: () {},
-                    tooltip: "Coming soon!",
+                    tooltip: "Notifica sanitaria... Coming soon!",
+                  ),
+
+                  IconButton(
+                    icon: Icon(CustomIcons.cloud_upload_outline),
+                    color: accentColor,
+                    onPressed: () {},
+                    tooltip: "Condividi dati con la community... Coming soon!",
                   ),
 
                   IconButton(
                     icon: Icon(Icons.settings),
                     color: accentColor,
-                    iconSize: 28,
                     tooltip: "Impostazioni",
                     onPressed: () {
                       Navigator.push(
