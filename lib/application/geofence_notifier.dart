@@ -111,10 +111,10 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
           .updateDay(location, DateTime.now().withoutMinAndSec());
       final place = Hive.box<Place>('places').get(identifier);
       place.enabled = false;
-      place.isHome = false;
       if (place.isHome) {
         userRepo.removeHomeGeofence();
       }
+      place.isHome = false;
       place.save();
       final list = state.geofences;
       list.removeWhere((element) => element.geofence.identifier == identifier);
