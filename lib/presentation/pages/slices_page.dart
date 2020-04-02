@@ -24,7 +24,6 @@ class TabBarDemo extends StatefulWidget {
 class _TabBarDemoState extends State<TabBarDemo> {
   List<Slice> places = [];
   List<Slice> slices = [];
-//  List<Slice> onOff = [];
   DateTime date;
 
   @override
@@ -39,11 +38,6 @@ class _TabBarDemoState extends State<TabBarDemo> {
       places = List.from(day.places);
     }
     date = slices.isNotEmpty ? slices?.first?.startTime : DateTime.now();
-//    final map = Hive.box<bool>('enabled_change').toMap();
-//    map.removeWhere(
-//        (stringDate, bool) => !DateTime.parse(stringDate).isSameDay(date));
-//    onOff = LocationUtils.buildOnOffSlices(Map<String, bool>.from(map),
-//        slices: places);
   }
 
   updateSlices() async {
@@ -64,7 +58,6 @@ class _TabBarDemoState extends State<TabBarDemo> {
             tabs: [
               Tab(icon: Icon(Icons.timelapse)),
               Tab(icon: Icon(Icons.place)),
-//              Tab(icon: Icon(Icons.extension))
             ],
           ),
           title: Text('Spicchi giornalieri ${date.day}'),
@@ -91,10 +84,6 @@ class _TabBarDemoState extends State<TabBarDemo> {
               slices: places ?? widget.places,
               isPlace: true,
             ),
-//            SlicesPage(
-//              slices: onOff,
-//              isPlace: true,
-//            )
           ],
         ),
       ),
@@ -128,9 +117,6 @@ class SlicesPage extends StatelessWidget {
     }
 
     return Scaffold(
-//      appBar: AppBar(
-//        title: Text('${isPlace ? 'Luoghi' : 'Attività'}'),
-//      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: slices.isEmpty
