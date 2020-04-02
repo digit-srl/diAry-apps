@@ -14,15 +14,15 @@ class PlaceLegend extends StatelessWidget {
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        Set<Place> places;
+        Set<Place> places = {};
         if (value.day.date.isToday()) {
-          places = Hive.box<Place>('places')
+          places.addAll(Hive.box<Place>('places')
               .values
               .where((place) => place.enabled == true)
-              .toSet();
-        } else {
-          places = value.day.geofences;
+              .toSet());
         }
+        places.addAll(value.day.geofences);
+
         if (places.isEmpty) {
           return Container(
             height: 150,
@@ -47,10 +47,6 @@ class PlaceLegend extends StatelessWidget {
                 'Luoghi',
                 style: titleCardStyle,
               ),
-//              Text(
-//                'Descrizione',
-//                style: secondaryStyle,
-//              ),
               SizedBox(
                 height: 10,
               ),
@@ -65,16 +61,6 @@ class PlaceLegend extends StatelessWidget {
 //                    PlaceUtils.removePlace(context, place.identifier);
 //                  },
                 ),
-//              Align(
-//                alignment: Alignment.centerRight,
-//                child: Padding(
-//                  padding: const EdgeInsets.all(8.0),
-//                  child: GenericButton(
-//                    onPressed: () {},
-//                    text: 'AGGIUNGI LUOGO',
-//                  ),
-//                ),
-//              ),
             ],
           ),
         );
@@ -136,7 +122,6 @@ class PlaceRowLegend extends StatelessWidget {
     return Column(
       children: <Widget>[
         Container(
-//            color: Colors.green,
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.max,
@@ -148,8 +133,6 @@ class PlaceRowLegend extends StatelessWidget {
               ),
               Expanded(
                 child: Container(
-//                    height: 20,
-//                    color: Colors.yellow,
                   padding: const EdgeInsets.only(left: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +146,6 @@ class PlaceRowLegend extends StatelessWidget {
                         ),
                       ),
                       Container(
-//                          color: Colors.blue,
                         child: AutoSizeText(
                           location,
                           maxLines: 1,
@@ -174,11 +156,6 @@ class PlaceRowLegend extends StatelessWidget {
                   ),
                 ),
               ),
-//              IconButton(
-//                icon: Icon(Icons.delete),
-//                color: accentColor,
-//                onPressed: onRemove,
-//              ),
             ],
           ),
         ),

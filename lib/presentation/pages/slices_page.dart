@@ -8,7 +8,6 @@ import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart' as pro;
-import 'package:diary/utils/extensions.dart';
 
 class TabBarDemo extends StatefulWidget {
   final List<Slice> places;
