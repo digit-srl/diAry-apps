@@ -9,6 +9,7 @@ import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -41,6 +42,7 @@ class _MapPageState extends State<MapPage>
   BitmapDescriptor _currentPositionMarkerIcon;
   BitmapDescriptor _annotationPositionMarkerIcon;
   BitmapDescriptor _pinPositionMarkerIcon;
+  BitmapDescriptor _selectedPinMarkerIcon;
 
   Function removeServiceListener;
   Function removeLocationListener;
@@ -66,7 +68,7 @@ class _MapPageState extends State<MapPage>
   Set<Circle> _geofenceEventEdges = {};
   Set<Circle> _geofenceEventLocations = {};
   Set<Circle> _stationaryMarker = {};
-  Set<Circle> _selectedPin = {};
+
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId selectedMarker;
 
@@ -508,6 +510,19 @@ class _MapPageState extends State<MapPage>
               imageConfiguration, 'assets/black_circle_pin.png')
           .then(_updateBlackBitmap);
     }
+
+    if (_selectedPinMarkerIcon == null) {
+      final ImageConfiguration imageConfiguration = ImageConfiguration(
+        bundle: DefaultAssetBundle.of(context),
+        devicePixelRatio: 2.5,
+        locale: Localizations.localeOf(context, nullOk: true),
+        textDirection: Directionality.of(context),
+        platform: defaultTargetPlatform,
+      );
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/selected_pin.png')
+          .then(_updateSelectedBitmap);
+    }
   }
 
   void _updateCurrentBitmap(BitmapDescriptor bitmap) {
@@ -519,6 +534,12 @@ class _MapPageState extends State<MapPage>
   void _updateBlackBitmap(BitmapDescriptor bitmap) {
     setState(() {
       _pinPositionMarkerIcon = bitmap;
+    });
+  }
+
+  void _updateSelectedBitmap(BitmapDescriptor bitmap) {
+    setState(() {
+      _selectedPinMarkerIcon = bitmap;
     });
   }
 
@@ -656,9 +677,30 @@ class _MapPageState extends State<MapPage>
     super.dispose();
   }
 
-  _onLocationTap(Location location) {
+  _onLocationTap(Location location) async {
     print('[MapPage] _onAnnotationTap');
-    showModalBottomSheet(
+
+    final MarkerId markerId = MarkerId('${location.uuid}_tmp');
+//    final MarkerId markerId = MarkerId('${location.uuid}');
+    final Marker marker = Marker(
+      markerId: markerId,
+      icon: _selectedPinMarkerIcon,
+      anchor: Offset(0.5, 0.5),
+      position: LatLng(
+        location.coords.latitude,
+        location.coords.longitude,
+      ),
+      zIndex: 0.4,
+    );
+    markers.removeWhere((k, m) => k.value == location.uuid);
+//    markers[markerId] =
+//        markers[markerId].copyWith(iconParam: _selectedPinMarkerIcon);
+
+    setState(() {
+      markers[markerId] = marker;
+    });
+
+    await showModalBottomSheet(
       context: context,
       builder: (context) {
         return Padding(
@@ -769,6 +811,10 @@ class _MapPageState extends State<MapPage>
         );
       },
     );
+    markers.removeWhere((k, v) => k.value == '${location.uuid}_tmp');
+//    markers[markerId] =
+//        markers[markerId].copyWith(iconParam: _pinPositionMarkerIcon);
+    setState(() {});
   }
 
   _onAnnotationTap(Annotation annotation) {

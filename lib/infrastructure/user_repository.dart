@@ -40,8 +40,6 @@ class UserRepositoryImpl extends UserRepository {
   @override
   String getHomeGeofenceIdentifier() {
     print('[UserRepositoryImpl] getHomeGeofenceIdentifier()');
-    final result = userBox.get(homeGeofenceKey) as String;
-    print(result);
-    return result;
+    return userBox.get(homeGeofenceKey);
   }
 }
