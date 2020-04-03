@@ -1,3 +1,5 @@
+import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -6,6 +8,7 @@ import '../slices_page.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
 import 'widgets/gps_card.dart';
+import 'package:provider/provider.dart';
 
 class MyBehavior extends ScrollBehavior {
   @override
@@ -70,7 +73,10 @@ class HomePage extends StatelessWidget {
                             width: 25,
                           ),
                           Text(
-                            '-',
+                            context.select((DayState value) =>
+                                value?.day?.wom != null
+                                    ? value.day.wom.toString()
+                                    : '-'),
                             style: TextStyle(fontSize: 20),
                           )
                         ],

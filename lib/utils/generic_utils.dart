@@ -1,5 +1,9 @@
+import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:diary/domain/entities/slice.dart';
+import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class GenericUtils {
@@ -95,5 +99,46 @@ class GenericUtils {
     final min = list[1];
     if (min == 0) return '$hour h';
     return '$hour h : $min m';
+  }
+
+  static int getWomCountForThisDay(List<Slice> places) {
+    int offMinutes = 0;
+//    final places = state.day.places;
+
+    final offSlices = places?.where((p) => p.activity == MotionActivity.Off);
+    if (offSlices.isNotEmpty) {
+      offMinutes = offSlices
+          ?.map((slice) => slice.minutes)
+          ?.reduce((curr, next) => curr + next);
+    }
+
+    print('[DayNotifier] offMinutes : $offMinutes');
+
+    final homeIdentifier = Hive.box('user').get(homeGeofenceKey);
+
+    int homeMinutes = 0;
+    if (homeIdentifier != null) {
+      final homeSlices = places.where((p) => p.places.contains(homeIdentifier));
+      if (homeSlices.isNotEmpty) {
+        homeMinutes = homeSlices
+            .map((slice) => slice.minutes)
+            .reduce((curr, next) => curr + next);
+      }
+    }
+    final onMinutes = 1440 - offMinutes;
+
+    int onWom = (onMinutes / 60.0).ceil();
+    int homeWom = (homeMinutes / 60.0).ceil();
+    int wom = onWom;
+    if (homeWom > 12) {
+      int tmp = homeWom - 12;
+      tmp *= 2;
+      wom = onWom + tmp;
+    }
+
+    print(
+        '[DayNotifier] homeMinutes : $homeMinutes, offMinutes $offMinutes, onMinutes: $onMinutes. WOM $wom');
+
+    return wom;
   }
 }

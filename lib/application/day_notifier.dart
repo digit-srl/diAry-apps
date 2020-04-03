@@ -3,6 +3,10 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:diary/domain/entities/slice.dart';
+import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:state_notifier/state_notifier.dart';
 
@@ -35,9 +39,6 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
   void update(T Function<T>() watch) {
     final AnnotationState annotationState = watch<AnnotationState>();
     manageAnnotation(annotationState);
-//    final annotation = watch<AnnotationNotifier>();
-//    print('[DayNotifier] update');
-//    print(annotation.annotations.length);
   }
 
   changeDay(DateTime selectedDate) {

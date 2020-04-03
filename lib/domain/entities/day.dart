@@ -1,6 +1,7 @@
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/place.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:hive/hive.dart';
 
 import 'slice.dart';
@@ -11,16 +12,20 @@ class Day {
   final List<Slice> slices;
   final List<Slice> places;
   final List<Annotation> annotations;
+  int wom;
 
 //  final List<Location> notes;
   final pointCount;
 
-  Day(
-      {this.annotations = const [],
-      @required this.date,
-      this.slices = const [],
-      this.places = const [],
-      this.pointCount = 0});
+  Day({
+    this.annotations = const [],
+    @required this.date,
+    this.slices = const [],
+    this.places = const [],
+    this.pointCount = 0,
+  }) {
+    wom = GenericUtils.getWomCountForThisDay(places);
+  }
 
   List<double> get annotationSlices {
     final list = <double>[];
@@ -38,13 +43,18 @@ class Day {
     return list;
   }
 
-  copyWith(List<Slice> slices, List<Slice> places, [int newPoints = 0]) {
+  copyWith(
+    List<Slice> slices,
+    List<Slice> places, [
+    int newPoints = 0,
+  ]) {
     return Day(
-        date: this.date,
-        slices: slices ?? this.slices,
-        places: places ?? this.places,
-        annotations: this.annotations,
-        pointCount: this.pointCount + newPoints);
+      date: this.date,
+      slices: slices ?? this.slices,
+      places: places ?? this.places,
+      annotations: this.annotations,
+      pointCount: this.pointCount + newPoints,
+    );
   }
 
   Set<Place> get geofences {
@@ -71,11 +81,12 @@ class Day {
     }
 
     return Day(
-        date: this.date,
-        slices: this.slices,
-        places: this.places,
-        annotations: list,
-        pointCount: this.pointCount);
+      date: this.date,
+      slices: this.slices,
+      places: this.places,
+      annotations: list,
+      pointCount: this.pointCount,
+    );
   }
 
   @override

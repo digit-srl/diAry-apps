@@ -45,14 +45,15 @@ class LocationUtils {
     for (DateTime key in locationsPerDay.keys) {
       final tmp = aggregateLocationsInSlices3(locationsPerDay[key]);
       days[key] = Day(
-          date: key,
-          slices: tmp[0],
-          places: tmp[1],
-          annotations: Hive.box<Annotation>('annotations')
-              .values
-              .where((annotation) => annotation.dateTime.isSameDay(key))
-              .toList(),
-          pointCount: locationsPerDay[key].length);
+        date: key,
+        slices: tmp[0],
+        places: tmp[1],
+        annotations: Hive.box<Annotation>('annotations')
+            .values
+            .where((annotation) => annotation.dateTime.isSameDay(key))
+            .toList(),
+        pointCount: locationsPerDay[key].length,
+      );
     }
     return days;
   }
