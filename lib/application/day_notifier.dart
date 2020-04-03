@@ -1,3 +1,4 @@
+import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
@@ -23,7 +24,7 @@ class DayState {
 }
 
 class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
-  final Map<DateTime, Day> days;
+  Map<DateTime, Day> days;
   static DateTime openAppDate = DateTime.now().withoutMinAndSec();
 
   DayNotifier(this.days)
@@ -34,6 +35,20 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
       read<DateNotifier>().changeSelectedDate(selectedDate);
       state = DayState(days[selectedDate]);
     }
+  }
+
+  void processAllLocations() async {
+    final Map<DateTime, List<Location>> locationsPerDate =
+        await LocationUtils.readAndFilterLocationsPerDay();
+    final newDays =
+        LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
+
+    final today = DateTime.now().withoutMinAndSec();
+    if (!newDays.containsKey(today)) {
+      newDays[today] = Day(date: today);
+    }
+    this.days = newDays;
+    state = DayState(days[read<DateNotifier>().selectedDate]);
   }
 
   void updateDay(Location location, DateTime date) {

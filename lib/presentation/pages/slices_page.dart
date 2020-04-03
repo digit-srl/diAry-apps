@@ -165,8 +165,8 @@ class SlicesPage extends StatelessWidget {
     if (isPlace) {
       Set<String> list = {};
       slice.places.forEach((identifier) {
-//        list.add(identifier);
-        list.add(Hive.box<Place>('places').get(identifier).name);
+        list.add(identifier);
+//        list.add(Hive.box<Place>('places').get(identifier).name);
       });
       return list.toString();
     }

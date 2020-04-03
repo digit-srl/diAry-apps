@@ -35,6 +35,13 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   }
 
   List<DateTime> get dates => locationsPerDate.keys.toList();
+  List<Location> get locations {
+    final list = [];
+    locationsPerDate.keys.forEach((key) {
+      list.addAll(locationsPerDate[key]);
+    });
+    return list;
+  }
 
   List<Location> get getCurrentDayLocations {
     final selectedDay = read<DateNotifier>().selectedDate;

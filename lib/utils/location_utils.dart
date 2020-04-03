@@ -430,7 +430,7 @@ class LocationUtils {
     final currentDay = locations.first.dateTime;
 
     final List<Slice> slices = [];
-    final List<Slice> places = [];
+    List<Slice> places = [];
 
     Action lastAction = Action.Unknown;
     bool isFirstGeofence = true;
@@ -448,7 +448,10 @@ class LocationUtils {
         ? partialDayPlaces.last.startTime.toMinutes() +
             partialDayPlaces.last.minutes
         : 0;
-
+    final maxAccuracy =
+        Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
+    final postProcessingEnabled =
+        Hive.box('user').get('postProcessing', defaultValue: true);
     bool waitingOn = false;
 
     for (int i = 0; i < locations.length; i++) {
@@ -459,7 +462,7 @@ class LocationUtils {
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
-      if (loc.coords.accuracy < 1000) {
+      if (loc.coords.accuracy < maxAccuracy) {
         int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
 
         final event = loc.event;
@@ -488,6 +491,7 @@ class LocationUtils {
             ),
           );
         } else if (event == Event.Off) {
+          //TODO controllare che places non sia vuoto o spostare casistica if (places.isEmpty) qui
           places.last.minutes += partialPlaceMinutes;
           if (places.last.activity != MotionActivity.Off) {
             places.add(
@@ -675,57 +679,67 @@ class LocationUtils {
       if (currentDay.isToday()) {
         final nowMinutes = DateTime.now().toMinutes();
         final currentPartialTime = nowMinutes - cumulativePlacesMinutes;
-        places.last.minutes += currentPartialTime;
+        DateTime startTime;
+        if (places.isNotEmpty) {
+          places.last.minutes += currentPartialTime;
+          startTime = places.last.endTime;
+        }
         cumulativePlacesMinutes += currentPartialTime;
         places.add(
           Slice(
             id: 0,
             minutes: maxMinutes - cumulativePlacesMinutes,
-            startTime: places.last.endTime,
+            startTime: startTime ?? DateTime.now(),
             activity: MotionActivity.Unknown,
             places: {},
           ),
         );
       } else {
-        places.last.minutes = maxMinutes - cumulativePlacesMinutes;
+        if (places.isNotEmpty) {
+          places.last.minutes += maxMinutes - cumulativePlacesMinutes;
+        }
       }
       cumulativePlacesMinutes += maxMinutes - cumulativePlacesMinutes;
     }
 
     if (cumulativeMinutes < maxMinutes) {
       if (currentDay.isToday()) {
+        DateTime startTime = slices.last.endTime;
         slices.add(
           Slice(
             id: 0,
             minutes: maxMinutes - cumulativeMinutes,
             activity: MotionActivity.Unknown,
-            startTime: slices.last.endTime,
+            startTime: startTime ?? DateTime.now(),
           ),
         );
       } else {
-        slices.last.minutes = maxMinutes - cumulativeMinutes;
+        if (slices.isNotEmpty) {
+          slices.last.minutes += maxMinutes - cumulativeMinutes;
+        }
       }
       cumulativeMinutes += maxMinutes - cumulativeMinutes;
     }
 
     print('cumulative minutes complete = $cumulativeMinutes');
 
-    places.removeWhere((p) =>
-        p.minutes == 0 &&
-        p.activity == MotionActivity.Still &&
-        p.places.isEmpty);
+    if (postProcessingEnabled) {
+      places.removeWhere((p) =>
+          p.minutes == 0 &&
+          p.activity == MotionActivity.Still &&
+          p.places.isEmpty);
 
-    places.forEach((p) {
-      if (p.activity == MotionActivity.Still &&
-          p.minutes < 2 &&
-          p.places.isEmpty) {
-        p.activity = MotionActivity.Walking;
-      }
-    });
+      places.forEach((p) {
+        if (p.activity == MotionActivity.Still &&
+            p.minutes < 2 &&
+            p.places.isEmpty) {
+          p.activity = MotionActivity.Walking;
+        }
+      });
 
-    final newPlaces = reduceWalking(places);
-
-    return [slices, newPlaces];
+      places = reduceWalking(places);
+    }
+    return [slices, places];
   }
 
 //  static List<List<Slice>> aggregateLocationsInSlices2(
