@@ -32,4 +32,6 @@ class CustomIcons {
   static const IconData cog_outline = IconData(0xe809, fontFamily: _kFontFam);
   static const IconData crosshairs_off = IconData(0xe80a, fontFamily: _kFontFam);
   static const IconData hospital_box_outline = IconData(0xe80b, fontFamily: _kFontFam);
+  static const IconData home_outline = IconData(0xe80c, fontFamily: _kFontFam);
+  static const IconData trash_can_outline = IconData(0xe80d, fontFamily: _kFontFam);
 }

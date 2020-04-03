@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
@@ -144,7 +145,7 @@ class PlaceRowLegend extends StatelessWidget {
                 ),
                 child: Center(
                   child: Icon(
-                    isHome ? Icons.home : Icons.place,
+                    isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
                     color: Colors.white,
                     size: 24,
                   ),
@@ -176,7 +177,7 @@ class PlaceRowLegend extends StatelessWidget {
               ),
 
               IconButton(
-                icon: Icon(Icons.delete),
+                icon: Icon(CustomIcons.trash_can_outline),
                 color: accentColor,
                 onPressed: onRemove,
                 tooltip: "Elimina luogo",
