@@ -66,6 +66,7 @@ class _MapPageState extends State<MapPage>
   Set<Circle> _geofenceEventEdges = {};
   Set<Circle> _geofenceEventLocations = {};
   Set<Circle> _stationaryMarker = {};
+  Set<Circle> _selectedPin = {};
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId selectedMarker;
 
@@ -441,7 +442,6 @@ class _MapPageState extends State<MapPage>
         annotation.latitude,
         annotation.longitude,
       ),
-      anchor: Offset(0.0, 1.0),
       zIndex: 0.2,
     );
 //    final Marker marker = Marker(
@@ -630,7 +630,6 @@ class _MapPageState extends State<MapPage>
             annotation.latitude,
             annotation.longitude,
           ),
-          anchor: Offset(0.0, 1.0),
           zIndex: 0.2,
         );
         markers[markerId] = marker;
@@ -791,9 +790,12 @@ class _MapPageState extends State<MapPage>
                           'assets/annotation_pin.png',
                           width: 30,
                         )),
-                    Text(
-                      annotation.title,
-                      style: TextStyle(fontSize: 30),
+                    Expanded(
+                      child: AutoSizeText(
+                        annotation.title,
+                        maxLines: 3,
+                        style: TextStyle(fontSize: 30),
+                      ),
                     ),
 //                    coloredGeofence.isHome
 //                        ? Padding(

@@ -131,28 +131,28 @@ class SlicesPage extends StatelessWidget {
                             ? Colors.red
                             : null,
                         child: ListTile(
-                            leading: Text(slice.placeRecords.toString()),
-                            title: Row(
-                              children: <Widget>[
-                                Text(
-                                  getText(slice),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22),
-                                ),
-                                Text('  ->  '),
-                                Text(slice.formattedMinutes),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(slice.activity
-                                    .toString()
-                                    .replaceFirst('MotionActivity.', '')),
-                                Text(slice.startTime.toString()),
-                              ],
-                            )),
+                          leading: Text(slice.placeRecords.toString()),
+                          title: Row(
+                            children: <Widget>[
+                              Text(
+                                getText(slice),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 22),
+                              ),
+                              Text('  ->  '),
+                              Text(slice.formattedMinutes),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(slice.activity
+                                  .toString()
+                                  .replaceFirst('MotionActivity.', '')),
+                              Text(slice.startTime.toString()),
+                            ],
+                          ),
+                        ),
                       ),
                     )
                     .toList(),
