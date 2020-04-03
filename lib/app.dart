@@ -1,5 +1,6 @@
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
+import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
 import 'package:unicorndial/unicorndial.dart';
+import 'application/annotation_notifier.dart';
 import 'application/app_provider.dart';
 import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
@@ -55,6 +57,10 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         Provider<UserRepositoryImpl>.value(
           value: userRepository,
+        ),
+        StateNotifierProvider<AnnotationNotifier, AnnotationState>(
+          create: (_) => AnnotationNotifier(
+              Hive.box<Annotation>('annotations').values.toList()),
         ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),

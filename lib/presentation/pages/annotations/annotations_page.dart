@@ -1,6 +1,8 @@
+import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -9,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:diary/utils/extensions.dart';
+import 'package:provider/provider.dart';
 
 class AnnotationsPage extends StatefulWidget {
   @override
@@ -32,35 +35,6 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
         child: StateNotifierBuilder<DateState>(
           stateNotifier: context.watch<DateNotifier>(),
           builder: (BuildContext context, dateState, Widget child) {
-/*           final day =
-            Provider.of<LocationNotifier>(context, listen: false).getDay();
-
-
-            if (day.annotations.isEmpty) {
-              return Center(
-                child: Text('Nessuna annotazione'),
-              );
-            }
-            return ListView.separated(
-              itemCount: day.annotations.length,
-              itemBuilder: (context, index) {
-                final annotation = day.annotations[index];
-                return ListTile(
-                    title: Text(
-                      annotation.title,
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    leading: Icon(Icons.bookmark_border),
-                    subtitle: Text(
-                      'Ore: ${format.format(annotation.dateTime)}',
-                      style: TextStyle(color: secondaryText),
-                    ));
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return Divider();
-              },
-            );
-            */
             return ValueListenableBuilder(
               valueListenable: Hive.box<Annotation>('annotations').listenable(),
               builder:
@@ -79,15 +53,29 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                   itemBuilder: (context, index) {
                     final annotation = annotations[index];
                     return ListTile(
-                        title: Text(
-                          annotation.title,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        leading: Icon(Icons.bookmark_border),
-                        subtitle: Text(
-                          'Ore: ${format.format(annotation.dateTime)}',
-                          style: TextStyle(color: secondaryText),
-                        ));
+                      title: Text(
+                        annotation.title,
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(Icons.bookmark_border),
+                      trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Colors.black,
+                          onPressed: () {
+                            GenericUtils.ask(context,
+                                'Sicuro di volere eliminare questa annotazione?',
+                                () {
+                              context
+                                  .read<AnnotationNotifier>()
+                                  .removeAnnotation(annotation);
+                              Navigator.of(context).pop();
+                            }, () {});
+                          }),
+                      subtitle: Text(
+                        'Ore: ${format.format(annotation.dateTime)}',
+                        style: TextStyle(color: secondaryText),
+                      ),
+                    );
                   },
                   separatorBuilder: (BuildContext context, int index) {
                     return Divider();

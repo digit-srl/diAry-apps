@@ -302,18 +302,18 @@ class DailyStats extends StatelessWidget {
                             _showPlaceLegend(context);
                           }),
                     ),
-                    Positioned(
-//                      alignment: Alignment.bottomCenter,
-                      bottom: 0,
-                      left: (MediaQuery.of(context).size.width / 2) -
-                          (_chartSize.width / 2) -
-                          16,
-                      child: IconButton(
-                          icon: Icon(Icons.settings),
-                          onPressed: () {
-                            _showAggregationSettings(context);
-                          }),
-                    ),
+//                    Positioned(
+////                      alignment: Alignment.bottomCenter,
+//                      bottom: 0,
+//                      left: (MediaQuery.of(context).size.width / 2) -
+//                          (_chartSize.width / 2) -
+//                          16,
+//                      child: IconButton(
+//                          icon: Icon(Icons.settings),
+//                          onPressed: () {
+//                            _showAggregationSettings(context);
+//                          }),
+//                    ),
                   ],
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:hive/hive.dart';
@@ -61,9 +62,14 @@ class Day {
     return list;
   }
 
-  copyWithNewAnnotation(Annotation annotation) {
+  copyWithAnnotationAction(Annotation annotation, AnnotationAction action) {
     final list = List<Annotation>.from(annotations);
-    list.add(annotation);
+    if (action == AnnotationAction.Added) {
+      list.add(annotation);
+    } else if (action == AnnotationAction.Removed) {
+      list.removeWhere((a) => a.id == annotation.id);
+    }
+
     return Day(
         date: this.date,
         slices: this.slices,

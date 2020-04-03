@@ -1,3 +1,4 @@
+import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/day.dart';
@@ -29,6 +30,15 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
 
   DayNotifier(this.days)
       : super(DayState(days[DateTime.now().withoutMinAndSec()]));
+
+  @override
+  void update(T Function<T>() watch) {
+    final AnnotationState annotationState = watch<AnnotationState>();
+    manageAnnotation(annotationState);
+//    final annotation = watch<AnnotationNotifier>();
+//    print('[DayNotifier] update');
+//    print(annotation.annotations.length);
+  }
 
   changeDay(DateTime selectedDate) {
     if (state.day.date != selectedDate) {
@@ -77,11 +87,15 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     }
   }
 
-  void addAnnotation(Annotation annotation) {
-    final date = annotation.dateTime.withoutMinAndSec();
-    days[date] = days[date].copyWithNewAnnotation(annotation);
-    if (state.day.date.isSameDay(annotation.dateTime)) {
-      state = DayState(days[date]);
+  void manageAnnotation(AnnotationState annotationState) {
+    print('[DayNotifier] addAnnotation() $annotationState');
+    if (annotationState != null) {
+      final date = annotationState.annotation.dateTime.withoutMinAndSec();
+      days[date] = days[date].copyWithAnnotationAction(
+          annotationState.annotation, annotationState.action);
+      if (state.day.date.isSameDay(annotationState.annotation.dateTime)) {
+        state = DayState(days[date]);
+      }
     }
   }
 }

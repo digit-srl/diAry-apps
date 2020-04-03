@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
@@ -194,7 +195,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   _addAnnotation() async {
-    final box = Hive.box<Annotation>('annotations');
+//    final box = Hive.box<Annotation>('annotations');
     final annotation = Annotation(
       id: newLocation.uuid,
       dateTime: DateTime.tryParse(newLocation.timestamp).toLocal(),
@@ -202,9 +203,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       latitude: newLocation.coords.latitude,
       longitude: newLocation.coords.longitude,
     );
-    Provider.of<DayNotifier>(context, listen: false).addAnnotation(annotation);
-    final result = await box.add(annotation);
-    print('[AddAnnotationPage] add annotation $result');
+    context.read<AnnotationNotifier>().addAnnotation(annotation);
+//    final result = await box.add(annotation);
+    print('[AddAnnotationPage] add annotation');
     Navigator.of(context).pop();
   }
 
