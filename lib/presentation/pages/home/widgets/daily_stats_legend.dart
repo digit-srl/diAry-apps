@@ -73,19 +73,19 @@ class DailyStatsLegend extends StatelessWidget {
               SizedBox(
                 height: 16,
               ),
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.0),
-                  color: baseCard,
-                ),
-                child: Center(
+              if (places.isNotEmpty)
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    color: baseCard,
+                  ),
                   child: ListView(
                     shrinkWrap: true,
                     physics: AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     children: <Widget>[
-                      if (!places.isEmpty)
+                      if (places.isNotEmpty)
                         for (Place place in places)
                           PlaceRowDailyLegend(
                             title: place.name,
@@ -101,68 +101,33 @@ class DailyStatsLegend extends StatelessWidget {
                               PlaceUtils.removePlace(context, place.identifier);
                             },
                           )
-                      else
-                        Center(
-                            child: Text(
-                              "Non ci sono luoghi da visualizzare per questa giornata.",
-                              style: secondaryStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                        ),
-
                     ],
                   ),
+                )
+              else
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    color: baseCard,
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        "Non ci sono luoghi da visualizzare per questa giornata.",
+                        style: secondaryStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-
-//              Align(
-//                alignment: Alignment.centerRight,
-//                child: Padding(
-//                  padding: const EdgeInsets.all(8.0),
-//                  child: GenericButton(
-//                    onPressed: () {},
-//                    text: 'AGGIUNGI LUOGO',
-//                  ),
-//                ),
-//              ),
             ],
           ),
         );
       },
     );
   }
-
-//  _onRemove(BuildContext context, String identifier) {
-//    final homeIdentifier =
-//        Provider.of<UserRepositoryImpl>(context, listen: false)
-//            .getHomeGeofenceIdentifier();
-//    showPlatformDialog(
-//      context: context,
-//      builder: (_) => BasicDialogAlert(
-//        title: Text("Sicuro di voler cancellare questo luogo?"),
-//        actions: <Widget>[
-//          BasicDialogAction(
-//            title: Text("Si"),
-//            onPressed: () {
-//              Provider.of<GeofenceNotifier>(context, listen: false)
-//                  .removeGeofence(identifier);
-//              if (identifier == homeIdentifier) {
-//                Provider.of<UserRepositoryImpl>(context, listen: false)
-//                    .removeHomeGeofence();
-//              }
-//              Navigator.pop(context);
-//            },
-//          ),
-//          BasicDialogAction(
-//            title: Text("No"),
-//            onPressed: () {
-//              Navigator.pop(context);
-//            },
-//          ),
-//        ],
-//      ),
-//    );
-//  }
 }
 
 class PlaceRowDailyLegend extends StatelessWidget {
@@ -203,7 +168,9 @@ class PlaceRowDailyLegend extends StatelessWidget {
                 ),
                 child: Center(
                   child: Icon(
-                    isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
+                    isHome
+                        ? CustomIcons.home_outline
+                        : CustomIcons.map_marker_outline,
                     color: Colors.white,
                     size: 24,
                   ),

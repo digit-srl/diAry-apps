@@ -4,7 +4,6 @@ import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats_legend.dart';
 import 'package:flutter/material.dart';
@@ -300,12 +299,15 @@ class DailyStats extends StatelessWidget {
                       ,
                       child: IconButton(
                           icon: Icon(Icons.help_outline, color: Colors.black12),
-                          /*Text(
+                          /*
+                          Text(
                             '?',
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 20,
-                            ),*/
+                            ),
+                          ),
+                          */
                           onPressed: () {
                             _showPlaceLegend(context);
                           }),
@@ -314,8 +316,9 @@ class DailyStats extends StatelessWidget {
 ////                      alignment: Alignment.bottomCenter,
 //                      bottom: 0,
 //                      left: (MediaQuery.of(context).size.width / 2) -
-//                          (_chartSize.width / 2) -
-//                          16,
+//                          (_chartSize.width / 2)
+//                          // - 16,
+//                          ,
 //                      child: IconButton(
 //                          icon: Icon(Icons.settings),
 //                          onPressed: () {
@@ -325,7 +328,6 @@ class DailyStats extends StatelessWidget {
                   ],
                 ),
               ),
-              // todo change on click
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // 20
                 child: IntrinsicHeight(

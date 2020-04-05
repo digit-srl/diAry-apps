@@ -206,7 +206,7 @@ class _MapPageState extends State<MapPage>
         context: context,
         builder: (context) {
           return Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -595,7 +595,7 @@ class _MapPageState extends State<MapPage>
         initialCameraPosition: _initialPosition ?? _kGooglePlex,
         mapToolbarEnabled: false,
         myLocationButtonEnabled: false,
-//        myLocationEnabled: true,
+//       myLocationEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
           _loadInitialDailyMarkers();
@@ -706,7 +706,7 @@ class _MapPageState extends State<MapPage>
       context: context,
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -825,7 +825,7 @@ class _MapPageState extends State<MapPage>
         context: context,
         builder: (context) {
           return Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,

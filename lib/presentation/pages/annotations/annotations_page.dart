@@ -4,6 +4,7 @@ import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
+import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
@@ -78,14 +79,16 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                   itemBuilder: (context, index) {
                     final annotation = annotations[index];
                     return ListTile(
+                      contentPadding: EdgeInsets.all(16),
                       title: Text(
                         annotation.title,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       leading: Icon(Icons.bookmark_border),
+                      onTap: () {},
                       trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Colors.black,
+                          icon: Icon(CustomIcons.trash_can_outline),
+                          color: accentColor,
                           onPressed: () {
                             GenericUtils.ask(context,
                                 'Sicuro di volere eliminare questa annotazione?',

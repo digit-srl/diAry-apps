@@ -109,14 +109,17 @@ class _HomePageState extends State<HomePage> {
                         children: <Widget>[
                           Image.asset(
                             'assets/wom_pin.png',
-                            width: 25,
+                            width: 16,
+                          ),
+                          SizedBox(
+                            width: 8,
                           ),
                           Text(
                             context.select((DayState value) =>
                                 value?.day?.wom != null
                                     ? value.day.wom.toString()
                                     : '-'),
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 20, color: accentColor),
                           )
                         ],
                       ),
