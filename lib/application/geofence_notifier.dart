@@ -1,14 +1,17 @@
 import 'dart:ui' show Color;
 
+import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart' show Colors;
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:uuid/uuid.dart';
+import 'package:diary/utils/extensions.dart';
 
 class GeofenceState {
   final List<ColoredGeofence> geofences;
@@ -101,13 +104,18 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
   void removeGeofence(String identifier) async {
     final deleted = await bg.BackgroundGeolocation.removeGeofence(identifier);
     if (deleted) {
+      final location = await LocationUtils.insertExitFromGeofenceOnDb(
+          identifier, DateTime.now(), 0.0, 0.0, 0.0);
+      //TODO usare data della lcocation
+      read<DayNotifier>()
+          .updateDay(location, DateTime.now().withoutMinAndSec());
       final place = Hive.box<Place>('places').get(identifier);
       place.enabled = false;
-      place.isHome = false;
-      place.save();
       if (place.isHome) {
         userRepo.removeHomeGeofence();
       }
+      place.isHome = false;
+      place.save();
       final list = state.geofences;
       list.removeWhere((element) => element.geofence.identifier == identifier);
       state = GeofenceState(list);

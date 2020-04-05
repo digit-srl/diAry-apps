@@ -1,8 +1,13 @@
-import 'package:diary/application/service_notifier.dart';
+import 'package:diary/application/annotation_notifier.dart';
+import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/day.dart';
+import 'package:diary/domain/entities/location.dart';
+import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:diary/domain/entities/slice.dart';
+import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import 'package:intl/intl.dart';
@@ -24,11 +29,17 @@ class DayState {
 }
 
 class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
-  final Map<DateTime, Day> days;
+  Map<DateTime, Day> days;
   static DateTime openAppDate = DateTime.now().withoutMinAndSec();
 
   DayNotifier(this.days)
       : super(DayState(days[DateTime.now().withoutMinAndSec()]));
+
+  @override
+  void update(T Function<T>() watch) {
+    final AnnotationState annotationState = watch<AnnotationState>();
+    manageAnnotation(annotationState);
+  }
 
   changeDay(DateTime selectedDate) {
     if (state.day.date != selectedDate) {
@@ -37,19 +48,28 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     }
   }
 
-  updateDay(Location location, DateTime date) {
+  void processAllLocations() async {
+    final Map<DateTime, List<Location>> locationsPerDate =
+        await LocationUtils.readAndFilterLocationsPerDay();
+    final newDays =
+        LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
+
+    final today = DateTime.now().withoutMinAndSec();
+    if (!newDays.containsKey(today)) {
+      newDays[today] = Day(date: today);
+    }
+    this.days = newDays;
+    state = DayState(days[read<DateNotifier>().selectedDate]);
+  }
+
+  void updateDay(Location location, DateTime date) {
     if (!days.containsKey(date)) {
       days[date] = Day(date: date);
     }
-    final partialOnOff = read<ServiceNotifier>().onOff;
-//        Map<String, bool>.from(Hive.box<bool>('enabled_change').toMap());
-    partialOnOff.removeWhere((key, value) =>
-        DateTime.parse(key).isAfter(DateTime.tryParse(location.timestamp)));
     final partialSlices = days[date]?.slices ?? [];
     final partialPlaces = days[date]?.places ?? [];
-    final newSlices = LocationUtils.aggregateLocationsInSlices(
+    final newSlices = LocationUtils.aggregateLocationsInSlices3(
       [location],
-      box: partialOnOff,
       partialDaySlices: date.isSameDay(openAppDate) && partialSlices.isNotEmpty
           ? partialSlices.sublist(0, partialSlices.length - 1)
           : partialSlices,
@@ -68,11 +88,15 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     }
   }
 
-  void addAnnotation(Annotation annotation) {
-    final date = annotation.dateTime.withoutMinAndSec();
-    days[date] = days[date].copyWithNewAnnotation(annotation);
-    if (state.day.date.isSameDay(annotation.dateTime)) {
-      state = DayState(days[date]);
+  void manageAnnotation(AnnotationState annotationState) {
+    print('[DayNotifier] addAnnotation() $annotationState');
+    if (annotationState != null) {
+      final date = annotationState.annotation.dateTime.withoutMinAndSec();
+      days[date] = days[date].copyWithAnnotationAction(
+          annotationState.annotation, annotationState.action);
+      if (state.day.date.isSameDay(annotationState.annotation.dateTime)) {
+        state = DayState(days[date]);
+      }
     }
   }
 }

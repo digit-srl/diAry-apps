@@ -1,6 +1,7 @@
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
+import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
@@ -10,22 +11,22 @@ import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
 import 'package:unicorndial/unicorndial.dart';
+import 'application/annotation_notifier.dart';
 import 'application/app_provider.dart';
 import 'application/geofence_notifier.dart';
 import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
+import 'domain/entities/location.dart';
 import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg show Location;
 
 import 'domain/entities/day.dart';
 
 class MyDayApp extends StatefulWidget {
-  final Map<DateTime, List<bg.Location>> locationsPerDate;
+  final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
 
   const MyDayApp({Key key, this.locationsPerDate, this.days}) : super(key: key);
@@ -36,6 +37,7 @@ class MyDayApp extends StatefulWidget {
 
 class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
+//  DayNotifier dayNotifier;
   UserRepository userRepository;
   // todo final GlobalKey<UnicornDialerState> dialerKey =
   // todo GlobalKey<UnicornDialerState>(debugLabel: 'prova');
@@ -44,6 +46,7 @@ class _MyDayAppState extends State<MyDayApp> {
     super.initState();
     userRepository = UserRepositoryImpl(Hive.box('user'));
     serviceNotifier = ServiceNotifier();
+//    dayNotifier = DayNotifier(widget.days);
   }
 
   @override
@@ -57,19 +60,23 @@ class _MyDayAppState extends State<MyDayApp> {
         Provider<UserRepositoryImpl>.value(
           value: userRepository,
         ),
+        StateNotifierProvider<AnnotationNotifier, AnnotationState>(
+          create: (_) => AnnotationNotifier(
+              Hive.box<Annotation>('annotations').values.toList()),
+        ),
         StateNotifierProvider<DateNotifier, DateState>(
           create: (_) => DateNotifier(),
         ),
-        StateNotifierProvider.value(
-          value: serviceNotifier,
-        ),
         StateNotifierProvider<DayNotifier, DayState>(
           create: (_) => DayNotifier(widget.days),
+          lazy: false,
+        ),
+        StateNotifierProvider<ServiceNotifier, ServiceState>.value(
+          value: serviceNotifier,
         ),
         StateNotifierProvider<LocationNotifier, LocationState>(
           create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
         ),
-
         StateNotifierProvider<MotionActivityNotifier, MotionActivityState>(
           create: (_) => MotionActivityNotifier(),
         ),
@@ -134,6 +141,7 @@ class _MyDayAppState extends State<MyDayApp> {
   @override
   void dispose() {
     serviceNotifier.dispose();
+//    dayNotifier.dispose();
     super.dispose();
   }
 }

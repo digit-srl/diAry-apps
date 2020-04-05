@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/day.dart';
+import 'package:diary/domain/entities/location.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -10,7 +11,7 @@ import 'day_notifier.dart';
 
 class LocationState {
 //  final List<bg.Location> liveLocations;
-  final bg.Location newLocation;
+  final Location newLocation;
 
 //  final Map<DateTime, Day> _days;
 
@@ -20,7 +21,7 @@ class LocationState {
 }
 
 class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
-  final Map<DateTime, List<bg.Location>> locationsPerDate;
+  final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
 
 //  List<bg.Location> liveLocations = [];
@@ -34,8 +35,15 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   }
 
   List<DateTime> get dates => locationsPerDate.keys.toList();
+  List<Location> get locations {
+    final list = [];
+    locationsPerDate.keys.forEach((key) {
+      list.addAll(locationsPerDate[key]);
+    });
+    return list;
+  }
 
-  List<bg.Location> get getCurrentDayLocations {
+  List<Location> get getCurrentDayLocations {
     final selectedDay = read<DateNotifier>().selectedDate;
     final locations = locationsPerDate[selectedDay];
 //    if (locations == null) {
@@ -81,13 +89,24 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //    return days[selectedDate];
 //  }
 
-  void addLocation(bg.Location location) {
+  @override
+  void initState() {
+    print('[LocationNotifier] initState');
+    super.initState();
+  }
+
+  @override
+  void update(T Function<T>() watch) {
+    print('[LocationNotifier] update');
+    super.update(watch);
+  }
+
+  void addLocation(Location location) {
     print('[LocationNotifier] total live locations: $location');
 
     state = LocationState(location);
 
-    final date =
-        DateTime.tryParse(location.timestamp).toLocal().withoutMinAndSec();
+    final date = location.dateTime.withoutMinAndSec();
 
     //aggiorno la map
     if (!locationsPerDate.containsKey(date)) {
@@ -122,11 +141,16 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //  }
 
   void _onLocation(bg.Location location) {
-    Hive.box<String>('logs').add('[onLocation] $location');
-    print('[LocationNotifier] _onLocation()');
-    if (location.sample) return;
-    print('[LocationNotifier] true loction');
-    addLocation(location);
+    try {
+      Hive.box<String>('logs').add('[onLocation] $location');
+      print('[LocationNotifier] _onLocation()');
+      if (location?.sample ?? false) return;
+      print('[LocationNotifier] true loction');
+      final loc = Location.fromJson(Map<String, dynamic>.from(location.map));
+      addLocation(loc);
+    } catch (ex) {
+      Hive.box<String>('logs').add('[ERROR onLocation] $ex');
+    }
   }
 
   void _onLocationError(bg.LocationError error) {

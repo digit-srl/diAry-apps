@@ -1,3 +1,4 @@
+import 'package:diary/domain/entities/location.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -20,18 +21,24 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
   }
 
   void _onGeofence(bg.GeofenceEvent geofenceEvent) {
-    Hive.box<String>('logs').add('[onGeofence] $geofenceEvent');
-    final location = bg.Location(geofenceEvent.location.map);
-    final event = bg.GeofenceEvent({
-      'identifier': geofenceEvent.identifier,
-      'action': geofenceEvent.action,
-      'extras': geofenceEvent.extras,
-    });
-    location.geofence = event;
-    print('[GeofenceEventNotifier] location $location');
-    if (location != null) {
-      read<LocationNotifier>().addLocation(location);
+    try {
+      Hive.box<String>('logs').add('[onGeofence] $geofenceEvent');
+      final location = Location.fromJson(
+          Map<String, dynamic>.from(geofenceEvent.location.map));
+      final event = Geofence.fromJson({
+        'identifier': geofenceEvent.identifier,
+        'action': geofenceEvent.action,
+        'extras': geofenceEvent.extras,
+      });
+      location.geofence = event;
+      print('[Geofence Location] location $location');
+      if (location != null) {
+        read<LocationNotifier>().addLocation(location);
+      }
+      state = GeofenceEventState(geofenceEvent);
+    } catch (ex) {
+      Hive.box<String>('logs').add(
+          '[ERROR onGeofence] $ex, ${geofenceEvent ?? 'errore lettura GeofenceEvent'}');
     }
-    state = GeofenceEventState(geofenceEvent);
   }
 }

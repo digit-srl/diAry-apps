@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'domain/entities/annotation.dart';
 import 'domain/entities/day.dart';
+import 'domain/entities/location.dart';
 import 'domain/entities/place.dart';
 
 void main() async {
@@ -82,14 +83,10 @@ void main() async {
   await Hive.openBox<String>('logs');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
-  await Hive.openBox<Place>('places');
-  await Hive.openBox<bool>('enabled_change');
-//  await box.clear();
-//  box.put(DateTime(2020, 3, 29, 11, 40).toIso8601String(), true);
-//  box.put(DateTime(2020, 3, 29, 16, 10).toIso8601String(), false);
-//  box.put(DateTime(2020, 3, 29, 16, 50).toIso8601String(), true);
-  final Map<DateTime, List<bg.Location>> locationsPerDate =
-  await LocationUtils.readAndFilterLocationsPerDay();
+  final box = await Hive.openBox<Place>('places');
+  box.values.forEach(print);
+  final Map<DateTime, List<Location>> locationsPerDate =
+      await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
 
   final today = DateTime.now().withoutMinAndSec();

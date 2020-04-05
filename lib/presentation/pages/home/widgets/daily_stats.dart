@@ -4,6 +4,8 @@ import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
+import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
@@ -14,6 +16,8 @@ import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
+import 'package:state_notifier/state_notifier.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 
 class DailyStats extends StatelessWidget {
   final DateFormat dateFormat = DateFormat('HH:mm');
@@ -172,7 +176,11 @@ class DailyStats extends StatelessWidget {
                   color = Colors.grey[100];
                   break;
                 case MotionActivity.Still:
-                  color = Colors.orange;
+                  if (e.places.isEmpty) {
+                    color = Colors.grey;
+                  } else {
+                    color = Colors.orange;
+                  }
                   break;
                 default:
                   color = Colors.orange[100];
@@ -225,10 +233,9 @@ class DailyStats extends StatelessWidget {
 //        print(annotationSlices);
 //        print(annotationSlices.reduce((value, element) => value + element));
 //        day.notes.forEach((element) => print(element.dateTime));
-
           for (int i = 0; i < annotationSlices.length; i++) {
             if (annotationSlices[i] == 0.0) {
-              annotationSegments.add(CircularSegmentEntry(5, Colors.black87));
+              annotationSegments.add(CircularSegmentEntry(5, Colors.black));
             } else {
               annotationSegments.add(
                   CircularSegmentEntry(annotationSlices[i], Colors.grey[100]));
@@ -303,6 +310,18 @@ class DailyStats extends StatelessWidget {
                             _showPlaceLegend(context);
                           }),
                     ),
+//                    Positioned(
+////                      alignment: Alignment.bottomCenter,
+//                      bottom: 0,
+//                      left: (MediaQuery.of(context).size.width / 2) -
+//                          (_chartSize.width / 2) -
+//                          16,
+//                      child: IconButton(
+//                          icon: Icon(Icons.settings),
+//                          onPressed: () {
+//                            _showAggregationSettings(context);
+//                          }),
+//                    ),
                   ],
                 ),
               ),
@@ -454,4 +473,89 @@ class DailyStats extends StatelessWidget {
       ],
     ).show();*/
   }
+
+  void _showAggregationSettings(BuildContext context) {
+    final accuracy =
+        Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
+    final postProcessingEnabled =
+        Hive.box('user').get('postProcessing', defaultValue: true);
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        useRootNavigator: true,
+        builder: (BuildContext context) {
+          return AggregationSettings(
+            accuracy: accuracy,
+          );
+        });
+  }
 }
+
+class AggregationSettings extends StatefulWidget {
+  final int accuracy;
+  const AggregationSettings({Key key, this.accuracy}) : super(key: key);
+  @override
+  _AggregationSettingsState createState() => _AggregationSettingsState();
+}
+
+class _AggregationSettingsState extends State<AggregationSettings> {
+  TextEditingController accuracy = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    accuracy = TextEditingController(text: widget.accuracy.toString());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+          top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            title: Text('Filtro accuratezza'),
+            trailing: Container(
+              width: 80,
+              alignment: Alignment.center,
+              child: TextField(
+                controller: accuracy,
+                keyboardType: TextInputType.number,
+                onSubmitted: (text) {
+                  int value = int.tryParse(text);
+                  Hive.box('user').put('aggregationAccuracy', value);
+                },
+                decoration: InputDecoration(border: OutlineInputBorder()),
+              ),
+            ),
+          ),
+          ListTile(
+            title: Text('Post Processing'),
+            trailing: Container(
+                width: 80,
+                alignment: Alignment.center,
+                child: Switch(
+                    value: Hive.box('user')
+                        .get('postProcessing', defaultValue: true),
+                    onChanged: (value) {
+                      Hive.box('user').put('postProcessing', value);
+                      setState(() {});
+                    })),
+          ),
+          GenericButton(
+            text: 'Ricalcola',
+            onPressed: () {
+              context.read<DayNotifier>().processAllLocations();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+//Hive.box('user')
+//.get('aggregationAccuracy', defaultValue: 1000),

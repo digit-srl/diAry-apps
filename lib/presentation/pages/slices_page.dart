@@ -1,18 +1,18 @@
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
+import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart' as pro;
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 
 class TabBarDemo extends StatefulWidget {
   final List<Slice> places;
   final List<Slice> slices;
-  final List<bg.Location> locations;
+  final List<Location> locations;
 
   const TabBarDemo({Key key, this.places, this.slices, this.locations})
       : super(key: key);
@@ -41,9 +41,11 @@ class _TabBarDemoState extends State<TabBarDemo> {
   }
 
   updateSlices() async {
-//    final output = LocationUtils.aggregateLocationsInSlices(widget.locations, );
-//    slices = output[0];
-//    places = output[1];
+    final output = LocationUtils.aggregateLocationsInSlices3(
+      widget.locations,
+    );
+    slices = output[0];
+    places = output[1];
   }
 
   @override
@@ -65,8 +67,8 @@ class _TabBarDemoState extends State<TabBarDemo> {
                   widget.locations != null ? Icons.update : Icons.file_upload),
               color: Colors.black,
               onPressed: widget.locations != null
-                  ? () {
-                      updateSlices();
+                  ? () async {
+                      await updateSlices();
                       setState(() {});
                     }
                   : _importJson,
@@ -115,9 +117,6 @@ class SlicesPage extends StatelessWidget {
     }
 
     return Scaffold(
-//      appBar: AppBar(
-//        title: Text('${isPlace ? 'Luoghi' : 'Attività'}'),
-//      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: slices.isEmpty
@@ -132,28 +131,28 @@ class SlicesPage extends StatelessWidget {
                             ? Colors.red
                             : null,
                         child: ListTile(
-                            leading: Text(slice.placeRecords.toString()),
-                            title: Row(
-                              children: <Widget>[
-                                Text(
-                                  getText(slice),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22),
-                                ),
-                                Text('  ->  '),
-                                Text(slice.formattedMinutes),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(slice.activity
-                                    .toString()
-                                    .replaceFirst('MotionActivity.', '')),
-                                Text(slice.startTime.toString()),
-                              ],
-                            )),
+                          leading: Text(slice.placeRecords.toString()),
+                          title: Row(
+                            children: <Widget>[
+                              Text(
+                                getText(slice),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 22),
+                              ),
+                              Text('  ->  '),
+                              Text(slice.formattedMinutes),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(slice.activity
+                                  .toString()
+                                  .replaceFirst('MotionActivity.', '')),
+                              Text(slice.startTime.toString()),
+                            ],
+                          ),
+                        ),
                       ),
                     )
                     .toList(),
@@ -166,6 +165,7 @@ class SlicesPage extends StatelessWidget {
     if (isPlace) {
       Set<String> list = {};
       slice.places.forEach((identifier) {
+//        list.add(identifier);
         list.add(Hive.box<Place>('places').get(identifier).name);
       });
       return list.toString();

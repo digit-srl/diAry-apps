@@ -18,4 +18,6 @@ extension ExtensionDateTime on DateTime {
     return DateTime(year ?? this.year, month ?? this.month, day ?? this.day,
         hour ?? this.hour, minute ?? this.minute, second ?? this.second);
   }
+
+  int toMinutes() => this.hour * 60 + this.minute;
 }

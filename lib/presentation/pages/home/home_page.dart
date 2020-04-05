@@ -2,6 +2,8 @@ import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
 import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
@@ -110,7 +112,10 @@ class _HomePageState extends State<HomePage> {
                             width: 25,
                           ),
                           Text(
-                            '-',
+                            context.select((DayState value) =>
+                                value?.day?.wom != null
+                                    ? value.day.wom.toString()
+                                    : '-'),
                             style: TextStyle(fontSize: 20),
                           )
                         ],

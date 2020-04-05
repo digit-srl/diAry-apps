@@ -9,13 +9,9 @@ class ServiceState {
 }
 
 class ServiceNotifier extends StateNotifier<ServiceState> with LocatorMixin {
-  Map<String, bool> onOff = {};
   ServiceNotifier() : super(ServiceState(false));
 
-  setEnabled(bool enabled, {String dateTime}) async {
-    if (dateTime != null) {
-      onOff[dateTime] = enabled;
-    }
+  setEnabled(bool enabled) async {
     if (state.isEnabled != enabled) {
       state = ServiceState(enabled);
     }
