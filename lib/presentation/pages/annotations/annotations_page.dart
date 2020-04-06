@@ -84,7 +84,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                         annotation.title,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                      leading: Icon(Icons.bookmark_border),
+                      leading: Icon(Icons.bookmark_border, color: secondaryText,),
                       onTap: () {},
                       trailing: IconButton(
                           icon: Icon(CustomIcons.trash_can_outline),

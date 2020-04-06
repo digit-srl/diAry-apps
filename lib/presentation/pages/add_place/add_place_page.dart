@@ -241,7 +241,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
             markers: markers,
             circles: circles,
           ),
-          if (newLocation == null)
+          if (newLocation == null || error != null)
             Container(
               color: Colors.black.withOpacity(0.5),
               padding: const EdgeInsets.all(16),
@@ -263,31 +263,33 @@ class _AddPlacePageState extends State<AddPlacePage> {
                 ],
               ),
             ),
-          Positioned(
-            child: Container(
-              height: 40.0,
-              width: 40.0,
+
+          if (error != null)
+            Positioned(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
-                  ],
-                ),
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(Icons.gps_fixed),
-                    iconSize: 16,
-                    color: accentColor,
-                    onPressed: getCurrentLocationAndUpdateMap,
+                height: 40.0,
+                width: 40.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: Colors.black26, blurRadius: 4),
+                    ],
+                  ),
+                  child: Center(
+                    child: IconButton(
+                      icon: Icon(Icons.gps_fixed),
+                      iconSize: 16,
+                      color: accentColor,
+                      onPressed: getCurrentLocationAndUpdateMap,
+                    ),
                   ),
                 ),
               ),
+              top: 42,
+              right: 25,
             ),
-            top: 42,
-            right: 25,
-          ),
         ],
       ),
     );

@@ -298,7 +298,7 @@ class DailyStats extends StatelessWidget {
                       //- 16
                       ,
                       child: IconButton(
-                          icon: Icon(Icons.help_outline, color: Colors.black12),
+                          icon: Icon(Icons.help_outline, color: secondaryText),
                           /*
                           Text(
                             '?',
