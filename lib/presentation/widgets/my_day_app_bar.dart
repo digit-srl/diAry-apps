@@ -1,5 +1,6 @@
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/colors.dart';
@@ -10,8 +11,6 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 
 class MyDayAppBar extends StatefulWidget {
   const MyDayAppBar({Key key}) : super(key: key);
@@ -158,7 +157,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                       color: accentColor,
                       icon: Icon(Icons.gps_fixed),
                       onPressed: () {
-                        getCurrentLoc();
+                        context.read<GpsNotifier>().getCurrentLoc(() {}, () {});
                       })
                 else if (_currentPage == 2)
                   IconButton(
@@ -169,13 +168,5 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 
       ),
     );
-  }
-
-  getCurrentLoc() {
-    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
-      print('[getCurrentPosition] - $location');
-    }, (error) {
-      print('[getCurrentPosition] ERROR: $error');
-    });
   }
 }

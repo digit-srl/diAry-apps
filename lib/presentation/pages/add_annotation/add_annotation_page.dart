@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
-import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+
+import '../../../main.dart';
 
 class AddAnnotationPage extends StatefulWidget {
   final LatLng location;
@@ -29,7 +29,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   ThemeData themeData = ThemeData(primaryColor: accentColor);
   Circle place;
-  BitmapDescriptor _currentPositionMarkerIcon;
+//  BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
   //final GlobalKey _key = GlobalKey();
@@ -50,7 +50,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     super.initState();
     selectedDate =
         Provider.of<DateNotifier>(context, listen: false).selectedDate;
-    getCurrentLocationAndUpdateMap();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCurrentLocationAndUpdateMap();
+    });
   }
 
   @override
@@ -62,7 +64,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   @override
   Widget build(BuildContext context) {
-    _createMarkerImageFromAsset(context);
+//    _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -162,6 +164,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               ),
             ),
 
+          if (error != null)
           Positioned(
             child: Container(
               height: 40.0,
@@ -207,30 +210,14 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     Navigator.of(context).pop();
   }
 
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_currentPositionMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/annotation_pin.png')
-          .then(_updateCurrentBitmap);
-    }
-  }
-
-  void _updateCurrentBitmap(BitmapDescriptor bitmap) {
-    setState(() {
-      _currentPositionMarkerIcon = bitmap;
-    });
-  }
-
   void getCurrentLocationAndUpdateMap() {
-    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
+    context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
       newLocation = location;
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      //WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           _canSave = annotationEditingController.text.trim().length >= 3 && newLocation != null;
         });
@@ -245,7 +232,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     markers.add(
       Marker(
         markerId: MarkerId('current'),
-        icon: _currentPositionMarkerIcon,
+        icon: currentPositionMarkerIcon,
         position: location,
       ),
     );

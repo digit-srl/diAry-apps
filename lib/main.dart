@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:diary/utils/location_utils.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'app.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
 as bg;
@@ -13,6 +14,11 @@ import 'domain/entities/annotation.dart';
 import 'domain/entities/day.dart';
 import 'domain/entities/location.dart';
 import 'domain/entities/place.dart';
+
+BitmapDescriptor currentPositionMarkerIcon;
+BitmapDescriptor annotationPositionMarkerIcon;
+BitmapDescriptor pinPositionMarkerIcon;
+BitmapDescriptor selectedPinMarkerIcon;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

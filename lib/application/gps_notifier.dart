@@ -9,12 +9,12 @@ import 'service_notifier.dart';
 
 class GpsState {
   final bool gpsEnabled;
-
-  GpsState(this.gpsEnabled);
+  final bool manualPositionDetection;
+  GpsState(this.gpsEnabled, this.manualPositionDetection);
 }
 
 class GpsNotifier extends StateNotifier<GpsState> with LocatorMixin {
-  GpsNotifier() : super(GpsState(false)) {
+  GpsNotifier() : super(GpsState(false, false)) {
     bg.BackgroundGeolocation.onEnabledChange(_onEnabledChange);
     bg.BackgroundGeolocation.providerState.then((bg.ProviderChangeEvent event) {
       _onProviderChange(event);
@@ -33,7 +33,20 @@ class GpsNotifier extends StateNotifier<GpsState> with LocatorMixin {
   _onProviderChange(bg.ProviderChangeEvent event) {
     Hive.box<String>('logs').add('[onProviderChange] $event');
     if (state.gpsEnabled != event.gps) {
-      state = GpsState(event.gps);
+      state = GpsState(event.gps, false);
     }
+  }
+
+  getCurrentLoc(Function onDone, Function onError) {
+    state = GpsState(state.gpsEnabled, true);
+    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
+      print('[getCurrentPosition] - $location');
+      onDone(location);
+      state = GpsState(state.gpsEnabled, false);
+    }, (error) {
+      print('[getCurrentPosition] ERROR: $error');
+      onError(error);
+      state = GpsState(state.gpsEnabled, false);
+    });
   }
 }

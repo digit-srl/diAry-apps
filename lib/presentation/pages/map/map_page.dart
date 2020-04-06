@@ -10,6 +10,7 @@ import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -22,6 +23,7 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
 import 'package:provider/provider.dart';
+import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
@@ -42,10 +44,6 @@ class _MapPageState extends State<MapPage>
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
-  BitmapDescriptor _currentPositionMarkerIcon;
-  BitmapDescriptor _annotationPositionMarkerIcon;
-  BitmapDescriptor _pinPositionMarkerIcon;
-  BitmapDescriptor _selectedPinMarkerIcon;
 
   Function removeServiceListener;
   Function removeLocationListener;
@@ -128,7 +126,7 @@ class _MapPageState extends State<MapPage>
     removeAnnotationListener = context.read<AnnotationNotifier>().addListener(
       (state) {
         print('[MapPage] AnnotationNotifier');
-        if (state != null) {
+        if (state != null && _currentDate.isToday()) {
           _onAnnotation(state);
         }
       },
@@ -171,7 +169,6 @@ class _MapPageState extends State<MapPage>
     removeDateListener = Provider.of<DateNotifier>(context).addListener(
       (state) {
         print('[MapPage] DateNotifier');
-
         if (_currentDate != state.selectedDate) {
           _currentDate = state.selectedDate;
           _loadInitialDailyMarkers();
@@ -190,21 +187,10 @@ class _MapPageState extends State<MapPage>
       return;
     }
     addMarker(location);
-//    circles.add(
-//      Circle(
-//          circleId: CircleId(location.uuid),
-//          center: ll,
-//          fillColor: Colors.black,
-//          radius: 2),
-//    );
-//    setState(() {
-//      updateAllCircles();
-//    });
   }
 
   void _onGeofenceTap(ColoredGeofence coloredGeofence) {
     print('[MapPage] _onGeofenceTap');
-//    final color = Color(coloredGeofence.color);
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -334,62 +320,12 @@ class _MapPageState extends State<MapPage>
       return;
     }
 
-//    bg.Geofence geofence = marker.geofence;
-//
-//    // Render a new greyed-out geofence CircleMarker to show it's been fired but only if it hasn't been drawn yet.
-//    // since we can have multiple hits on the same geofence.  No point re-drawing the same hit circle twice.
-//    GeofenceMarker eventMarker = _geofenceEvents.firstWhere(
-//        (GeofenceMarker marker) =>
-//            marker.geofence.identifier == event.identifier,
-//        orElse: () => null);
-//    if (eventMarker == null)
-//      _geofenceEvents.add(GeofenceMarker(geofence, true));
-//
-//    // Build geofence hit statistic markers:
-//    // 1.  A computed CircleMarker upon the edge of the geofence circle (red=exit, green=enter)
-//    // 2.  A CircleMarker for the actual location of the geofence event.
-//    // 3.  A black PolyLine joining the two above.
     bg.Location location = event.location;
-//    LatLng center = new LatLng(geofence.latitude, geofence.longitude);
     LatLng hit =
         new LatLng(location.coords.latitude, location.coords.longitude);
 
     // Update current position marker.
     _updateCurrentPositionMarker(hit);
-
-//    // Determine bearing from center -> event location
-//    double bearing = Geospatial.getBearing(center, hit);
-//    // Compute a coordinate at the intersection of the line joining center point -> event location and the circle.
-//    LatLng edge =
-//        Geospatial.computeOffsetCoordinate(center, geofence.radius, bearing);
-    // Green for ENTER, Red for EXIT.
-//    Color color = Colors.green;
-//    if (event.action == "EXIT") {
-//      color = Colors.red;
-//    } else if (event.action == "DWELL") {
-//      color = Colors.yellow;
-//    }
-
-//    _geofenceEventEdges.add(
-//      Circle(
-//          circleId: CircleId(Random().nextInt(1000).toString()),
-//          center: edge,
-//          fillColor: color,
-//          radius: 4,
-//          strokeWidth: 1),
-//    );
-//
-//    // Event location CircleMarker (background: black, stroke doesn't work so stack 2 circles)
-//    _geofenceEventLocations.add(
-//      Circle(
-//          circleId: CircleId(Random().nextInt(1000).toString()),
-//          center: edge,
-//          strokeColor: Colors.black,
-//          fillColor: Colors.blue,
-//          radius: 4,
-//          strokeWidth: 2),
-//    );
-
     setState(() => updateAllCircles());
   }
 
@@ -428,26 +364,15 @@ class _MapPageState extends State<MapPage>
     final MarkerId markerId = MarkerId(location.uuid);
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _pinPositionMarkerIcon,
-//          onTap: () => onMarkerTap(loc),
+      icon: pinPositionMarkerIcon,
+      onTap: () => _onLocationTap(location),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
       ),
       zIndex: 0.1,
     );
-//    final Marker marker = Marker(
-//      markerId: markerId,
-//      icon: BitmapDescriptor.defaultMarkerWithHue(
-//          hue ?? BitmapDescriptor.hueGreen),
-//      position: LatLng(
-//        loc.coords.latitude,
-//        loc.coords.longitude,
-//      ),
-//      onTap: () => onMarkerTap(loc),
-//    );
     markers[markerId] = marker;
-//    _goToLocation(loc);
     setState(() {
       markers[markerId] = marker;
     });
@@ -457,26 +382,15 @@ class _MapPageState extends State<MapPage>
     final MarkerId markerId = MarkerId(annotation.id);
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _annotationPositionMarkerIcon,
-//          onTap: () => onMarkerTap(loc),
+      icon: annotationPositionMarkerIcon,
+      onTap: () => _onAnnotationTap(annotation),
       position: LatLng(
         annotation.latitude,
         annotation.longitude,
       ),
       zIndex: 0.2,
     );
-//    final Marker marker = Marker(
-//      markerId: markerId,
-//      icon: BitmapDescriptor.defaultMarkerWithHue(
-//          hue ?? BitmapDescriptor.hueGreen),
-//      position: LatLng(
-//        loc.coords.latitude,
-//        loc.coords.longitude,
-//      ),
-//      onTap: () => onMarkerTap(loc),
-//    );
     markers[markerId] = marker;
-//    _goToLocation(loc);
     setState(() {
       markers[markerId] = marker;
     });
@@ -489,32 +403,21 @@ class _MapPageState extends State<MapPage>
     markers[markerId] = Marker(
       markerId: MarkerId("current_position"),
       position: ll,
-      icon: _currentPositionMarkerIcon,
+      icon: currentPositionMarkerIcon,
       zIndex: 0.3,
     );
     setState(() {});
-//    _currentPosition.add(Circle(
-//        circleId: CircleId('center'),
-//        center: ll,
-//        fillColor: Colors.blue,
-//        strokeColor: Colors.white,
-//        strokeWidth: 3,
-//        radius: 11));
-
-//    setState(() {
-//      updateAllCircles();
-//    });
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_currentPositionMarkerIcon == null) {
+    if (currentPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/my_position_pin.png')
           .then(_updateCurrentBitmap);
     }
-    if (_annotationPositionMarkerIcon == null) {
+    if (annotationPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
@@ -522,7 +425,7 @@ class _MapPageState extends State<MapPage>
           .then(_updateAnnotationBitmap);
     }
 
-    if (_pinPositionMarkerIcon == null) {
+    if (pinPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
@@ -530,7 +433,7 @@ class _MapPageState extends State<MapPage>
           .then(_updateBlackBitmap);
     }
 
-    if (_selectedPinMarkerIcon == null) {
+    if (selectedPinMarkerIcon == null) {
       final ImageConfiguration imageConfiguration = ImageConfiguration(
         bundle: DefaultAssetBundle.of(context),
         devicePixelRatio: 2.5,
@@ -546,25 +449,25 @@ class _MapPageState extends State<MapPage>
 
   void _updateCurrentBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _currentPositionMarkerIcon = bitmap;
+      currentPositionMarkerIcon = bitmap;
     });
   }
 
   void _updateBlackBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _pinPositionMarkerIcon = bitmap;
+      pinPositionMarkerIcon = bitmap;
     });
   }
 
   void _updateSelectedBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _selectedPinMarkerIcon = bitmap;
+      selectedPinMarkerIcon = bitmap;
     });
   }
 
   void _updateAnnotationBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _annotationPositionMarkerIcon = bitmap;
+      annotationPositionMarkerIcon = bitmap;
     });
   }
 
@@ -607,20 +510,24 @@ class _MapPageState extends State<MapPage>
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _initialPosition ?? _kGooglePlex,
-        mapToolbarEnabled: false,
-        myLocationButtonEnabled: false,
-//       myLocationEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-          _loadInitialDailyMarkers();
-        },
-        markers: Set<Marker>.of(markers.values),
-        circles: _allCircles,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: _initialPosition ?? _kGooglePlex,
+            mapToolbarEnabled: false,
+            myLocationButtonEnabled: false,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+              _loadInitialDailyMarkers();
+            },
+            markers: Set<Marker>.of(markers.values),
+            circles: _allCircles,
+          ),
+          ManualDetectionPositionLayer(),
+        ],
       ),
-//      floatingActionButton: MainMenuButton(),
     );
   }
 
@@ -647,7 +554,7 @@ class _MapPageState extends State<MapPage>
         final MarkerId markerId = MarkerId(location.uuid);
         final Marker marker = Marker(
           markerId: markerId,
-          icon: _pinPositionMarkerIcon,
+          icon: pinPositionMarkerIcon,
           onTap: () => _onLocationTap(location),
           position: LatLng(
             location.coords.latitude,
@@ -658,13 +565,16 @@ class _MapPageState extends State<MapPage>
         markers[markerId] = marker;
       }
     }
-    final annotations = context.read<AnnotationNotifier>().annotations;
+    final annotations = context
+        .read<AnnotationNotifier>()
+        .annotations
+        .where((a) => a.dateTime.isSameDay(_currentDate));
     if (annotations.isNotEmpty) {
       for (Annotation annotation in annotations) {
         final MarkerId markerId = MarkerId(annotation.id);
         final Marker marker = Marker(
           markerId: markerId,
-          icon: _annotationPositionMarkerIcon,
+          icon: annotationPositionMarkerIcon,
           onTap: () => _onAnnotationTap(annotation),
           position: LatLng(
             annotation.latitude,
@@ -675,35 +585,17 @@ class _MapPageState extends State<MapPage>
         markers[markerId] = marker;
       }
     }
-
-    setState(() {
-//      updateAllCircles();
-    });
-
-//    await _goToLocation(dailyLocations.first);
-  }
-
-  @override
-  void dispose() {
-    print('[MapPage] dispose()');
-    removeServiceListener();
-    removeDateListener();
-    removeLocationListener();
-    removeGeofenceListener();
-    removeGeofenceEventListener();
-    removeGeofenceChangeListener();
-    removeAnnotationListener();
-    super.dispose();
+    setState(() {});
   }
 
   _onLocationTap(Location location) async {
-    print('[MapPage] _onAnnotationTap');
+    print('[MapPage] _onLocationTap');
 
     final MarkerId markerId = MarkerId('${location.uuid}_tmp');
 //    final MarkerId markerId = MarkerId('${location.uuid}');
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _selectedPinMarkerIcon,
+      icon: selectedPinMarkerIcon,
       anchor: Offset(0.5, 0.5),
       position: LatLng(
         location.coords.latitude,
@@ -711,9 +603,6 @@ class _MapPageState extends State<MapPage>
       ),
       zIndex: 0.4,
     );
-    markers.removeWhere((k, m) => k.value == location.uuid);
-//    markers[markerId] =
-//        markers[markerId].copyWith(iconParam: _selectedPinMarkerIcon);
 
     setState(() {
       markers[markerId] = marker;
@@ -886,8 +775,6 @@ class _MapPageState extends State<MapPage>
       },
     );
     markers.removeWhere((k, v) => k.value == '${location.uuid}_tmp');
-//    markers[markerId] =
-//        markers[markerId].copyWith(iconParam: _pinPositionMarkerIcon);
     setState(() {});
   }
 
@@ -1003,5 +890,17 @@ class _MapPageState extends State<MapPage>
             ),
           );
         });
+  }
+  @override
+  void dispose() {
+    print('[MapPage] dispose()');
+    removeServiceListener();
+    removeDateListener();
+    removeLocationListener();
+    removeGeofenceListener();
+    removeGeofenceEventListener();
+    removeGeofenceChangeListener();
+    removeAnnotationListener();
+    super.dispose();
   }
 }

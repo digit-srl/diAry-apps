@@ -15,8 +15,6 @@ import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
-import 'package:state_notifier/state_notifier.dart';
-import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 
 class DailyStats extends StatelessWidget {
   final DateFormat dateFormat = DateFormat('HH:mm');
@@ -476,6 +474,7 @@ class DailyStats extends StatelessWidget {
     ).show();*/
   }
 
+  // only for developers
   void _showAggregationSettings(BuildContext context) {
     final accuracy =
         Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
