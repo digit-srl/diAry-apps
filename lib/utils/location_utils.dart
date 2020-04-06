@@ -42,8 +42,19 @@ class LocationUtils {
   static Map<DateTime, Day> aggregateLocationsInDayPerDate(
       Map<DateTime, List<Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
+    int i = 0;
     for (DateTime key in locationsPerDay.keys) {
-      final tmp = aggregateLocationsInSlices3(locationsPerDay[key]);
+      final yesterdayPlace = <String>{};
+      if (i > 0 &&
+          days[locationsPerDay.keys.toList()[i - 1]].places.isNotEmpty) {
+        final oldPlaceIdentifiers =
+            days[locationsPerDay.keys.toList()[i - 1]].places.last.places;
+        yesterdayPlace.addAll(oldPlaceIdentifiers);
+      }
+      final tmp = aggregateLocationsInSlices3(
+        locationsPerDay[key],
+        yesterdayPlaces: yesterdayPlace,
+      );
       days[key] = Day(
         date: key,
         slices: tmp[0],
@@ -54,6 +65,7 @@ class LocationUtils {
             .toList(),
         pointCount: locationsPerDay[key].length,
       );
+      i++;
     }
     return days;
   }
@@ -102,9 +114,12 @@ class LocationUtils {
     DateTime(2020, 3, 27, 17, 25): true,
   };
 
-  static List<List<Slice>> aggregateLocationsInSlices3(List<Location> locations,
-      {List<Slice> partialDaySlices = const [],
-      List<Slice> partialDayPlaces = const []}) {
+  static List<List<Slice>> aggregateLocationsInSlices3(
+    List<Location> locations, {
+    List<Slice> partialDaySlices = const [],
+    List<Slice> partialDayPlaces = const [],
+    Set<String> yesterdayPlaces = const {},
+  }) {
     if (locations.isEmpty) return [[], []];
 
     final currentDay = locations.first.dateTime;
@@ -205,7 +220,9 @@ class LocationUtils {
               id: 0,
               minutes: partialPlaceMinutes,
               startTime: currentDate.withoutMinAndSec(),
-              places: action == Action.Unknown ? {} : {where},
+              places: action == Action.Enter
+                  ? {where, ...yesterdayPlaces}
+                  : yesterdayPlaces,
               activity: action == Action.Unknown
                   ? currentActivity
                   : MotionActivity.Still,
