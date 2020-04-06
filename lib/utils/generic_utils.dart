@@ -104,7 +104,7 @@ class GenericUtils {
   static int getWomCountForThisDay(List<Slice> places) {
     try {
       int offMinutes = 0;
-//    final places = state.day.places;
+      int unknownMinutes = 0;
 
       final offSlices = places?.where((p) => p.activity == MotionActivity.Off);
       if (offSlices.isNotEmpty) {
@@ -113,7 +113,15 @@ class GenericUtils {
             ?.reduce((curr, next) => curr + next);
       }
 
-      print('[DayNotifier] offMinutes : $offMinutes');
+      final unknownSlices =
+          places?.where((p) => p.activity == MotionActivity.Unknown);
+      if (unknownSlices.isNotEmpty) {
+        unknownMinutes = unknownSlices
+            ?.map((slice) => slice.minutes)
+            ?.reduce((curr, next) => curr + next);
+      }
+
+      print('[GeneriUtils] offMinutes : $offMinutes');
 
       final homeIdentifier = Hive.box('user').get(homeGeofenceKey);
 
@@ -127,7 +135,10 @@ class GenericUtils {
               .reduce((curr, next) => curr + next);
         }
       }
-      final onMinutes = 1440 - offMinutes;
+      final onMinutes = 1440 - offMinutes - unknownMinutes;
+      if (onMinutes < 0) {
+        throw Exception('[GeneriUtils] onMinites cannont to be less that zero');
+      }
 
       int onWom = (onMinutes / 60.0).ceil();
       int homeWom = (homeMinutes / 60.0).ceil();
