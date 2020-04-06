@@ -1,6 +1,6 @@
 import 'package:diary/presentation/pages/logs_page.dart';
 import 'package:diary/presentation/pages/slices_page.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';

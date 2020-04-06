@@ -1,7 +1,7 @@
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/root_elevation_notifier.dart';

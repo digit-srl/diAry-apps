@@ -4,7 +4,7 @@ import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/presentation/widgets/calendar_button.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';

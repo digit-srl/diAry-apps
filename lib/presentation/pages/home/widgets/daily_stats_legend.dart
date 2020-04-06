@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';

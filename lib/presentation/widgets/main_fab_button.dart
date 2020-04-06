@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +60,10 @@ class MainFabButton extends StatelessWidget {
       ),
       UnicornButton(
         hasLabel: true,
-        labelText: "Aggiungi segnalazione",
+        labelText: "Aggiungi annotazione",
         labelColor: accentColor,
         currentButton: FloatingActionButton(
-          heroTag: "aggiungi segnalazione",
+          heroTag: "aggiungi annotazione",
 //              heroTag: null,
           backgroundColor: bgColor,
           foregroundColor: accentColor,

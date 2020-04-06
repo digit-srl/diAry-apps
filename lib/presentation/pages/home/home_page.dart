@@ -1,7 +1,7 @@
 import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
-import 'package:diary/presentation/widgets/custom_icons_icons.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/material.dart';
