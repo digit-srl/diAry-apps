@@ -68,12 +68,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         addPin(lastLocation);
         addCircle(lastLocation);
         setState(() {
-          if (placeEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
-            _top = _size.height - 30;
-          } else {
-            _top = null;
-          }
+          _canSave = placeEditingController.text.trim().length >= 3 && newLocation != null;
         });
       });
     } else {
@@ -238,7 +233,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
         fit: StackFit.expand,
         children: <Widget>[
           GoogleMap(
-            myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
               target: lastLocation ?? LatLng(0.0, 0.0),
               zoom: zoom,
@@ -260,93 +254,32 @@ class _AddPlacePageState extends State<AddPlacePage> {
             markers: markers,
             circles: circles,
           ),
-          if (newLocation == null || error != null)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                  Container(
-                    height: 16,
-                  ),
-                  Text(
-                    'Acquisendo la tua posizione corrente...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
-
-          if (error != null)
-            Positioned(
+          ManualDetectionPositionLayer(),
+          Positioned(
+            child: Container(
+              height: 40.0,
+              width: 40.0,
               child: Container(
-                height: 40.0,
-                width: 40.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(color: Colors.black26, blurRadius: 4),
-                    ],
-                  ),
-                  child: Center(
-                    child: IconButton(
-                      icon: Icon(Icons.gps_fixed),
-                      iconSize: 16,
-                      color: accentColor,
-                      onPressed: getCurrentLocationAndUpdateMap,
-                    ),
-                  ),
-                      onMapCreated: (controller) {
-                        _controller.complete(controller);
-                      },
-                      onTap: (location) {
-                        setState(() {
-                          lastLocation = location;
-                          addCircle(location);
-                        });
-                      },
-                      markers: markers,
-                      circles: circles,
-                    ),
-                    ManualDetectionPositionLayer(),
-                    Positioned(
-                      top: 30,
-                      right: 10.0,
-                      child: Container(
-                        width: 35,
-                        height: 35,
-                        margin: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(color: accentColor, blurRadius: 3),
-                          ],
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            icon: Icon(Icons.gps_fixed),
-                            iconSize: 17,
-                            color: accentColor,
-                            onPressed: getCurrentLocationAndUpdateMap,
-                          ),
-                        ),
-                      ),
-                    )
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 4),
                   ],
                 ),
+                child: Center(
+                  child: IconButton(
+                    icon: Icon(Icons.gps_fixed),
+                    iconSize: 16,
+                    color: accentColor,
+                    onPressed: getCurrentLocationAndUpdateMap,
+                  ),
+                ),
               ),
-              top: 42,
-              right: 25,
             ),
+            top: 42,
+            right: 25,
+          ),
         ],
       ),
     );
@@ -510,11 +443,9 @@ class _AddPlacePageState extends State<AddPlacePage> {
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
-      addCircle(lastLocation);
+
       setState(() {
-        _canSave = placeEditingController.text.trim().length >= 3 &&
-            newLocation != null;
-      });
+        _canSave = placeEditingController.text.trim().length >= 3 && newLocation != null;
       });
     }, (ex) {
       error = ex.toString();

@@ -217,10 +217,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
-      //WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          _canSave = annotationEditingController.text.trim().length >= 3 && newLocation != null;
-        });
+
+      setState(() {
+        _canSave = annotationEditingController.text.trim().length >= 3 && newLocation != null;
       });
     }, (ex) {
       error = ex.toString();
