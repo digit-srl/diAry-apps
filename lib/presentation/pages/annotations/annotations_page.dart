@@ -24,7 +24,7 @@ class AnnotationsPage extends StatefulWidget {
 }
 
 class _AnnotationsPageState extends State<AnnotationsPage> {
-  DateFormat format = DateFormat('HH : mm');
+  DateFormat dateFormat = DateFormat('HH:mm');
 
   ScrollController _controller;
   final double elevationOn = 4;
@@ -35,12 +35,14 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
     super.initState();
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
-    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(2, 0);
+    Provider.of<RootElevationNotifier>(context, listen: false)
+        .changeElevationIfDifferent(2, 0);
   }
 
   void _scrollListener() {
     double newElevation = _controller.offset > 1 ? elevationOn : elevationOff;
-    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(2, newElevation);
+    Provider.of<RootElevationNotifier>(context, listen: false)
+        .changeElevationIfDifferent(2, newElevation);
   }
 
   @override
@@ -54,75 +56,88 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StateNotifierBuilder<DateState>(
-          stateNotifier: context.watch<DateNotifier>(),
-          builder: (BuildContext context, dateState, Widget child) {
-            return ValueListenableBuilder(
-              valueListenable: Hive.box<Annotation>('annotations').listenable(),
-              builder:
-                  (BuildContext context, Box<Annotation> value, Widget child) {
-                final annotations = value.values
-                    .where((annotation) =>
-                        annotation.dateTime.isSameDay(dateState.selectedDate))
-                    .toList();
-                if (annotations.isEmpty) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child:
-                    Column(
+        stateNotifier: context.watch<DateNotifier>(),
+        builder: (BuildContext context, dateState, Widget child) {
+          return ValueListenableBuilder(
+            valueListenable: Hive.box<Annotation>('annotations').listenable(),
+            builder:
+                (BuildContext context, Box<Annotation> value, Widget child) {
+              final annotations = value.values
+                  .where((annotation) =>
+                      annotation.dateTime.isSameDay(dateState.selectedDate))
+                  .toList();
+              if (annotations.isEmpty) {
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  child: Center(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Icon(CustomIcons.bookmark_outline, size: 60, color: secondaryText,),
-                        SizedBox(height: 16,),
-                        Text('Nessuna annotazione al momento.', style: secondaryStyle,),
+                        Icon(
+                          CustomIcons.bookmark_outline,
+                          size: 60,
+                          color: secondaryText,
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          'Nessuna annotazione presente per questa giornata.',
+                          style: secondaryStyle,
+                          textAlign: TextAlign.center,
+                        ),
                       ],
-
+                    ),
                   ),
+                );
+              }
+              return ListView.separated(
+                // draw below statusbar and appbar
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + kToolbarHeight
+                ),
+                itemCount: annotations.length,
+                controller: _controller,
+
+                itemBuilder: (context, index) {
+                  final annotation = annotations[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    title: Text(
+                      annotation.title,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    leading: Icon(
+                      Icons.bookmark_border,
+                      color: secondaryText,
+                    ),
+                    onTap: () {},
+                    trailing: IconButton(
+                        icon: Icon(CustomIcons.trash_can_outline),
+                        color: accentColor,
+                        onPressed: () {
+                          GenericUtils.ask(context,
+                              'Sicuro di volere eliminare questa annotazione?',
+                              () {
+                            context
+                                .read<AnnotationNotifier>()
+                                .removeAnnotation(annotation);
+                          }, () {});
+                        }),
+                    subtitle: Text(
+                      'Ore: ${dateFormat.format(annotation.dateTime)}',
+                      style: TextStyle(color: secondaryText),
                     ),
                   );
-                }
-                return ListView.separated(
-                  // draw below statusbar and appbar
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).padding.top + kToolbarHeight),
-                  itemCount: annotations.length,
-                  controller: _controller,
-
-                  itemBuilder: (context, index) {
-                    final annotation = annotations[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.all(16),
-                      title: Text(
-                        annotation.title,
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      leading: Icon(Icons.bookmark_border, color: secondaryText,),
-                      onTap: () {},
-                      trailing: IconButton(
-                          icon: Icon(CustomIcons.trash_can_outline),
-                          color: accentColor,
-                          onPressed: () {
-                            GenericUtils.ask(context,
-                                'Sicuro di volere eliminare questa annotazione?',
-                                () {
-                              context
-                                  .read<AnnotationNotifier>()
-                                  .removeAnnotation(annotation);
-                            }, () {});
-                          }),
-                      subtitle: Text(
-                        'Ore: ${format.format(annotation.dateTime)}',
-                        style: TextStyle(color: secondaryText),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider();
-                  },
-                );
-              },
-            );
-          },
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider();
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

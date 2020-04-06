@@ -23,7 +23,11 @@ class DailyStats extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
+
+    // misure euristiche, dipendenti dal valore di height
     final _chartSize = Size(height / 3, height / 3);
+    final _overlayLegendPaddingTop = height / 26;
+    final _overlayLegendTextHeight = height / 48;
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
@@ -289,40 +293,86 @@ class DailyStats extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-//                      alignment: Alignment.bottomCenter,
-                      bottom: 16,
-                      right: (MediaQuery.of(context).size.width / 2) -
-                          (_chartSize.width / 2)
-                      //- 16
-                      ,
-                      child: IconButton(
-                          icon: Icon(Icons.help_outline, color: secondaryText),
-                          /*
-                          Text(
-                            '?',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20,
+                      top: 0,
+                      child: Container(
+                        color: Colors.white.withOpacity(0.6),
+                        width: size.width / 2,
+                        padding: EdgeInsets.only(
+                            top: _overlayLegendPaddingTop,
+                            right: 2
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Container(
+                                child: FittedBox(
+                                  child: Text(
+                                      "Spostamenti",
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: secondaryText
+                                      )
+                                  ),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2),
+                            Container(
+                                child: FittedBox(
+                                  child: Text(
+                                      "Luoghi",
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: secondaryText
+                                      )
+                                  ),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2
                             ),
-                          ),
-                          */
-                          onPressed: () {
-                            _showPlaceLegend(context);
-                          }),
+                            Container(
+                                child: FittedBox(
+                                  child: Text("Annotazioni",
+                                      style: TextStyle(
+                                          fontSize: 12, color: secondaryText
+                                      )
+                                  ),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-//                    Positioned(
-////                      alignment: Alignment.bottomCenter,
-//                      bottom: 0,
-//                      left: (MediaQuery.of(context).size.width / 2) -
-//                          (_chartSize.width / 2)
-//                          // - 16,
-//                          ,
-//                      child: IconButton(
-//                          icon: Icon(Icons.settings),
-//                          onPressed: () {
-//                            _showAggregationSettings(context);
-//                          }),
-//                    ),
+                    Positioned(
+                      bottom: 16,
+                      right: (MediaQuery.of(context).size.width / 2) - (_chartSize.width / 2),
+                      child: IconButton(
+                        icon: Icon(Icons.help_outline, color: secondaryText),
+                        onPressed: () {
+                          _showPlaceLegend(context);
+                        }
+                      ),
+                    ),
+                    /*
+                    Positioned(
+                      alignment: Alignment.bottomCenter,
+                      bottom: 0,
+                      left: (MediaQuery.of(context).size.width / 2) - (_chartSize.width / 2),
+                      child: IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {
+                          _showAggregationSettings(context);
+                        }
+                      ),
+                    ),
+                    */
                   ],
                 ),
               ),
@@ -332,7 +382,6 @@ class DailyStats extends StatelessWidget {
                   child: Row(
                     children: <Widget>[
                       Flexible(
-//                  fit: FlexFit.loose,
                         child: Container(
                           alignment: Alignment.center,
                           child: ButtonTheme(
@@ -361,7 +410,10 @@ class DailyStats extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        Icon(CustomIcons.map_marker_outline),
+                                        Icon(
+                                          CustomIcons.map_marker_outline,
+                                          color: accentColor,
+                                        ),
                                         SizedBox(
                                           width: 4,
                                         ),
@@ -389,20 +441,22 @@ class DailyStats extends StatelessWidget {
                             minWidth: double.infinity,
                             child: FlatButton(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 16),
+                                  vertical: 4.0, horizontal: 16
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(16.0),
                               ),
                               onPressed: () {
-                                context
-                                    .read<CurrentRootPageNotifier>()
-                                    .changePage(2);
+                                context.read<CurrentRootPageNotifier>().changePage(2);
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Text('Segnalazioni',
-                                      maxLines: 1, style: secondaryStyle),
+                                  Text(
+                                    'Annotazioni',
+                                    maxLines: 1,
+                                    style: secondaryStyle
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Row(
@@ -410,7 +464,7 @@ class DailyStats extends StatelessWidget {
                                       children: <Widget>[
                                         Icon(
                                           CustomIcons.bookmark_outline,
-                                          size: 25,
+                                          color: accentColor,
                                         ),
                                         SizedBox(
                                           width: 4,
@@ -448,30 +502,6 @@ class DailyStats extends StatelessWidget {
         builder: (context) {
           return DailyStatsLegend();
         });
-    /* Alert(
-      context: context,
-      title: 'Legenda del grafico',
-      content: Container(
-          width: MediaQuery.of(context).size.width - 32,
-          height: MediaQuery.of(context).size.height / 2,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              PlaceLegend(),
-            ],
-          )),
-      buttons: [
-        DialogButton(
-          child: Text(
-            'Ok',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    ).show();*/
   }
 
   // only for developers

@@ -137,9 +137,13 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         fit: StackFit.expand,
         children: <Widget>[
           GoogleMap(
+                zoomGesturesEnabled: false,
+                scrollGesturesEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
                 myLocationButtonEnabled: false,
                 initialCameraPosition: CameraPosition(
-              target: lastLocation ?? LatLng(0.0, 0.0),
+              target: lastLocation ??  LatLng(37.42796133580664, -122.085749655962),
               zoom: zoom,
             ),
             onMapCreated: (controller) {
@@ -147,7 +151,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             },
             markers: markers,
           ),
-          if (newLocation == null)
+          if (newLocation == null || context.watch<GpsState>().manualPositionDetection)
             Container(
               color: Colors.black.withOpacity(0.5),
               padding: const EdgeInsets.all(16),
@@ -235,7 +239,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     markers.add(
       Marker(
         markerId: MarkerId('current'),
-        icon: currentPositionMarkerIcon,
+        icon: annotationPositionMarkerIcon, // forse è più corretto-chiaro mostrare il pin annotazione?
         position: location,
       ),
     );
