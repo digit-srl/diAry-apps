@@ -157,7 +157,9 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                       color: accentColor,
                       icon: Icon(Icons.gps_fixed),
                       onPressed: () {
-                        context.read<GpsNotifier>().getCurrentLoc(() {}, () {});
+                        context
+                            .read<GpsNotifier>()
+                            .getCurrentLoc((location) {}, (error) {});
                       })
                 else if (_currentPage == 2)
                   IconButton(
