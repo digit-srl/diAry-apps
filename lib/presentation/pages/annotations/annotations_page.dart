@@ -95,7 +95,6 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                               context
                                   .read<AnnotationNotifier>()
                                   .removeAnnotation(annotation);
-                              Navigator.of(context).pop();
                             }, () {});
                           }),
                       subtitle: Text(
