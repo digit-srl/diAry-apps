@@ -1,13 +1,12 @@
 import 'package:diary/application/day_notifier.dart';
-import 'package:diary/utils/location_utils.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
+import 'package:state_notifier/state_notifier.dart';
 
 class MyDayAppBar extends StatefulWidget {
   final Function changePage;
@@ -129,7 +128,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                   : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
               onPressed: () {
                 if (_currentPage == 1) {
-                  getCurrentLoc();
+                  context.read<GpsNotifier>().getCurrentLoc(() {}, () {});
                 } else {
                   widget.changePage(2);
                   setState(() {
@@ -142,13 +141,5 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
         ),
       ),
     );
-  }
-
-  getCurrentLoc() {
-    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
-      print('[getCurrentPosition] - $location');
-    }, (error) {
-      print('[getCurrentPosition] ERROR: $error');
-    });
   }
 }

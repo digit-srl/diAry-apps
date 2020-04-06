@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -166,7 +168,6 @@ class _MapPageState extends State<MapPage>
     removeDateListener = Provider.of<DateNotifier>(context).addListener(
       (state) {
         print('[MapPage] DateNotifier');
-
         if (_currentDate != state.selectedDate) {
           _currentDate = state.selectedDate;
           _loadInitialDailyMarkers();
@@ -185,44 +186,33 @@ class _MapPageState extends State<MapPage>
       return;
     }
     addMarker(location);
-//    circles.add(
-//      Circle(
-//          circleId: CircleId(location.uuid),
-//          center: ll,
-//          fillColor: Colors.black,
-//          radius: 2),
-//    );
-//    setState(() {
-//      updateAllCircles();
-//    });
   }
 
   void _onGeofenceTap(ColoredGeofence coloredGeofence) {
     print('[MapPage] _onGeofenceTap');
-//    final color = Color(coloredGeofence.color);
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.person_pin,
-                        size: 35,
-                        color: coloredGeofence.color,
-                      ),
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.person_pin,
+                      size: 35,
+                      color: coloredGeofence.color,
                     ),
-                    Text(
-                      coloredGeofence.name,
-                      style: TextStyle(fontSize: 30),
-                    ),
+                  ),
+                  Text(
+                    coloredGeofence.name,
+                    style: TextStyle(fontSize: 30),
+                  ),
 //                    coloredGeofence.isHome
 //                        ? Padding(
 //                            padding: const EdgeInsets.all(8.0),
@@ -233,50 +223,51 @@ class _MapPageState extends State<MapPage>
 //                            ),
 //                          )
 //                        : Container(),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.settings_ethernet,
-                        color: coloredGeofence.color,
-                      ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.settings_ethernet,
+                      color: coloredGeofence.color,
                     ),
-                    Text(
-                        'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri'),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Row(
-                    children: <Widget>[
-                      Spacer(),
-                      GenericButton(
-                        text: 'Elimina',
-                        onPressed: () async {
-                          final deleted = await PlaceUtils.removePlace(
-                              context, coloredGeofence.geofence.identifier);
-                          if (deleted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                  ),
+                  Text(
+                      'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri'),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  children: <Widget>[
+                    Spacer(),
+                    GenericButton(
+                      text: 'Elimina',
+                      onPressed: () async {
+                        final deleted = await PlaceUtils.removePlace(
+                            context, coloredGeofence.geofence.identifier);
+                        if (deleted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
 //                      GenericButton(
 //                        text: 'Modifica',
 //                        onPressed: () {},
 //                      ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _onGeofence(List<ColoredGeofence> geofences) {
@@ -315,62 +306,12 @@ class _MapPageState extends State<MapPage>
       return;
     }
 
-//    bg.Geofence geofence = marker.geofence;
-//
-//    // Render a new greyed-out geofence CircleMarker to show it's been fired but only if it hasn't been drawn yet.
-//    // since we can have multiple hits on the same geofence.  No point re-drawing the same hit circle twice.
-//    GeofenceMarker eventMarker = _geofenceEvents.firstWhere(
-//        (GeofenceMarker marker) =>
-//            marker.geofence.identifier == event.identifier,
-//        orElse: () => null);
-//    if (eventMarker == null)
-//      _geofenceEvents.add(GeofenceMarker(geofence, true));
-//
-//    // Build geofence hit statistic markers:
-//    // 1.  A computed CircleMarker upon the edge of the geofence circle (red=exit, green=enter)
-//    // 2.  A CircleMarker for the actual location of the geofence event.
-//    // 3.  A black PolyLine joining the two above.
     bg.Location location = event.location;
-//    LatLng center = new LatLng(geofence.latitude, geofence.longitude);
     LatLng hit =
         new LatLng(location.coords.latitude, location.coords.longitude);
 
     // Update current position marker.
     _updateCurrentPositionMarker(hit);
-
-//    // Determine bearing from center -> event location
-//    double bearing = Geospatial.getBearing(center, hit);
-//    // Compute a coordinate at the intersection of the line joining center point -> event location and the circle.
-//    LatLng edge =
-//        Geospatial.computeOffsetCoordinate(center, geofence.radius, bearing);
-    // Green for ENTER, Red for EXIT.
-//    Color color = Colors.green;
-//    if (event.action == "EXIT") {
-//      color = Colors.red;
-//    } else if (event.action == "DWELL") {
-//      color = Colors.yellow;
-//    }
-
-//    _geofenceEventEdges.add(
-//      Circle(
-//          circleId: CircleId(Random().nextInt(1000).toString()),
-//          center: edge,
-//          fillColor: color,
-//          radius: 4,
-//          strokeWidth: 1),
-//    );
-//
-//    // Event location CircleMarker (background: black, stroke doesn't work so stack 2 circles)
-//    _geofenceEventLocations.add(
-//      Circle(
-//          circleId: CircleId(Random().nextInt(1000).toString()),
-//          center: edge,
-//          strokeColor: Colors.black,
-//          fillColor: Colors.blue,
-//          radius: 4,
-//          strokeWidth: 2),
-//    );
-
     setState(() => updateAllCircles());
   }
 
@@ -588,18 +529,24 @@ class _MapPageState extends State<MapPage>
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _initialPosition ?? _kGooglePlex,
-        mapToolbarEnabled: false,
-        myLocationButtonEnabled: false,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: _initialPosition ?? _kGooglePlex,
+            mapToolbarEnabled: false,
+            myLocationButtonEnabled: false,
 //        myLocationEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-          _loadInitialDailyMarkers();
-        },
-        markers: Set<Marker>.of(markers.values),
-        circles: _allCircles,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+              _loadInitialDailyMarkers();
+            },
+            markers: Set<Marker>.of(markers.values),
+            circles: _allCircles,
+          ),
+          ManualDetectionPositionLayer(),
+        ],
       ),
 //      floatingActionButton: MainMenuButton(),
     );
@@ -692,7 +639,7 @@ class _MapPageState extends State<MapPage>
       ),
       zIndex: 0.4,
     );
-    markers.removeWhere((k, m) => k.value == location.uuid);
+//    markers.removeWhere((k, m) => k.value == location.uuid);
 //    markers[markerId] =
 //        markers[markerId].copyWith(iconParam: _selectedPinMarkerIcon);
 

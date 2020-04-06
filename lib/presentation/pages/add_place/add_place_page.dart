@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/presentation/pages/map/map_page.dart';
+import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
@@ -61,7 +64,10 @@ class _AddPlacePageState extends State<AddPlacePage> {
       final coords = locations.last.coords;
       lastLocation = LatLng(coords.latitude, coords.longitude);
     }
-    getCurrentLocationAndUpdateMap();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCurrentLocationAndUpdateMap();
+    });
   }
 
   @override
@@ -252,18 +258,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                       markers: markers,
                       circles: circles,
                     ),
-                    newLocation == null
-                        ? Container(
-                            color: Colors.black.withOpacity(0.5),
-                            child: Center(
-                              child: Text(
-                                'Acquisizione Posizione...',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 30),
-                              ),
-                            ),
-                          )
-                        : Container(),
+                    ManualDetectionPositionLayer(),
                     Positioned(
                       top: 30,
                       right: 10.0,
@@ -460,22 +455,20 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void getCurrentLocationAndUpdateMap() {
-    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
+    context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
       newLocation = location;
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
       addCircle(lastLocation);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          if (placeEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
-            _top = _size.height - 30;
-          } else {
-            _top = null;
-          }
-        });
+      setState(() {
+        if (placeEditingController.text.trim().length >= 3 &&
+            newLocation != null) {
+          _top = _size.height - 30;
+        } else {
+          _top = null;
+        }
       });
     }, (ex) {
       error = ex.toString();

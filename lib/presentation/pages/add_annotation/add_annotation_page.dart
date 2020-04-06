@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:diary/application/annotation_notifier.dart';
-import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -49,7 +47,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     super.initState();
     selectedDate =
         Provider.of<DateNotifier>(context, listen: false).selectedDate;
-    getCurrentLocationAndUpdateMap();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCurrentLocationAndUpdateMap();
+    });
   }
 
   @override
@@ -226,21 +226,20 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   void getCurrentLocationAndUpdateMap() {
-    LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
+    context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
       newLocation = location;
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          if (annotationEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
-            _top = _size.height - 30;
-          } else {
-            _top = null;
-          }
-        });
+
+      setState(() {
+        if (annotationEditingController.text.trim().length >= 3 &&
+            newLocation != null) {
+          _top = _size.height - 30;
+        } else {
+          _top = null;
+        }
       });
     }, (ex) {
       error = ex.toString();
