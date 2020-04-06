@@ -44,6 +44,7 @@ dependencies:
   flutter_colorpicker: ^0.3.2
   package_info: ^0.4.0+16
   file_picker: ^1.5.1
+  sliding_sheet: ^0.3.1
   intl:
 
 

@@ -27,6 +27,9 @@ import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
+
+import 'widgets/info_pin.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -75,6 +78,7 @@ class _MapPageState extends State<MapPage>
 
   CameraPosition _initialPosition;
   List<Annotation> annotations = [];
+  List<Location> locations = [];
 
   @override
   void initState() {
@@ -592,8 +596,8 @@ class _MapPageState extends State<MapPage>
 
   _onLocationTap(Location location) async {
     print('[MapPage] _onLocationTap');
-
-    final MarkerId markerId = MarkerId('${location.uuid}_tmp');
+    String selectedPinId = '${location.uuid}_tmp';
+    final MarkerId markerId = MarkerId(selectedPinId);
 //    final MarkerId markerId = MarkerId('${location.uuid}');
     final Marker marker = Marker(
       markerId: markerId,
@@ -610,233 +614,179 @@ class _MapPageState extends State<MapPage>
       markers[markerId] = marker;
     });
 
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
+    final dailyLocations = Provider.of<LocationNotifier>(context, listen: false)
+        .locationsPerDate[_currentDate];
+    final initialPage = dailyLocations
+        .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
+
+    await showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
       builder: (context) {
-        return Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                          Icons.pin_drop,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: AutoSizeText(
-                            "Pin",
-                            maxLines: 1,
-                            style: TextStyle(fontSize: 30, color: accentColor),
-                          )),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Container(
-                  height: 200,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: AlwaysScrollableScrollPhysics(),
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                              child: Icon(Icons.data_usage)),
-                          Expanded(
-                            child: AutoSizeText(
-                              location.uuid,
-                              maxLines: 1,
-                              style: TextStyle(color: secondaryText),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                              child: Icon(Icons.access_time)),
-                          Expanded(
-                            child: AutoSizeText(
-                              dateFormat.format(location.dateTime),
-                              maxLines: 1,
-                              style: TextStyle(color: secondaryText),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                            child: Icon(
-                              Icons.pin_drop,
-                            ),
-                          ),
-                          Expanded(
-                            child: AutoSizeText(
-                              'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
-                              style: TextStyle(color: secondaryText),
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                            child: Icon(
-                              Icons.gps_fixed,
-                            ),
-                          ),
-                          Expanded(
-                            child: AutoSizeText(
-                              'Accuratezza: ${location.coords.accuracy} m',
-                              style: TextStyle(color: secondaryText),
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                            child: Icon(
-                              Icons.event,
-                            ),
-                          ),
-                          Expanded(
-                            child: AutoSizeText(
-                              'Evento: ${location.event.toString().replaceFirst('Event.', '')}',
-                              style: TextStyle(color: secondaryText),
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (location?.activity != null)
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                              child: Icon(
-                                Icons.directions_walk,
-                              ),
-                            ),
-                            Expanded(
-                              child: AutoSizeText(
-                                'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
-                                style: TextStyle(color: secondaryText),
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      if (location?.battery != null)
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
-                              child: Icon(
-                                location.battery.isCharging
-                                    ? Icons.battery_charging_full
-                                    : Icons.battery_std,
-                              ),
-                            ),
-                            Expanded(
-                              child: AutoSizeText(
-                                '${(location.battery.level * 100).toInt()} %',
-                                style: TextStyle(color: secondaryText),
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        return SlidingSheetDialog(
+          backdropColor: Colors.black.withOpacity(0.2),
+          elevation: 8,
+          cornerRadius: 16,
+          minHeight: 370,
+          duration: Duration(milliseconds: 300),
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.4, 0.7, 1.0],
+            positioning: SnapPositioning.relativeToAvailableSpace,
           ),
+          builder: (ctx, sheetState) {
+            return Container(
+              height: 400,
+              child: Material(
+                child: InfoPinWidget(
+                  locations: dailyLocations,
+                  initialPage: initialPage,
+                  selectPin: (location) {
+                    Marker marker;
+                    setState(() {
+                      markers.removeWhere((k, v) => k.value == selectedPinId);
+                      selectedPinId = '${location.uuid}_tmp';
+                      final MarkerId markerId = MarkerId(selectedPinId);
+                      marker = Marker(
+                        markerId: markerId,
+                        icon: selectedPinMarkerIcon,
+                        anchor: Offset(0.5, 0.5),
+                        position: LatLng(
+                          location.coords.latitude,
+                          location.coords.longitude,
+                        ),
+                        zIndex: 0.4,
+                      );
+                      markers[markerId] = marker;
+                      // zoom in to the selected camera position
+                    });
+                    _controller.future.then((controller) {
+                      controller.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          bearing: 0,
+                          target: marker.position,
+                          zoom: 19,
+                        ),
+                      ));
+                    });
+                  },
+                ),
+              ),
+            );
+          },
         );
       },
     );
-    markers.removeWhere((k, v) => k.value == '${location.uuid}_tmp');
+//    await showModalBottomSheet(
+//      context: context,
+//      builder: (context) {
+//        return InfoPinWidget(
+//          locations: dailyLocations,
+//          initialPage: initialPage,
+//          selectPin: (location) {
+//            Marker marker;
+//            setState(() {
+//              markers.removeWhere((k, v) => k.value == selectedPinId);
+//              selectedPinId = '${location.uuid}_tmp';
+//              final MarkerId markerId = MarkerId(selectedPinId);
+//              marker = Marker(
+//                markerId: markerId,
+//                icon: selectedPinMarkerIcon,
+//                anchor: Offset(0.5, 0.5),
+//                position: LatLng(
+//                  location.coords.latitude,
+//                  location.coords.longitude,
+//                ),
+//                zIndex: 0.4,
+//              );
+//              markers[markerId] = marker;
+//              // zoom in to the selected camera position
+//            });
+//            _controller.future.then((controller) {
+//              controller.animateCamera(CameraUpdate.newCameraPosition(
+//                CameraPosition(
+//                  bearing: 0,
+//                  target: marker.position,
+//                  zoom: 19,
+//                ),
+//              ));
+//            });
+//          },
+//        );
+//      },
+//    );
+    markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }
 
   _onAnnotationTap(Annotation annotation) {
     print('[MapPage] _onAnnotationTap');
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/annotation_pin.png',
+                        width: 30,
+                      )),
+                  Expanded(
+                    child: AutoSizeText(
+                      annotation.title,
+                      maxLines: 3,
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  ),
+//                    coloredGeofence.isHome
+//                        ? Padding(
+//                            padding: const EdgeInsets.all(8.0),
+//                            child: Icon(
+//                              Icons.person_pin,
+//                              size: 35,
+//                              color: color,
+//                            ),
+//                          )
+//                        : Container(),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.gps_fixed,
+                    ),
+                  ),
+                  Text(
+                      'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.timelapse,
+                    ),
+                  ),
+                  Text(dateFormat.format(annotation.dateTime)),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
                   children: <Widget>[
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                          CustomIcons.bookmark_outline,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: AutoSizeText(
-                            "Annotazione",
-                            maxLines: 1,
-                            style: TextStyle(fontSize: 30, color: accentColor),
-                          )),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {},
-                      tooltip: "Modifica (coming soon!)",
-                    ),
-                    IconButton(
-                      icon: Icon(CustomIcons.trash_can_outline),
-                      tooltip: "Elimina",
+                    Spacer(),
+                    GenericButton(
+                      text: 'Elimina',
                       onPressed: () async {
                         GenericUtils.ask(context,
                             'Sicuro di volere eliminare questa annotazione?',
@@ -850,59 +800,21 @@ class _MapPageState extends State<MapPage>
                         });
                       },
                     ),
+                    SizedBox(
+                      width: 10,
+                    ),
+//                      GenericButton(
+//                        text: 'Modifica',
+//                        onPressed: () {},
+//                      ),
                   ],
                 ),
-                SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.message,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        annotation.title,
-                        style: TextStyle(color: secondaryText),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.gps_fixed,
-                      ),
-                    ),
-                    Text(
-                      'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}',
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.access_time,
-                      ),
-                    ),
-                    Text(
-                      dateFormat.format(annotation.dateTime),
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override

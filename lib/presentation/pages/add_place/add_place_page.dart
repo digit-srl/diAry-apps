@@ -42,7 +42,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Circle place;
 //  BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
-  bg.Location newLocation;
+//  bg.Location newLocation;
   Color currentColor = Colors.orange;
   Set<Marker> markers = {};
   Set<Circle> circles = {};
@@ -69,8 +69,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         addPin(lastLocation);
         addCircle(lastLocation);
         setState(() {
-          _canSave = placeEditingController.text.trim().length >= 3 &&
-              newLocation != null;
+          _canSave = placeEditingController.text.trim().length >= 3;
         });
       });
     } else {
@@ -156,7 +155,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                           ),
                           onChanged: (text) {
                             _canSave = (text.trim().length >= 3 &&
-                                newLocation != null);
+                                lastLocation != null);
                             setState(() {});
                           },
                           onSubmitted: (text) {
@@ -449,15 +448,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void getCurrentLocationAndUpdateMap() {
     context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      newLocation = location;
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
-
+      addCircle(lastLocation);
       setState(() {
-        _canSave = placeEditingController.text.trim().length >= 3 &&
-            newLocation != null;
+        _canSave = placeEditingController.text.trim().length >= 3;
       });
     }, (ex) {
       error = ex.toString();
