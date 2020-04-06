@@ -287,7 +287,7 @@ class LocationUtils {
           places.last.minutes += partialPlaceMinutes;
 
           if (action == Action.Enter) {
-            if (!places.last.places.contains(where)) {
+            if (places.isNotEmpty && !places.last.places.contains(where)) {
               if (lastAction == Action.Exit &&
                   places.last.activity == MotionActivity.Unknown) {
                 places.last.places.add(where);

@@ -24,6 +24,7 @@ import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -72,6 +73,7 @@ class _MapPageState extends State<MapPage>
 
   CameraPosition _initialPosition;
   List<Annotation> annotations = [];
+  List<Location> locations = [];
 
   @override
   void initState() {
@@ -572,8 +574,8 @@ class _MapPageState extends State<MapPage>
 
   _onLocationTap(Location location) async {
     print('[MapPage] _onLocationTap');
-
-    final MarkerId markerId = MarkerId('${location.uuid}_tmp');
+    String selectedPinId = '${location.uuid}_tmp';
+    final MarkerId markerId = MarkerId(selectedPinId);
 //    final MarkerId markerId = MarkerId('${location.uuid}');
     final Marker marker = Marker(
       markerId: markerId,
@@ -590,108 +592,108 @@ class _MapPageState extends State<MapPage>
       markers[markerId] = marker;
     });
 
-    await showModalBottomSheet(
-      context: context,
+    final dailyLocations = Provider.of<LocationNotifier>(context, listen: false)
+        .locationsPerDate[_currentDate];
+    final initialPage = dailyLocations
+        .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
+
+    await showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.data_usage)),
-                  Expanded(
-                    child: AutoSizeText(
-                      location.uuid,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.timelapse,
-                    ),
-                  ),
-                  Text(dateFormat.format(location.dateTime)),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.pin_drop,
-                    ),
-                  ),
-                  Text(
-                      'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.gps_fixed,
-                    ),
-                  ),
-                  Text('Accuratezza: ${location.coords.accuracy} m'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.event,
-                    ),
-                  ),
-                  Text(
-                      'Evento: ${location.event.toString().replaceFirst('Event.', '')}'),
-                ],
-              ),
-              if (location?.activity != null)
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.directions_walk,
-                      ),
-                    ),
-                    Text(
-                        'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %'),
-                  ],
-                ),
-              if (location?.battery != null)
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        location.battery.isCharging
-                            ? Icons.battery_charging_full
-                            : Icons.battery_std,
-                      ),
-                    ),
-                    Text('${(location.battery.level * 100).toInt()} %'),
-                  ],
-                ),
-            ],
+        return SlidingSheetDialog(
+          backdropColor: Colors.black.withOpacity(0.2),
+          elevation: 8,
+          cornerRadius: 16,
+          minHeight: 370,
+          duration: Duration(milliseconds: 300),
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.4, 0.7, 1.0],
+            positioning: SnapPositioning.relativeToAvailableSpace,
           ),
+          builder: (ctx, sheetState) {
+            return Container(
+              height: 400,
+              child: Material(
+                child: InfoPinWidget(
+                  locations: dailyLocations,
+                  initialPage: initialPage,
+                  selectPin: (location) {
+                    Marker marker;
+                    setState(() {
+                      markers.removeWhere((k, v) => k.value == selectedPinId);
+                      selectedPinId = '${location.uuid}_tmp';
+                      final MarkerId markerId = MarkerId(selectedPinId);
+                      marker = Marker(
+                        markerId: markerId,
+                        icon: selectedPinMarkerIcon,
+                        anchor: Offset(0.5, 0.5),
+                        position: LatLng(
+                          location.coords.latitude,
+                          location.coords.longitude,
+                        ),
+                        zIndex: 0.4,
+                      );
+                      markers[markerId] = marker;
+                      // zoom in to the selected camera position
+                    });
+                    _controller.future.then((controller) {
+                      controller.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          bearing: 0,
+                          target: marker.position,
+                          zoom: 19,
+                        ),
+                      ));
+                    });
+                  },
+                ),
+              ),
+            );
+          },
         );
       },
     );
-    markers.removeWhere((k, v) => k.value == '${location.uuid}_tmp');
+//    await showModalBottomSheet(
+//      context: context,
+//      builder: (context) {
+//        return InfoPinWidget(
+//          locations: dailyLocations,
+//          initialPage: initialPage,
+//          selectPin: (location) {
+//            Marker marker;
+//            setState(() {
+//              markers.removeWhere((k, v) => k.value == selectedPinId);
+//              selectedPinId = '${location.uuid}_tmp';
+//              final MarkerId markerId = MarkerId(selectedPinId);
+//              marker = Marker(
+//                markerId: markerId,
+//                icon: selectedPinMarkerIcon,
+//                anchor: Offset(0.5, 0.5),
+//                position: LatLng(
+//                  location.coords.latitude,
+//                  location.coords.longitude,
+//                ),
+//                zIndex: 0.4,
+//              );
+//              markers[markerId] = marker;
+//              // zoom in to the selected camera position
+//            });
+//            _controller.future.then((controller) {
+//              controller.animateCamera(CameraUpdate.newCameraPosition(
+//                CameraPosition(
+//                  bearing: 0,
+//                  target: marker.position,
+//                  zoom: 19,
+//                ),
+//              ));
+//            });
+//          },
+//        );
+//      },
+//    );
+    markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }
 
