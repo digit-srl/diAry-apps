@@ -127,7 +127,9 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                   : _currentPage == 1 ? Icons.gps_fixed : Icons.search),
               onPressed: () {
                 if (_currentPage == 1) {
-                  context.read<GpsNotifier>().getCurrentLoc(() {}, () {});
+                  context
+                      .read<GpsNotifier>()
+                      .getCurrentLoc((location) {}, (error) {});
                 } else {
                   widget.changePage(2);
                   setState(() {

@@ -43,7 +43,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Set<Marker> markers = {};
   Set<Circle> circles = {};
   Completer<GoogleMapController> _controller = Completer();
-  double zoom = 19.0;
+  double zoom = 17.0;
   Widget fab = Container();
   bool isHomeEnabled;
   final GlobalKey _key = GlobalKey();

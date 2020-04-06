@@ -34,7 +34,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   final GlobalKey _key = GlobalKey();
   Set<Marker> markers = {};
   Completer<GoogleMapController> _controller = Completer();
-  double zoom = 19.0;
+  double zoom = 17.0;
   Widget fab = Container();
   bool isHomeEnabled;
 
