@@ -6,6 +6,7 @@ import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -69,10 +70,22 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
           title: Text(
-            'Aggiungi segnalazione',
+            'Aggiungi annotazione',
             style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
           ),
-          centerTitle: false,
+          iconTheme: IconThemeData(
+            color: accentColor,
+          ),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.help_outline),
+              tooltip: "Cos'è questa schermata?",
+              onPressed: () {
+                _showHelper(context);
+              },
+            )
+          ],
           elevation: 4,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(260.0),
@@ -86,8 +99,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                       cursorColor: accentColor,
                       controller: annotationEditingController,
                       expands: false,
-                      maxLines: 5,
-                      minLines: 5,
+                      maxLines: 8,
+                      minLines: 8,
                       style: TextStyle(fontFamily: "Nunito"),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -108,13 +121,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                       },
                       onSubmitted: (text) {},
                     ),
-                  ),
-                  SizedBox(
-                    height: 24,
-                  ),
-                  AutoSizeText(
-                    "La segnalazione verrà associata alla tua posizione corrente. Deve avere una lunghezza minima di 3 caratteri.",
-                    maxLines: 2,
                   ),
                 ],
               ),
@@ -254,5 +260,35 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       print('[MapPage] [Error] [_goToLocation]');
       print(ex);
     }
+  }
+
+  void _showHelper(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  "Cos'è questa schermata?",
+                  style: titleCardStyle,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "Da qui è possibile aggiungere segnalare situazioni particolari degne di nota. L'annotazione verrà applicata alla tua posizione corrente, per cui è necessario autorizzare l'accesso alla localizzazione da parte dell'app per poterne aggiungere una.",
+                  style: secondaryStyle,
+                ),
+              ],
+            )
+          );
+        }
+    );
   }
 }

@@ -613,163 +613,175 @@ class _MapPageState extends State<MapPage>
       isScrollControlled: true,
       builder: (context) {
         return Container(
-          height: 300,
-          child:
-          Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Icon(
+                          //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
+                          Icons.pin_drop,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
-                    child: Center(
+                    Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: AutoSizeText(
+                            "Pin",
+                            maxLines: 1,
+                            style: TextStyle(fontSize: 30, color: accentColor),
+                          )),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+
+          Container(
+            height: 200,
+            child:   ListView(
+              shrinkWrap: true,
+              physics: AlwaysScrollableScrollPhysics(),
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                        child: Icon(Icons.data_usage)),
+                    Expanded(
+                      child: AutoSizeText(
+                        location.uuid,
+                        maxLines: 1,
+                        style: TextStyle(color: secondaryText),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                        child: Icon(Icons.access_time)),
+                    Expanded(
+                      child: AutoSizeText(
+                        dateFormat.format(location.dateTime),
+                        maxLines: 1,
+                        style: TextStyle(color: secondaryText),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                       child: Icon(
-                        //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
                         Icons.pin_drop,
-                        color: Colors.white,
-                        size: 24,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                    Expanded(
+                      child: AutoSizeText(
+                        'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
+                        style: TextStyle(color: secondaryText),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                      child: Icon(
+                        Icons.gps_fixed,
+                      ),
+                    ),
+                    Expanded(
+                      child: AutoSizeText(
+                        'Accuratezza: ${location.coords.accuracy} m',
+                        style: TextStyle(color: secondaryText),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                      child: Icon(
+                        Icons.event,
+                      ),
+                    ),
+                    Expanded(
+                      child: AutoSizeText(
+                        'Evento: ${location.event.toString().replaceFirst('Event.', '')}',
+                        style: TextStyle(color: secondaryText),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                if (location?.activity != null)
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                        child: Icon(
+                          Icons.directions_walk,
+                        ),
+                      ),
+                      Expanded(
                         child: AutoSizeText(
-                          "Pin",
+                          'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
+                          style: TextStyle(color: secondaryText),
                           maxLines: 1,
-                          style: TextStyle(fontSize: 30, color: accentColor),
-                        )),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(Icons.data_usage)),
-                  Expanded(
-                    child: AutoSizeText(
-                      location.uuid,
-                      maxLines: 1,
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(Icons.access_time)),
-                  Expanded(
-                    child: AutoSizeText(
-                      dateFormat.format(location.dateTime),
-                      maxLines: 1,
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                    child: Icon(
-                      Icons.pin_drop,
-                    ),
-                  ),
-                  Expanded(
-                    child: AutoSizeText(
-                      'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
-                      style: TextStyle(color: secondaryText),
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                    child: Icon(
-                      Icons.gps_fixed,
-                    ),
-                  ),
-                  Expanded(
-                    child: AutoSizeText(
-                      'Accuratezza: ${location.coords.accuracy} m',
-                      style: TextStyle(color: secondaryText),
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                    child: Icon(
-                      Icons.event,
-                    ),
-                  ),
-                  Expanded(
-                    child: AutoSizeText(
-                      'Evento: ${location.event.toString().replaceFirst('Event.', '')}',
-                      style: TextStyle(color: secondaryText),
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-              if (location?.activity != null)
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.directions_walk,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: AutoSizeText(
-                        'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
-                        style: TextStyle(color: secondaryText),
-                        maxLines: 1,
+                    ],
+                  ),
+                if (location?.battery != null)
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
+                        child: Icon(
+                          location.battery.isCharging
+                              ? Icons.battery_charging_full
+                              : Icons.battery_std,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              if (location?.battery != null)
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
-                      child: Icon(
-                        location.battery.isCharging
-                            ? Icons.battery_charging_full
-                            : Icons.battery_std,
+                      Expanded(
+                        child: AutoSizeText(
+                          '${(location.battery.level * 100).toInt()} %',
+                          style: TextStyle(color: secondaryText),
+                          maxLines: 1,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: AutoSizeText(
-                        '${(location.battery.level * 100).toInt()} %',
-                        style: TextStyle(color: secondaryText),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
+                    ],
+                  ),
+              ],
+            ),
           ),
+
+              ],
+            ),
           ),
         );
       },
@@ -891,6 +903,7 @@ class _MapPageState extends State<MapPage>
           );
         });
   }
+
   @override
   void dispose() {
     print('[MapPage] dispose()');

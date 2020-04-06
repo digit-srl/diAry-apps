@@ -9,6 +9,7 @@ import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
+import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -68,7 +69,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
         addPin(lastLocation);
         addCircle(lastLocation);
         setState(() {
-          _canSave = placeEditingController.text.trim().length >= 3 && newLocation != null;
+          _canSave = placeEditingController.text.trim().length >= 3 &&
+              newLocation != null;
         });
       });
     } else {
@@ -96,7 +98,16 @@ class _AddPlacePageState extends State<AddPlacePage> {
           'Aggiungi luogo',
           style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
         ),
-        centerTitle: false,
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            tooltip: "Cos'è questa schermata?",
+            onPressed: () {
+              _showHelper(context);
+            },
+          )
+        ],
         elevation: 4,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(260.0),
@@ -445,7 +456,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
       addPin(lastLocation);
 
       setState(() {
-        _canSave = placeEditingController.text.trim().length >= 3 && newLocation != null;
+        _canSave = placeEditingController.text.trim().length >= 3 &&
+            newLocation != null;
       });
     }, (ex) {
       error = ex.toString();
@@ -473,6 +485,36 @@ class _AddPlacePageState extends State<AddPlacePage> {
         icon: currentPositionMarkerIcon,
         position: location,
       ),
+    );
+  }
+
+  void _showHelper(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Cos'è questa schermata?",
+                    style: titleCardStyle,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Da qui è possibile aggiungere o modificare un luogo, così da rendere più preciso l'operato dell'app. Posiziona il luogo premendo in un qualunque punto nella mappa. Puoi inoltre sceglierne il nome, il colore con quale visualizzarlo nella mappa, il raggio, e specificare se è la tua abitazione principale. Passando più tempo nella tua abitazione principale, otterrai un maggior numero di WOM.",
+                    style: secondaryStyle,
+                  ),
+                ],
+              )
+          );
+        }
     );
   }
 }
