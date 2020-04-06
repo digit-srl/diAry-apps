@@ -163,8 +163,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                 ],
               ),
             ),
-
-          if (error != null)
           Positioned(
             child: Container(
               height: 40.0,
