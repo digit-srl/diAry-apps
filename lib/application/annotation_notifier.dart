@@ -1,12 +1,6 @@
 import 'package:diary/domain/entities/annotation.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
-import 'package:diary/utils/extensions.dart';
-import 'day_notifier.dart';
-import 'service_notifier.dart';
 
 enum AnnotationAction { Added, Removed, Edited }
 

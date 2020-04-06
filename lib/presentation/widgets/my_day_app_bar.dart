@@ -6,7 +6,6 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 class MyDayAppBar extends StatefulWidget {
   final Function changePage;

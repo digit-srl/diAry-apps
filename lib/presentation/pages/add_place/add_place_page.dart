@@ -5,11 +5,9 @@ import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/user_repository.dart';
-import 'package:diary/presentation/pages/map/map_page.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,6 +17,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
     as bg;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../main.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
@@ -36,7 +36,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   ThemeData themeData = ThemeData(primaryColor: accentColor);
   Circle place;
-  BitmapDescriptor _currentPositionMarkerIcon;
+//  BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
   Color currentColor = Colors.orange;
@@ -63,11 +63,24 @@ class _AddPlacePageState extends State<AddPlacePage> {
     if (locations.isNotEmpty) {
       final coords = locations.last.coords;
       lastLocation = LatLng(coords.latitude, coords.longitude);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _goToLocation(lastLocation);
+        addPin(lastLocation);
+        addCircle(lastLocation);
+        setState(() {
+          if (placeEditingController.text.trim().length >= 3 &&
+              newLocation != null) {
+            _top = _size.height - 30;
+          } else {
+            _top = null;
+          }
+        });
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getCurrentLocationAndUpdateMap();
+      });
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getCurrentLocationAndUpdateMap();
-    });
   }
 
   @override
@@ -79,7 +92,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   @override
   Widget build(BuildContext context) {
-    _createMarkerImageFromAsset(context);
+//    _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -303,21 +316,21 @@ class _AddPlacePageState extends State<AddPlacePage> {
     );
   }
 
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_currentPositionMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/my_position_pin.png')
-          .then(_updateCurrentBitmap);
-    }
-  }
-
-  void _updateCurrentBitmap(BitmapDescriptor bitmap) {
-    setState(() {
-      _currentPositionMarkerIcon = bitmap;
-    });
-  }
+//  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
+//    if (_currentPositionMarkerIcon == null) {
+//      final ImageConfiguration imageConfiguration =
+//          createLocalImageConfiguration(context);
+//      BitmapDescriptor.fromAssetImage(
+//              imageConfiguration, 'assets/my_position_pin.png')
+//          .then(_updateCurrentBitmap);
+//    }
+//  }
+//
+//  void _updateCurrentBitmap(BitmapDescriptor bitmap) {
+//    setState(() {
+//      _currentPositionMarkerIcon = bitmap;
+//    });
+//  }
 
 //  void getCurrentLocationAndUpdateMap() {
 //    bg.BackgroundGeolocation.getCurrentPosition(
@@ -493,7 +506,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
     markers.add(
       Marker(
         markerId: MarkerId('current'),
-        icon: _currentPositionMarkerIcon,
+        icon: currentPositionMarkerIcon,
         position: location,
       ),
     );

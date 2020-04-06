@@ -1,6 +1,5 @@
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
-import 'package:diary/utils/location_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'

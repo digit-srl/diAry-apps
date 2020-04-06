@@ -1,4 +1,3 @@
-import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';

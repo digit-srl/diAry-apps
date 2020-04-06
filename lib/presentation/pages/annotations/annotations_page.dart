@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:diary/utils/extensions.dart';
-import 'package:provider/provider.dart';
 
 class AnnotationsPage extends StatefulWidget {
   @override

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
-import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
@@ -21,6 +20,7 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
 import 'package:provider/provider.dart';
+import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
@@ -41,10 +41,6 @@ class _MapPageState extends State<MapPage>
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
-  BitmapDescriptor _currentPositionMarkerIcon;
-  BitmapDescriptor _annotationPositionMarkerIcon;
-  BitmapDescriptor _pinPositionMarkerIcon;
-  BitmapDescriptor _selectedPinMarkerIcon;
 
   Function removeServiceListener;
   Function removeLocationListener;
@@ -125,7 +121,7 @@ class _MapPageState extends State<MapPage>
     removeAnnotationListener = context.read<AnnotationNotifier>().addListener(
       (state) {
         print('[MapPage] AnnotationNotifier');
-        if (state != null) {
+        if (state != null && _currentDate.isToday()) {
           _onAnnotation(state);
         }
       },
@@ -350,26 +346,15 @@ class _MapPageState extends State<MapPage>
     final MarkerId markerId = MarkerId(location.uuid);
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _pinPositionMarkerIcon,
-//          onTap: () => onMarkerTap(loc),
+      icon: pinPositionMarkerIcon,
+      onTap: () => _onLocationTap(location),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
       ),
       zIndex: 0.1,
     );
-//    final Marker marker = Marker(
-//      markerId: markerId,
-//      icon: BitmapDescriptor.defaultMarkerWithHue(
-//          hue ?? BitmapDescriptor.hueGreen),
-//      position: LatLng(
-//        loc.coords.latitude,
-//        loc.coords.longitude,
-//      ),
-//      onTap: () => onMarkerTap(loc),
-//    );
     markers[markerId] = marker;
-//    _goToLocation(loc);
     setState(() {
       markers[markerId] = marker;
     });
@@ -379,26 +364,15 @@ class _MapPageState extends State<MapPage>
     final MarkerId markerId = MarkerId(annotation.id);
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _annotationPositionMarkerIcon,
-//          onTap: () => onMarkerTap(loc),
+      icon: annotationPositionMarkerIcon,
+      onTap: () => _onAnnotationTap(annotation),
       position: LatLng(
         annotation.latitude,
         annotation.longitude,
       ),
       zIndex: 0.2,
     );
-//    final Marker marker = Marker(
-//      markerId: markerId,
-//      icon: BitmapDescriptor.defaultMarkerWithHue(
-//          hue ?? BitmapDescriptor.hueGreen),
-//      position: LatLng(
-//        loc.coords.latitude,
-//        loc.coords.longitude,
-//      ),
-//      onTap: () => onMarkerTap(loc),
-//    );
     markers[markerId] = marker;
-//    _goToLocation(loc);
     setState(() {
       markers[markerId] = marker;
     });
@@ -411,32 +385,21 @@ class _MapPageState extends State<MapPage>
     markers[markerId] = Marker(
       markerId: MarkerId("current_position"),
       position: ll,
-      icon: _currentPositionMarkerIcon,
+      icon: currentPositionMarkerIcon,
       zIndex: 0.3,
     );
     setState(() {});
-//    _currentPosition.add(Circle(
-//        circleId: CircleId('center'),
-//        center: ll,
-//        fillColor: Colors.blue,
-//        strokeColor: Colors.white,
-//        strokeWidth: 3,
-//        radius: 11));
-
-//    setState(() {
-//      updateAllCircles();
-//    });
   }
 
   Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_currentPositionMarkerIcon == null) {
+    if (currentPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/my_position_pin.png')
           .then(_updateCurrentBitmap);
     }
-    if (_annotationPositionMarkerIcon == null) {
+    if (annotationPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
@@ -444,7 +407,7 @@ class _MapPageState extends State<MapPage>
           .then(_updateAnnotationBitmap);
     }
 
-    if (_pinPositionMarkerIcon == null) {
+    if (pinPositionMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
@@ -452,7 +415,7 @@ class _MapPageState extends State<MapPage>
           .then(_updateBlackBitmap);
     }
 
-    if (_selectedPinMarkerIcon == null) {
+    if (selectedPinMarkerIcon == null) {
       final ImageConfiguration imageConfiguration = ImageConfiguration(
         bundle: DefaultAssetBundle.of(context),
         devicePixelRatio: 2.5,
@@ -468,25 +431,25 @@ class _MapPageState extends State<MapPage>
 
   void _updateCurrentBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _currentPositionMarkerIcon = bitmap;
+      currentPositionMarkerIcon = bitmap;
     });
   }
 
   void _updateBlackBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _pinPositionMarkerIcon = bitmap;
+      pinPositionMarkerIcon = bitmap;
     });
   }
 
   void _updateSelectedBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _selectedPinMarkerIcon = bitmap;
+      selectedPinMarkerIcon = bitmap;
     });
   }
 
   void _updateAnnotationBitmap(BitmapDescriptor bitmap) {
     setState(() {
-      _annotationPositionMarkerIcon = bitmap;
+      annotationPositionMarkerIcon = bitmap;
     });
   }
 
@@ -537,7 +500,6 @@ class _MapPageState extends State<MapPage>
             initialCameraPosition: _initialPosition ?? _kGooglePlex,
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
-//        myLocationEnabled: true,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
               _loadInitialDailyMarkers();
@@ -548,7 +510,6 @@ class _MapPageState extends State<MapPage>
           ManualDetectionPositionLayer(),
         ],
       ),
-//      floatingActionButton: MainMenuButton(),
     );
   }
 
@@ -575,7 +536,7 @@ class _MapPageState extends State<MapPage>
         final MarkerId markerId = MarkerId(location.uuid);
         final Marker marker = Marker(
           markerId: markerId,
-          icon: _pinPositionMarkerIcon,
+          icon: pinPositionMarkerIcon,
           onTap: () => _onLocationTap(location),
           position: LatLng(
             location.coords.latitude,
@@ -586,13 +547,16 @@ class _MapPageState extends State<MapPage>
         markers[markerId] = marker;
       }
     }
-    final annotations = context.read<AnnotationNotifier>().annotations;
+    final annotations = context
+        .read<AnnotationNotifier>()
+        .annotations
+        .where((a) => a.dateTime.isSameDay(_currentDate));
     if (annotations.isNotEmpty) {
       for (Annotation annotation in annotations) {
         final MarkerId markerId = MarkerId(annotation.id);
         final Marker marker = Marker(
           markerId: markerId,
-          icon: _annotationPositionMarkerIcon,
+          icon: annotationPositionMarkerIcon,
           onTap: () => _onAnnotationTap(annotation),
           position: LatLng(
             annotation.latitude,
@@ -603,35 +567,17 @@ class _MapPageState extends State<MapPage>
         markers[markerId] = marker;
       }
     }
-
-    setState(() {
-//      updateAllCircles();
-    });
-
-//    await _goToLocation(dailyLocations.first);
-  }
-
-  @override
-  void dispose() {
-    print('[MapPage] dispose()');
-    removeServiceListener();
-    removeDateListener();
-    removeLocationListener();
-    removeGeofenceListener();
-    removeGeofenceEventListener();
-    removeGeofenceChangeListener();
-    removeAnnotationListener();
-    super.dispose();
+    setState(() {});
   }
 
   _onLocationTap(Location location) async {
-    print('[MapPage] _onAnnotationTap');
+    print('[MapPage] _onLocationTap');
 
     final MarkerId markerId = MarkerId('${location.uuid}_tmp');
 //    final MarkerId markerId = MarkerId('${location.uuid}');
     final Marker marker = Marker(
       markerId: markerId,
-      icon: _selectedPinMarkerIcon,
+      icon: selectedPinMarkerIcon,
       anchor: Offset(0.5, 0.5),
       position: LatLng(
         location.coords.latitude,
@@ -639,9 +585,6 @@ class _MapPageState extends State<MapPage>
       ),
       zIndex: 0.4,
     );
-//    markers.removeWhere((k, m) => k.value == location.uuid);
-//    markers[markerId] =
-//        markers[markerId].copyWith(iconParam: _selectedPinMarkerIcon);
 
     setState(() {
       markers[markerId] = marker;
@@ -668,16 +611,6 @@ class _MapPageState extends State<MapPage>
                       style: TextStyle(fontSize: 30),
                     ),
                   ),
-//                    coloredGeofence.isHome
-//                        ? Padding(
-//                            padding: const EdgeInsets.all(8.0),
-//                            child: Icon(
-//                              Icons.person_pin,
-//                              size: 35,
-//                              color: color,
-//                            ),
-//                          )
-//                        : Container(),
                 ],
               ),
               Row(
@@ -759,37 +692,35 @@ class _MapPageState extends State<MapPage>
       },
     );
     markers.removeWhere((k, v) => k.value == '${location.uuid}_tmp');
-//    markers[markerId] =
-//        markers[markerId].copyWith(iconParam: _pinPositionMarkerIcon);
     setState(() {});
   }
 
   _onAnnotationTap(Annotation annotation) {
     print('[MapPage] _onAnnotationTap');
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          'assets/annotation_pin.png',
-                          width: 30,
-                        )),
-                    Expanded(
-                      child: AutoSizeText(
-                        annotation.title,
-                        maxLines: 3,
-                        style: TextStyle(fontSize: 30),
-                      ),
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/annotation_pin.png',
+                        width: 30,
+                      )),
+                  Expanded(
+                    child: AutoSizeText(
+                      annotation.title,
+                      maxLines: 3,
+                      style: TextStyle(fontSize: 30),
                     ),
+                  ),
 //                    coloredGeofence.isHome
 //                        ? Padding(
 //                            padding: const EdgeInsets.all(8.0),
@@ -800,64 +731,78 @@ class _MapPageState extends State<MapPage>
 //                            ),
 //                          )
 //                        : Container(),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.gps_fixed,
-                      ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.gps_fixed,
                     ),
-                    Text(
-                        'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}'),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.timelapse,
-                      ),
+                  ),
+                  Text(
+                      'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.timelapse,
                     ),
-                    Text(dateFormat.format(annotation.dateTime)),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Row(
-                    children: <Widget>[
-                      Spacer(),
-                      GenericButton(
-                        text: 'Elimina',
-                        onPressed: () async {
-                          GenericUtils.ask(context,
-                              'Sicuro di volere eliminare questa annotazione?',
-                              () {
-                            context
-                                .read<AnnotationNotifier>()
-                                .removeAnnotation(annotation);
-                            Navigator.of(context).pop();
-                          }, () {
-                            Navigator.of(context).pop();
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                  ),
+                  Text(dateFormat.format(annotation.dateTime)),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  children: <Widget>[
+                    Spacer(),
+                    GenericButton(
+                      text: 'Elimina',
+                      onPressed: () async {
+                        GenericUtils.ask(context,
+                            'Sicuro di volere eliminare questa annotazione?',
+                            () {
+                          context
+                              .read<AnnotationNotifier>()
+                              .removeAnnotation(annotation);
+                          Navigator.of(context).pop();
+                        }, () {
+                          Navigator.of(context).pop();
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
 //                      GenericButton(
 //                        text: 'Modifica',
 //                        onPressed: () {},
 //                      ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    print('[MapPage] dispose()');
+    removeServiceListener();
+    removeDateListener();
+    removeLocationListener();
+    removeGeofenceListener();
+    removeGeofenceEventListener();
+    removeGeofenceChangeListener();
+    removeAnnotationListener();
+    super.dispose();
   }
 }

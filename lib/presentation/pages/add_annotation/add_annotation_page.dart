@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 
+import '../../../main.dart';
+
 class AddAnnotationPage extends StatefulWidget {
   final LatLng location;
 
@@ -26,7 +28,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   ThemeData themeData = ThemeData(primaryColor: accentColor);
   Circle place;
-  BitmapDescriptor _currentPositionMarkerIcon;
+//  BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
   bg.Location newLocation;
   final GlobalKey _key = GlobalKey();
@@ -61,7 +63,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   @override
   Widget build(BuildContext context) {
-    _createMarkerImageFromAsset(context);
+//    _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -209,22 +211,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     Navigator.of(context).pop();
   }
 
-  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
-    if (_currentPositionMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/my_position_pin.png')
-          .then(_updateCurrentBitmap);
-    }
-  }
-
-  void _updateCurrentBitmap(BitmapDescriptor bitmap) {
-    setState(() {
-      _currentPositionMarkerIcon = bitmap;
-    });
-  }
-
   void getCurrentLocationAndUpdateMap() {
     context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
       newLocation = location;
@@ -251,7 +237,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     markers.add(
       Marker(
         markerId: MarkerId('current'),
-        icon: _currentPositionMarkerIcon,
+        icon: currentPositionMarkerIcon,
         position: location,
       ),
     );
