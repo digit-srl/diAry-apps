@@ -8,6 +8,7 @@ import 'package:diary/presentation/widgets/custom_icons_icons.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
+import 'package:diary/utils/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -64,8 +65,20 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                         annotation.dateTime.isSameDay(dateState.selectedDate))
                     .toList();
                 if (annotations.isEmpty) {
-                  return Center(
-                    child: Text('Nessuna annotazione'),
+                  return Container(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child:
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(CustomIcons.bookmark_outline, size: 60, color: secondaryText,),
+                        SizedBox(height: 16,),
+                        Text('Nessuna annotazione al momento.', style: secondaryStyle,),
+                      ],
+
+                  ),
+                    ),
                   );
                 }
                 return ListView.separated(

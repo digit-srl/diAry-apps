@@ -194,91 +194,93 @@ class _MapPageState extends State<MapPage>
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Padding(
+          return Container(
+            color: Colors.white,
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: coloredGeofence.color,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                          CustomIcons.map_marker_outline,
-                          color: Colors.white,
-                          size: 24,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: coloredGeofence.color,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
+                            CustomIcons.map_marker_outline,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: AutoSizeText(
-                            "Luogo",
-                            maxLines: 1,
-                            style: TextStyle(fontSize: 30, color: accentColor),
-                          )),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {},
-                      tooltip: "Modifica (coming soon!)",
-                    ),
-                    IconButton(
-                        icon: Icon(CustomIcons.trash_can_outline),
-                        tooltip: "Elimina",
-                        onPressed: () async {
-                          final deleted = await PlaceUtils.removePlace(
-                              context, coloredGeofence.geofence.identifier);
-                          if (deleted) {
-                            Navigator.of(context).pop();
-                          }
-                        }),
-                  ],
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.message,
+                      Expanded(
+                        child: Container(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: AutoSizeText(
+                              "Luogo",
+                              maxLines: 1,
+                              style:
+                                  TextStyle(fontSize: 30, color: accentColor),
+                            )),
                       ),
-                    ),
-                    Text(
-                      "Nome del luogo: " + coloredGeofence.name,
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.settings_ethernet,
-                        color: accentColor,
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {},
+                        tooltip: "Modifica (coming soon!)",
                       ),
-                    ),
-                    AutoSizeText(
-                      'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri',
-                      maxLines: 1,
-                      style: TextStyle(color: secondaryText),
-                    ),
-                  ],
-                ),
-              ],
+                      IconButton(
+                          icon: Icon(CustomIcons.trash_can_outline),
+                          tooltip: "Elimina",
+                          onPressed: () async {
+                            final deleted = await PlaceUtils.removePlace(
+                                context, coloredGeofence.geofence.identifier);
+                            if (deleted) {
+                              Navigator.of(context).pop();
+                            }
+                          }),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                        child: Icon(
+                          Icons.message,
+                        ),
+                      ),
+                      Text(
+                        "Nome del luogo: " + coloredGeofence.name,
+                        style: TextStyle(color: secondaryText),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                        child: Icon(
+                          Icons.settings_ethernet,
+                          color: accentColor,
+                        ),
+                      ),
+                      AutoSizeText(
+                        'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri',
+                        maxLines: 1,
+                        style: TextStyle(color: secondaryText),
+                      ),
+                    ],
+                  ),
+                ],
             ),
           );
         });
@@ -652,134 +654,132 @@ class _MapPageState extends State<MapPage>
                 SizedBox(
                   height: 16,
                 ),
-
-          Container(
-            height: 200,
-            child:   ListView(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                        child: Icon(Icons.data_usage)),
-                    Expanded(
-                      child: AutoSizeText(
-                        location.uuid,
-                        maxLines: 1,
-                        style: TextStyle(color: secondaryText),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                        child: Icon(Icons.access_time)),
-                    Expanded(
-                      child: AutoSizeText(
-                        dateFormat.format(location.dateTime),
-                        maxLines: 1,
-                        style: TextStyle(color: secondaryText),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.pin_drop,
-                      ),
-                    ),
-                    Expanded(
-                      child: AutoSizeText(
-                        'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
-                        style: TextStyle(color: secondaryText),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.gps_fixed,
-                      ),
-                    ),
-                    Expanded(
-                      child: AutoSizeText(
-                        'Accuratezza: ${location.coords.accuracy} m',
-                        style: TextStyle(color: secondaryText),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                      child: Icon(
-                        Icons.event,
-                      ),
-                    ),
-                    Expanded(
-                      child: AutoSizeText(
-                        'Evento: ${location.event.toString().replaceFirst('Event.', '')}',
-                        style: TextStyle(color: secondaryText),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                if (location?.activity != null)
-                  Row(
+                Container(
+                  height: 200,
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                        child: Icon(
-                          Icons.directions_walk,
-                        ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                              child: Icon(Icons.data_usage)),
+                          Expanded(
+                            child: AutoSizeText(
+                              location.uuid,
+                              maxLines: 1,
+                              style: TextStyle(color: secondaryText),
+                            ),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: AutoSizeText(
-                          'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
-                          style: TextStyle(color: secondaryText),
-                          maxLines: 1,
-                        ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                              child: Icon(Icons.access_time)),
+                          Expanded(
+                            child: AutoSizeText(
+                              dateFormat.format(location.dateTime),
+                              maxLines: 1,
+                              style: TextStyle(color: secondaryText),
+                            ),
+                          ),
+                        ],
                       ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                            child: Icon(
+                              Icons.pin_drop,
+                            ),
+                          ),
+                          Expanded(
+                            child: AutoSizeText(
+                              'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
+                              style: TextStyle(color: secondaryText),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                            child: Icon(
+                              Icons.gps_fixed,
+                            ),
+                          ),
+                          Expanded(
+                            child: AutoSizeText(
+                              'Accuratezza: ${location.coords.accuracy} m',
+                              style: TextStyle(color: secondaryText),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                            child: Icon(
+                              Icons.event,
+                            ),
+                          ),
+                          Expanded(
+                            child: AutoSizeText(
+                              'Evento: ${location.event.toString().replaceFirst('Event.', '')}',
+                              style: TextStyle(color: secondaryText),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (location?.activity != null)
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                              child: Icon(
+                                Icons.directions_walk,
+                              ),
+                            ),
+                            Expanded(
+                              child: AutoSizeText(
+                                'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
+                                style: TextStyle(color: secondaryText),
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (location?.battery != null)
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
+                              child: Icon(
+                                location.battery.isCharging
+                                    ? Icons.battery_charging_full
+                                    : Icons.battery_std,
+                              ),
+                            ),
+                            Expanded(
+                              child: AutoSizeText(
+                                '${(location.battery.level * 100).toInt()} %',
+                                style: TextStyle(color: secondaryText),
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
-                if (location?.battery != null)
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
-                        child: Icon(
-                          location.battery.isCharging
-                              ? Icons.battery_charging_full
-                              : Icons.battery_std,
-                        ),
-                      ),
-                      Expanded(
-                        child: AutoSizeText(
-                          '${(location.battery.level * 100).toInt()} %',
-                          style: TextStyle(color: secondaryText),
-                          maxLines: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-
+                ),
               ],
             ),
           ),
@@ -795,7 +795,8 @@ class _MapPageState extends State<MapPage>
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Padding(
+          return Container(
+            color: Colors.white,
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
