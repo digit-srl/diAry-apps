@@ -26,6 +26,8 @@ import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
+import 'widgets/info_pin.dart';
+
 class MapPage extends StatefulWidget {
   @override
   _MapPageState createState() => _MapPageState();
