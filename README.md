@@ -1,16 +1,26 @@
-# diary
+# 📖 diAry — Digital Arianna
 
-A new Flutter application.
+_Let’s stop COVID-19 together._  
+A project developed by the [University of Urbino](https://www.uniurb.it) and [DIGIT srl](http://digit.srl).
 
-## Getting Started
+## The project
 
-This project is a starting point for a Flutter application.
+[Digital Arianna”, **diAry**](https://covid19app.uniurb.it/en/diary-lets-stop-covid-19-together/), is a mobile application that allows to **keep trace**, on your own device and in any circumstance, of movements that are relevant to the containment of the diffusion of COVID-19. To face the diffusion of the virus, it is essential to be able to trace back to all the locations and people that have been met during the incubation period.
+All data is exclusively **stored on the personal device of the user**, who can freely decide to examine, export, and eventually intersect them with information of public utility.
 
-A few resources to get you started if this is your first Flutter project:
+Adopting **responsible behaviors and keeping track of them** is the most effective way that each individual can contribute to public health. The contribution is recognized and quantified in terms of [WOM vouchers](https://wom.social), special certificates that recognize the social value of individual actions.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Roadmap
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* **By 10th April**: publication on Google Play store.
+* **Within April**: definition of the open data specification, the data upload API and other data formats.
+* To be updated.
+
+## Download
+
+_Coming to Google Play very soon…_
+
+## License
+
+The code of the diAry mobile application is released under the MIT License.
+The source code diAry data collection back-end is [available here](https://github.com/digit-srl/diAry-backend).
