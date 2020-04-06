@@ -38,7 +38,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Circle place;
 //  BitmapDescriptor _currentPositionMarkerIcon;
   LatLng lastLocation;
-  bg.Location newLocation;
+//  bg.Location newLocation;
   Color currentColor = Colors.orange;
   Set<Marker> markers = {};
   Set<Circle> circles = {};
@@ -68,8 +68,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         addPin(lastLocation);
         addCircle(lastLocation);
         setState(() {
-          if (placeEditingController.text.trim().length >= 3 &&
-              newLocation != null) {
+          if (placeEditingController.text.trim().length >= 3) {
             _top = _size.height - 30;
           } else {
             _top = null;
@@ -153,7 +152,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                                 ),
                                 onChanged: (text) {
                                   if (text.trim().length >= 3 &&
-                                      newLocation != null) {
+                                      lastLocation != null) {
                                     _top = _size.height - 30;
                                   } else {
                                     _top = null;
@@ -469,15 +468,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void getCurrentLocationAndUpdateMap() {
     context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      newLocation = location;
       lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
       _goToLocation(lastLocation);
       addPin(lastLocation);
       addCircle(lastLocation);
       setState(() {
-        if (placeEditingController.text.trim().length >= 3 &&
-            newLocation != null) {
+        if (placeEditingController.text.trim().length >= 3) {
           _top = _size.height - 30;
         } else {
           _top = null;
