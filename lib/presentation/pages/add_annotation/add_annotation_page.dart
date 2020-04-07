@@ -5,6 +5,9 @@ import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/presentation/widgets/detection_error_position_layer.dart';
+import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
+import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
@@ -27,21 +30,18 @@ class AddAnnotationPage extends StatefulWidget {
 class _AddAnnotationPageState extends State<AddAnnotationPage> {
   double radius = 20;
   TextEditingController annotationEditingController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  Circle _place;
 
-  ThemeData themeData = ThemeData(primaryColor: accentColor);
-  Circle place;
-//  BitmapDescriptor _currentPositionMarkerIcon;
-  LatLng lastLocation;
-  bg.Location newLocation;
-  //final GlobalKey _key = GlobalKey();
-  Set<Marker> markers = {};
+  // BitmapDescriptor _currentPositionMarkerIcon;
+  LatLng _lastLocation;
+  bg.Location _newLocation;
+
+  Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
-  double zoom = 17.0;
-  Widget fab = Container();
-  bool isHomeEnabled;
+  double _zoom = 17.0;
 
-  //Size get _size => _key?.currentContext?.size;
-  String error;
+  String _locationError;
   bool _canSave = false;
 
   DateTime selectedDate;
@@ -52,7 +52,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     selectedDate =
         Provider.of<DateNotifier>(context, listen: false).selectedDate;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getCurrentLocationAndUpdateMap();
+      _getCurrentLocationAndUpdateMap();
     });
   }
 
@@ -65,9 +65,10 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   @override
   Widget build(BuildContext context) {
-//    _createMarkerImageFromAsset(context);
+    // _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      key: _scaffoldKey,
       appBar: AppBar(
           title: Text(
             'Aggiungi annotazione',
@@ -82,25 +83,25 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               icon: Icon(Icons.help_outline),
               tooltip: "Cos'è questa schermata?",
               onPressed: () {
-                _showHelper(context);
+                _showHelper();
               },
             )
           ],
           elevation: 4,
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(260.0),
+            preferredSize: const Size.fromHeight(240.0),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               child: Column(
                 children: <Widget>[
                   Theme(
-                    data: themeData,
+                    data: ThemeData(primaryColor: accentColor),
                     child: TextField(
                       cursorColor: accentColor,
                       controller: annotationEditingController,
                       expands: false,
-                      maxLines: 8,
-                      minLines: 8,
+                      maxLines: 7,
+                      minLines: 7,
                       style: TextStyle(fontFamily: "Nunito"),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -111,13 +112,14 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                           ),
                         ),
                         filled: true,
-                          fillColor: Colors.black12,
+                        fillColor: baseCard,
                         hintText:
                             "Che episodio desideri segnalare? Descrivilo in questo box.",
                       ),
                       onChanged: (text) {
-                        _canSave = (text.trim().length >= 3 && newLocation != null);
-                        setState(() {});
+                        setState(() {
+                          _canSave = (text.trim().length >= 3 && _newLocation != null);
+                        });
                       },
                       onSubmitted: (text) {},
                     ),
@@ -128,118 +130,76 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
-        onPressed: _canSave ? () { _addAnnotation(); }
-            : null,
-        backgroundColor: _canSave ? accentColor : Colors.grey,
+        onPressed: _addAnnotationIfPossible,
         child: Icon(Icons.check),
       ),
+
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
           GoogleMap(
-                zoomGesturesEnabled: false,
-                scrollGesturesEnabled: false,
-                rotateGesturesEnabled: false,
-                tiltGesturesEnabled: false,
-                myLocationButtonEnabled: false,
-                initialCameraPosition: CameraPosition(
-              target: lastLocation ??  LatLng(37.42796133580664, -122.085749655962),
-              zoom: zoom,
+            zoomGesturesEnabled: false,
+            scrollGesturesEnabled: false,
+            rotateGesturesEnabled: false,
+            tiltGesturesEnabled: false,
+            myLocationButtonEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
+              zoom: _zoom,
             ),
             onMapCreated: (controller) {
               _controller.complete(controller);
             },
-            markers: markers,
+            markers: _markers,
           ),
-          if (newLocation == null || context.watch<GpsState>().manualPositionDetection)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                  Container(
-                    height: 16,
-                  ),
-                  Text(
-                    'Acquisendo la tua posizione corrente...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
+
+          ManualDetectionPositionLayer(),
+
+          if (_locationError != null)
+            DetectionErrorPositionLayer(),
+
           Positioned(
-            child: Container(
-              height: 40.0,
-              width: 40.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
-                  ],
-                ),
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(Icons.gps_fixed),
-                    iconSize: 16,
-                    color: accentColor,
-                    onPressed: getCurrentLocationAndUpdateMap,
-                  ),
-                ),
-              ),
-            ),
             top: 42,
             right: 25,
-          ),
+            child: GpsSmallFabButton(
+              onPressed: _getCurrentLocationAndUpdateMap
+            ),
+            ),
         ],
       ),
     );
   }
 
-  _addAnnotation() async {
-//    final box = Hive.box<Annotation>('annotations');
-    final annotation = Annotation(
-      id: newLocation.uuid,
-      dateTime: DateTime.tryParse(newLocation.timestamp).toLocal(),
-      title: annotationEditingController.text.trim(),
-      latitude: newLocation.coords.latitude,
-      longitude: newLocation.coords.longitude,
-    );
-    context.read<AnnotationNotifier>().addAnnotation(annotation);
-//    final result = await box.add(annotation);
-    print('[AddAnnotationPage] add annotation');
-    Navigator.of(context).pop();
-  }
-
-  void getCurrentLocationAndUpdateMap() {
+  void _getCurrentLocationAndUpdateMap() {
+    setState(() {
+      _locationError = null;
+    });
     context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      newLocation = location;
-      lastLocation =
+      _newLocation = location;
+      _lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
-      _goToLocation(lastLocation);
-      addPin(lastLocation);
+      _goToLocation(_lastLocation);
+      _addPin(_lastLocation);
 
       setState(() {
-        _canSave = annotationEditingController.text.trim().length >= 3 && newLocation != null;
+        _canSave = annotationEditingController.text.trim().length >= 3 &&
+            _newLocation != null;
       });
     }, (ex) {
-      error = ex.toString();
+      setState(() {
+        _locationError = ex.toString();
+      });
     });
   }
 
-  addPin(LatLng location) {
-    markers.clear();
-    markers.add(
+  _addPin(LatLng location) {
+    _markers.clear();
+    _markers.add(
       Marker(
         markerId: MarkerId('current'),
-        icon: annotationPositionMarkerIcon, // forse è più corretto-chiaro mostrare il pin annotazione?
+        icon:
+            // forse è più corretto-chiaro mostrare il pin annotazione?
+            annotationPositionMarkerIcon,
         position: location,
       ),
     );
@@ -252,7 +212,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       controller.moveCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            zoom: zoom,
+            zoom: _zoom,
             target: LatLng(
               loc.latitude,
               loc.longitude,
@@ -266,33 +226,95 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     }
   }
 
-  void _showHelper(BuildContext context) {
+  void _addAnnotationIfPossible() {
+    if (_canSave) {
+      _addAnnotation();
+    } else if (_locationError != null) {
+      _showLocationErrorSnackbar();
+    } else if (annotationEditingController.text.trim().length < 3) {
+      _showShortTextSnackbar();
+    }
+  }
+
+  void _addAnnotation() async {
+    print('[AddAnnotationPage] Save annotation and close');
+    // final box = Hive.box<Annotation>('annotations');
+    final annotation = Annotation(
+      id: _newLocation.uuid,
+      dateTime: DateTime.tryParse(_newLocation.timestamp).toLocal(),
+      title: annotationEditingController.text.trim(),
+      latitude: _newLocation.coords.latitude,
+      longitude: _newLocation.coords.longitude,
+    );
+    context.read<AnnotationNotifier>().addAnnotation(annotation);
+    // final result = await box.add(annotation);
+    print('[AddAnnotationPage] add annotation');
+    Navigator.of(context).pop();
+  }
+
+  void _showLocationErrorSnackbar() {
+    print('[AddAnnotationPage] Show location error Snackbar');
+    _showSnackbar(
+      'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
+      _getCurrentLocationAndUpdateMap,
+      'Riprova'
+    );
+  }
+
+  void _showShortTextSnackbar() {
+    print('[AddAnnotationPage] Show short text Snackbar');
+    _showSnackbar("Il testo dell'annotazione deve avere una lunghezza minima di 3 caratteri.");
+  }
+
+  void _showSnackbar(String text, [Function action, String actionText]) {
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    final snackBar = SnackBar(
+      content: Text(
+        text,
+        style: TextStyle(fontFamily: "Nunito"),
+      ),
+
+      action: (action != null && actionText != null)
+          ? SnackBarAction(
+              textColor: Colors.white,
+              label: actionText,
+              onPressed: action,
+            )
+          : null
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _showHelper() {
+    print('[AddAnnotationPage] Show helper');
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) {
           return Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  "Cos'è questa schermata?",
-                  style: titleCardStyle,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  "Da qui è possibile aggiungere segnalare situazioni particolari degne di nota. L'annotazione verrà applicata alla tua posizione corrente, per cui è necessario autorizzare l'accesso alla localizzazione da parte dell'app per poterne aggiungere una.",
-                  style: secondaryStyle,
-                ),
-              ],
-            )
-          );
-        }
-    );
+              color: Colors.white,
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Cos'è questa schermata?",
+                    style: titleCardStyle,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Da qui è possibile aggiungere segnalare situazioni "
+                    "particolari degne di nota. L'annotazione verrà applicata "
+                    "alla tua posizione corrente, per cui è necessario autorizzare "
+                    "l'accesso alla localizzazione da parte dell'app per poterne "
+                    "aggiungere una.",
+                    style: secondaryStyle,
+                  ),
+                ],
+              ));
+        });
   }
 }

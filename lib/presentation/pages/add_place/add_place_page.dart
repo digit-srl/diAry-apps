@@ -6,6 +6,7 @@ import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
@@ -26,7 +27,6 @@ import '../../../utils/colors.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
-
   const AddPlacePage({Key key, this.location}) : super(key: key);
 
   @override
@@ -34,47 +34,47 @@ class AddPlacePage extends StatefulWidget {
 }
 
 class _AddPlacePageState extends State<AddPlacePage> {
-  double radius = 20;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  double _radius = 20;
   bool _isHome = false;
-  TextEditingController placeEditingController = TextEditingController();
-
-  ThemeData themeData = ThemeData(primaryColor: accentColor);
-  Circle place;
+  TextEditingController _placeEditingController = TextEditingController();
+  Circle _place;
 //  BitmapDescriptor _currentPositionMarkerIcon;
-  LatLng lastLocation;
+  LatLng _lastLocation;
 //  bg.Location newLocation;
-  Color currentColor = Colors.orange;
-  Set<Marker> markers = {};
-  Set<Circle> circles = {};
+  Color _currentColor = Colors.orange;
+  Set<Marker> _markers = {};
+  Set<Circle> _circles = {};
   Completer<GoogleMapController> _controller = Completer();
-  double zoom = 17.0;
-  Widget fab = Container();
-  bool isHomeEnabled;
-  String error;
+  double _zoom = 17.0;
+  bool _isHomeEnabled;
+  String _locationError;
   bool _canSave = false;
 
   @override
   void initState() {
     super.initState();
-    isHomeEnabled = !Provider.of<UserRepositoryImpl>(context, listen: false)
+    _isHomeEnabled = !Provider.of<UserRepositoryImpl>(context, listen: false)
         .isThereHomeGeofence();
     final locations = Provider.of<LocationNotifier>(context, listen: false)
         .getCurrentDayLocations;
 
     if (locations.isNotEmpty) {
       final coords = locations.last.coords;
-      lastLocation = LatLng(coords.latitude, coords.longitude);
+      _lastLocation = LatLng(coords.latitude, coords.longitude);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _goToLocation(lastLocation);
-        addPin(lastLocation);
-        addCircle(lastLocation);
+        _goToLocation(_lastLocation);
+        // forse più corretto non mostrarlo? In questo modo sarebbe più facile
+        // spostare il cerchio, rendendo cliccabile anche l'area del pin
+        //_addPin(lastLocation);
+        _addCircle(_lastLocation);
         setState(() {
-          _canSave = placeEditingController.text.trim().length >= 3;
+          _canSave = _placeEditingController.text.trim().length >= 3;
         });
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        getCurrentLocationAndUpdateMap();
+        _getCurrentLocationAndUpdateMap();
       });
     }
   }
@@ -90,6 +90,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Widget build(BuildContext context) {
 //    _createMarkerImageFromAsset(context);
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         iconTheme: IconThemeData(color: accentColor),
@@ -109,7 +110,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         ],
         elevation: 4,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(260.0),
+          preferredSize: const Size.fromHeight(240.0),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
             child: Column(
@@ -126,17 +127,17 @@ class _AddPlacePageState extends State<AddPlacePage> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: currentColor,
+                          color: _currentColor,
                           shape: BoxShape.circle,
                         ),
                       ),
                     ),
                     Expanded(
                       child: Theme(
-                        data: themeData,
+                        data: ThemeData(primaryColor: accentColor),
                         child: TextField(
                           cursorColor: accentColor,
-                          controller: placeEditingController,
+                          controller: _placeEditingController,
                           expands: false,
                           maxLines: 1,
                           maxLength: 20,
@@ -150,13 +151,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.black12,
+                            fillColor: baseCard,
                             hintText: "Inserisci qui il nome del luogo",
                           ),
                           onChanged: (text) {
-                            _canSave = (text.trim().length >= 3 &&
-                                lastLocation != null);
-                            setState(() {});
+                            setState(() {
+                              _canSave = (text.trim().length >= 3 && _lastLocation != null);
+                            });
                           },
                           onSubmitted: (text) {
                             if (_canSave) _addGeofence();
@@ -166,9 +167,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     ),
                   ],
                 ),
-                Container(
-                  height: 8,
-                ),
+                SizedBox( height: 4 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -184,17 +183,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600),
                           ),
-                          AutoSizeText(
-                            "Puoi impostare un solo luogo.",
-                            maxLines: 1,
-                            textAlign: TextAlign.left,
-                          ),
+
                         ],
                       ),
                     ),
                     Switch(
                       value: _isHome,
-                      onChanged: isHomeEnabled
+                      onChanged: _isHomeEnabled
                           ? (bool value) {
                               setState(() {
                                 this._isHome = value;
@@ -204,22 +199,25 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     ),
                   ],
                 ),
-                Container(height: 16),
+                SizedBox(
+                  height: 4,
+                ),
+
                 Text(
                   "Raggio",
                   textAlign: TextAlign.left,
+                  style: secondaryStyle,
                 ),
                 Slider(
                   min: 10.0,
                   max: 50.0,
                   divisions: 4,
-                  label: '${radius.toInt()} metri',
-                  value: radius,
+                  label: '${_radius.toInt()} metri',
+                  value: _radius,
                   onChanged: (value) {
-                    setState(
-                      () {
-                        this.radius = value;
-                        addCircle(lastLocation);
+                    setState(() {
+                        this._radius = value;
+                        _addCircle(_lastLocation);
                       },
                     );
                   },
@@ -231,12 +229,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
-        onPressed: _canSave
-            ? () {
-                _addGeofence();
-              }
-            : null,
-        backgroundColor: _canSave ? accentColor : Colors.grey,
+        onPressed: _addPlaceIfPossible,
         child: Icon(Icons.check),
       ),
       body: Stack(
@@ -244,51 +237,33 @@ class _AddPlacePageState extends State<AddPlacePage> {
         children: <Widget>[
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: lastLocation ?? LatLng(0.0, 0.0),
-              zoom: zoom,
+              target: _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
+              zoom: _zoom,
             ),
-//                  onCameraMove: (cameraPosition) {
-//                    setState(() {
-//                      addCircle(cameraPosition.target);
-//                    });
-//                  },
+           // onCameraMove: (cameraPosition) {
+           //   setState(() {
+           //   addCircle(cameraPosition.target);
+           // });
+           //},
             onMapCreated: (controller) {
               _controller.complete(controller);
             },
             onTap: (location) {
               setState(() {
-                lastLocation = location;
-                addCircle(location);
+                _lastLocation = location;
+                _addCircle(location);
               });
             },
-            markers: markers,
-            circles: circles,
+            markers: _markers,
+            circles: _circles,
           ),
           ManualDetectionPositionLayer(),
           Positioned(
-            child: Container(
-              height: 40.0,
-              width: 40.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
-                  ],
-                ),
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(Icons.gps_fixed),
-                    iconSize: 16,
-                    color: accentColor,
-                    onPressed: getCurrentLocationAndUpdateMap,
-                  ),
-                ),
-              ),
-            ),
             top: 42,
             right: 25,
+            child: GpsSmallFabButton(
+              onPressed: _getCurrentLocationAndUpdateMap,
+            ),
           ),
         ],
       ),
@@ -325,23 +300,23 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void _addGeofence() {
     final uuid = Uuid().v1();
-    final name = placeEditingController.text.trim().toUpperCase();
-    final int color = currentColor.value;
+    final name = _placeEditingController.text.trim().toUpperCase();
+    final int color = _currentColor.value;
     final geofence = bg.Geofence(
       identifier: uuid,
-      radius: radius,
-      latitude: lastLocation.latitude,
-      longitude: lastLocation.longitude,
+      radius: _radius,
+      latitude: _lastLocation.latitude,
+      longitude: _lastLocation.longitude,
       notifyOnEntry: true,
       notifyOnExit: true,
       extras: {
         'name': name,
         'color': color,
         'isHome': _isHome,
-        'radius': radius,
+        'radius': _radius,
         'center': {
-          'latitude': lastLocation.latitude,
-          'longitude': lastLocation.longitude
+          'latitude': _lastLocation.latitude,
+          'longitude': _lastLocation.longitude
         }
       },
     );
@@ -351,9 +326,9 @@ class _AddPlacePageState extends State<AddPlacePage> {
       (bool success) {
         if (success) {
           final newPlace = Place(uuid, name, color, _isHome,
-              lastLocation.latitude, lastLocation.latitude, geofence.radius);
+              _lastLocation.latitude, _lastLocation.latitude, geofence.radius);
           Provider.of<GeofenceNotifier>(context, listen: false)
-              .addGeofence(geofence, currentColor, name);
+              .addGeofence(geofence, _currentColor, name);
           Hive.box<Place>('places').put(geofence.identifier, newPlace);
           if (_isHome) {
             Provider.of<UserRepositoryImpl>(context, listen: false)
@@ -379,7 +354,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       controller?.moveCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            zoom: zoom,
+            zoom: _zoom,
             target: LatLng(
               loc.latitude,
               loc.longitude,
@@ -394,7 +369,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void _selectColor() async {
-    Color tmpColor = currentColor;
+    Color tmpColor = _currentColor;
     await Alert(
       style: AlertStyle(
         animationType: AnimationType.grow,
@@ -436,8 +411,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
           ),
           onPressed: () {
             setState(() {
-              this.currentColor = tmpColor;
-              addCircle(lastLocation);
+              this._currentColor = tmpColor;
+              _addCircle(_lastLocation);
             });
             Navigator.of(context).pop();
           },
@@ -446,37 +421,38 @@ class _AddPlacePageState extends State<AddPlacePage> {
     ).show();
   }
 
-  void getCurrentLocationAndUpdateMap() {
+  void _getCurrentLocationAndUpdateMap() {
     context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      lastLocation =
+      _lastLocation =
           LatLng(location.coords.latitude, location.coords.longitude);
-      _goToLocation(lastLocation);
-      addPin(lastLocation);
-      addCircle(lastLocation);
+      _goToLocation(_lastLocation);
+      // forse più corretto non mostrarlo? In questo modo sarebbe più facile
+      // spostare il cerchio, rendendo cliccabile anche l'area del pin
+      // _addPin(lastLocation);
+      _addCircle(_lastLocation);
       setState(() {
-        _canSave = placeEditingController.text.trim().length >= 3;
+        _canSave = _placeEditingController.text.trim().length >= 3;
       });
     }, (ex) {
-      error = ex.toString();
+      _locationError = ex.toString();
     });
   }
 
-  addCircle(LatLng location) {
-    circles.clear();
-
+  _addCircle(LatLng location) {
+    _circles.clear();
     Circle place = Circle(
       circleId: CircleId('place'),
       center: location,
-      fillColor: currentColor.withOpacity(0.3),
-      radius: radius,
+      fillColor: _currentColor.withOpacity(0.3),
+      radius: _radius,
       strokeWidth: 0,
     );
-    circles.add(place);
+    _circles.add(place);
   }
 
-  addPin(LatLng location) {
-    markers.clear();
-    markers.add(
+  _addPin(LatLng location) {
+    _markers.clear();
+    _markers.add(
       Marker(
         markerId: MarkerId('current'),
         icon: currentPositionMarkerIcon,
@@ -485,7 +461,40 @@ class _AddPlacePageState extends State<AddPlacePage> {
     );
   }
 
+  void _addPlaceIfPossible() {
+    if (_canSave) {
+      _addGeofence();
+    } else if (_placeEditingController.text.trim().length < 3) {
+      _showShortTextSnackbar();
+    }
+  }
+
+  void _showShortTextSnackbar() {
+    print('[AddPlacePage] Show short text Snackbar');
+    _showSnackbar("Il nome del luogo deve avere una lunghezza minima di 3 caratteri.");
+  }
+
+  void _showSnackbar(String text, [Function action, String actionText]) {
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    final snackBar = SnackBar(
+        content: Text(
+          text,
+          style: TextStyle(fontFamily: "Nunito"),
+        ),
+
+        action: (action != null && actionText != null)
+            ? SnackBarAction(
+          textColor: Colors.white,
+          label: actionText,
+          onPressed: action,
+        )
+            : null
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   void _showHelper(BuildContext context) {
+    print('[AddPlacePage] Show helper');
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -505,7 +514,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     height: 8,
                   ),
                   Text(
-                    "Da qui è possibile aggiungere o modificare un luogo, così da rendere più preciso l'operato dell'app. Posiziona il luogo premendo in un qualunque punto nella mappa. Puoi inoltre sceglierne il nome, il colore con quale visualizzarlo nella mappa, il raggio, e specificare se è la tua abitazione principale. Passando più tempo nella tua abitazione principale, otterrai un maggior numero di WOM.",
+                    "Da qui è possibile aggiungere o modificare un luogo, così "
+                    "da rendere più preciso l'operato dell'app. Posiziona il "
+                    "luogo premendo in un qualunque punto nella mappa. Puoi "
+                    "inoltre sceglierne il nome, il colore con quale "
+                    "visualizzarlo nella mappa, il raggio, e specificare se è "
+                    "la tua abitazione principale. Passando più tempo nella tua "
+                    "abitazione principale, otterrai un maggior numero di WOM.",
                     style: secondaryStyle,
                   ),
                 ],
