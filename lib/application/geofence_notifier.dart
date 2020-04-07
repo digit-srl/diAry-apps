@@ -106,7 +106,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     if (deleted) {
       final location = await LocationUtils.insertExitFromGeofenceOnDb(
           identifier, DateTime.now(), 0.0, 0.0, 0.0);
-      //TODO usare data della lcocation
+      //TODO usare data della location
       read<DayNotifier>()
           .updateDay(location, DateTime.now().withoutMinAndSec());
       final place = Hive.box<Place>('places').get(identifier);
