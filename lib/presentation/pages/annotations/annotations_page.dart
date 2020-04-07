@@ -21,12 +21,6 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
   DateFormat format = DateFormat('HH : mm');
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(

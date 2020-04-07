@@ -46,7 +46,6 @@
 //
 //  @override
 //  void initState() {
-//    // TODO: implement initState
 //    super.initState();
 //    _currentDay = DateTime.now();
 //    _mapOptions = MapOptions(
@@ -62,7 +61,6 @@
 //  }
 //
 //  void _onAddGeofence(LatLng latLng) {
-//    // TODO Play sound
 //
 //    Navigator.of(context).push(
 //      MaterialPageRoute<Null>(
