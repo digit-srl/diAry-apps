@@ -21,16 +21,10 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
 
   _InfoPinWidgetState();
 
-  int page;
   @override
   void initState() {
     super.initState();
-    page = widget.initialPage;
     _pageController = PageController(initialPage: widget.initialPage);
-//    _pageController.addListener(() {
-//      page = _pageController.page.toInt();
-//      widget.selectPin(widget.locations[page]);
-//    });
   }
 
   @override
@@ -39,8 +33,6 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
       controller: _pageController,
       itemCount: widget.locations.length,
       onPageChanged: (index) {
-        print('change page to $index');
-        page = index;
         widget.selectPin(widget.locations[index]);
       },
       itemBuilder: (BuildContext context, int itemIndex) {
@@ -58,20 +50,20 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                       color: Colors.black,
                       onPressed: () {
                         //TODO change to animatedPage
-                        if (page > 0) {
-                          _pageController.jumpToPage(page - 1);
+                        if (itemIndex > 0) {
+                          _pageController.jumpToPage(itemIndex - 1);
                         }
                       }),
                   Spacer(),
-                  Text(page.toString()),
+                  Text((itemIndex + 1).toString()),
                   Spacer(),
                   IconButton(
                       icon: Icon(Icons.arrow_forward),
                       color: Colors.black,
                       onPressed: () {
                         //TODO change to animatedPage
-                        if (page < widget.locations.length) {
-                          _pageController.jumpToPage(page + 1);
+                        if (itemIndex < widget.locations.length - 1) {
+                          _pageController.jumpToPage(itemIndex + 1);
                         }
                       }),
                 ],
