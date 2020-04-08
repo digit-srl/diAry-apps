@@ -616,8 +616,8 @@ class _MapPageState extends State<MapPage>
 //    final MarkerId markerId = MarkerId('${location.uuid}');
     final Marker marker = Marker(
       markerId: markerId,
-      icon: pinPositionMarkerIcon,
-      //anchor: Offset(0.5, 0.6),
+      icon: selectedPinMarkerIcon,
+      anchor: Offset(0.5, 0.6),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
@@ -666,8 +666,8 @@ class _MapPageState extends State<MapPage>
                       final MarkerId markerId = MarkerId(selectedPinId);
                       marker = Marker(
                         markerId: markerId,
-                        icon: pinPositionMarkerIcon,
-                        //anchor: Offset(0.5, 0.6),
+                        icon: selectedPinMarkerIcon,
+                        anchor: Offset(0.5, 0.6),
                         position: LatLng(
                           location.coords.latitude,
                           location.coords.longitude,
