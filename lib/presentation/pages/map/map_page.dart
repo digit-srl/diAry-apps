@@ -455,13 +455,9 @@ class _MapPageState extends State<MapPage>
     }
 
     if (selectedPinMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration = ImageConfiguration(
-        bundle: DefaultAssetBundle.of(context),
-        devicePixelRatio: 2.5,
-        locale: Localizations.localeOf(context, nullOk: true),
-        textDirection: Directionality.of(context),
-        platform: defaultTargetPlatform,
-      );
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/selected_pin.png')
           .then(_updateSelectedBitmap);
