@@ -263,12 +263,28 @@ class _AddPlacePageState extends State<AddPlacePage> {
             top: 42,
             right: 25,
             child: GpsSmallFabButton(
-              onPressed: _getCurrentLocationAndUpdateMap,
+              onPressed: _gpsClick,
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _gpsClick() {
+    // mostra una snackbar nel caso in cui il gps non sia disponibile
+    if (!Provider.of<GpsState>(context, listen: false).gpsEnabled) {
+      setState(() {
+        _locationError = "No gps";
+      });
+
+      _showLocationErrorSnackbar();
+    } else if (Provider.of<GpsState>(context, listen: false).manualPositionDetection) {
+      _showWaitPositionSnackbar();
+
+    } else {
+      _getCurrentLocationAndUpdateMap();
+    }
   }
 
 //  Future<void> _createMarkerImageFromAsset(BuildContext context) async {
@@ -423,20 +439,34 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void _getCurrentLocationAndUpdateMap() {
-    context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      _lastLocation =
-          LatLng(location.coords.latitude, location.coords.longitude);
-      _goToLocation(_lastLocation);
-      // forse più corretto non mostrarlo? In questo modo sarebbe più facile
-      // spostare il cerchio, rendendo cliccabile anche l'area del pin
-      // _addPin(lastLocation);
-      _addCircle(_lastLocation);
+    // non provare neanche ad avviare la ricerca, nel caso in cui il gps non sia abilitato
+    if (!Provider.of<GpsState>(context, listen: false).gpsEnabled) {
       setState(() {
-        _canSave = _placeEditingController.text.trim().length >= 3;
+        _locationError = "No gps";
       });
-    }, (ex) {
-      _locationError = ex.toString();
-    });
+
+    } else {
+      setState(() {
+        _locationError = null;
+      });
+
+      context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
+        _lastLocation =
+            LatLng(location.coords.latitude, location.coords.longitude);
+        _goToLocation(_lastLocation);
+        // forse più corretto non mostrarlo? In questo modo sarebbe più facile
+        // spostare il cerchio, rendendo cliccabile anche l'area del pin
+        // _addPin(lastLocation);
+        _addCircle(_lastLocation);
+        setState(() {
+          _canSave = _placeEditingController.text
+              .trim()
+              .length >= 3;
+        });
+      }, (ex) {
+        _locationError = ex.toString();
+      });
+    }
   }
 
   _addCircle(LatLng location) {
@@ -469,6 +499,22 @@ class _AddPlacePageState extends State<AddPlacePage> {
       _showShortTextSnackbar();
     }
   }
+
+
+  void _showLocationErrorSnackbar() {
+    print('[AddAnnotationPage] Show location error Snackbar');
+    _showSnackbar(
+        'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
+        _getCurrentLocationAndUpdateMap,
+        'Riprova'
+    );
+  }
+
+  void _showWaitPositionSnackbar() {
+    print('[AddAnnotationPage] Show short text Snackbar');
+    _showSnackbar("Rilevamento della posizione in corso. Attendine la terminazione.");
+  }
+
 
   void _showShortTextSnackbar() {
     print('[AddPlacePage] Show short text Snackbar');

@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DetectionErrorPositionLayer extends StatelessWidget {
+  bool errorDetected;
+
+  DetectionErrorPositionLayer([this.errorDetected]);
+
   @override
   Widget build(BuildContext context) {
     print('[DetectionErrorPositionLayer] build');
 
-    return Container(
+    return  errorDetected ? Container(
             color: Colors.black.withOpacity(0.5),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -23,13 +27,13 @@ class DetectionErrorPositionLayer extends StatelessWidget {
                   height: 16,
                 ),
                 Text(
-                  'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
+                  'Posizione non rilevata. Attiva i servizi GPS e riprova.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ],
             ),
-          );
-
+          )
+    : Container();
   }
 }

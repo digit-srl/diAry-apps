@@ -36,7 +36,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   // BitmapDescriptor _currentPositionMarkerIcon;
   LatLng _lastLocation;
-  bg.Location _newLocation;
+  bg.Location _foundLocation;
 
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
@@ -119,7 +119,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                       ),
                       onChanged: (text) {
                         setState(() {
-                          _canSave = (text.trim().length >= 3 && _newLocation != null);
+                          _canSave = (text.trim().length >= 3 && _foundLocation != null);
                         });
                       },
                       onSubmitted: (text) {},
@@ -155,42 +155,66 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
           ),
 
           ManualDetectionPositionLayer(),
-
-          if (_locationError != null)
-            DetectionErrorPositionLayer(),
+          
+          DetectionErrorPositionLayer(!context.watch<GpsState>().manualPositionDetection &&
+              _foundLocation == null),
 
           Positioned(
             top: 42,
             right: 25,
-            child: GpsSmallFabButton(
-              onPressed: _getCurrentLocationAndUpdateMap
-            ),
+            child: GpsSmallFabButton( onPressed: _gpsClick ),
             ),
         ],
       ),
     );
   }
 
-  void _getCurrentLocationAndUpdateMap() {
-    setState(() {
-      _locationError = null;
-    });
-    context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
-      _newLocation = location;
-      _lastLocation =
-          LatLng(location.coords.latitude, location.coords.longitude);
-      _goToLocation(_lastLocation);
-      _addPin(_lastLocation);
 
+  void _gpsClick() {
+    // mostra una snackbar nel caso in cui il gps non sia disponibile
+    if (!Provider.of<GpsState>(context, listen: false).gpsEnabled) {
       setState(() {
-        _canSave = annotationEditingController.text.trim().length >= 3 &&
-            _newLocation != null;
+        _locationError = "No gps";
       });
-    }, (ex) {
+
+      _showLocationErrorSnackbar();
+    } else if (Provider.of<GpsState>(context, listen: false).manualPositionDetection) {
+      _showWaitPositionSnackbar();
+
+    } else {
+      _getCurrentLocationAndUpdateMap();
+    }
+  }
+
+  void _getCurrentLocationAndUpdateMap() {
+    // non provare neanche ad avviare la ricerca, nel caso in cui il gps non sia abilitato
+    if (!Provider.of<GpsState>(context, listen: false).gpsEnabled) {
       setState(() {
-        _locationError = ex.toString();
+        _locationError = "No gps";
       });
-    });
+
+    } else {
+      setState(() {
+        _locationError = null;
+      });
+
+      context.read<GpsNotifier>().getCurrentLoc((bg.Location location) {
+        _foundLocation = location;
+        _lastLocation =
+            LatLng(location.coords.latitude, location.coords.longitude);
+        _goToLocation(_lastLocation);
+        _addPin(_lastLocation);
+
+        setState(() {
+          _canSave = annotationEditingController.text.trim().length >= 3 &&
+              _foundLocation != null;
+        });
+      }, (ex) {
+        setState(() {
+          _locationError = ex.toString();
+        });
+      });
+    }
   }
 
   _addPin(LatLng location) {
@@ -232,6 +256,10 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       _addAnnotation();
     } else if (_locationError != null) {
       _showLocationErrorSnackbar();
+
+    } else if (_foundLocation == null) {
+      _showWaitPositionSnackbar();
+
     } else if (annotationEditingController.text.trim().length < 3) {
       _showShortTextSnackbar();
     }
@@ -241,11 +269,11 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     print('[AddAnnotationPage] Save annotation and close');
     // final box = Hive.box<Annotation>('annotations');
     final annotation = Annotation(
-      id: _newLocation.uuid,
-      dateTime: DateTime.tryParse(_newLocation.timestamp).toLocal(),
+      id: _foundLocation.uuid,
+      dateTime: DateTime.tryParse(_foundLocation.timestamp).toLocal(),
       title: annotationEditingController.text.trim(),
-      latitude: _newLocation.coords.latitude,
-      longitude: _newLocation.coords.longitude,
+      latitude: _foundLocation.coords.latitude,
+      longitude: _foundLocation.coords.longitude,
     );
     context.read<AnnotationNotifier>().addAnnotation(annotation);
     // final result = await box.add(annotation);
@@ -265,6 +293,12 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   void _showShortTextSnackbar() {
     print('[AddAnnotationPage] Show short text Snackbar');
     _showSnackbar("Il testo dell'annotazione deve avere una lunghezza minima di 3 caratteri.");
+  }
+
+
+  void _showWaitPositionSnackbar() {
+    print('[AddAnnotationPage] Show short text Snackbar');
+    _showSnackbar("Rilevamento della posizione in corso. Attendine la terminazione.");
   }
 
   void _showSnackbar(String text, [Function action, String actionText]) {
