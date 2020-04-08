@@ -13,6 +13,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 
@@ -298,21 +299,15 @@ class DailyStats extends StatelessWidget {
                         color: Colors.white.withOpacity(0.6),
                         width: size.width / 2,
                         padding: EdgeInsets.only(
-                            top: _overlayLegendPaddingTop,
-                            right: 2
-                        ),
+                            top: _overlayLegendPaddingTop, right: 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Container(
                                 child: FittedBox(
-                                  child: Text(
-                                      "Spostamenti",
+                                  child: Text("Spostamenti",
                                       style: TextStyle(
-                                          fontSize: 12,
-                                          color: secondaryText
-                                      )
-                                  ),
+                                          fontSize: 12, color: secondaryText)),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -320,45 +315,37 @@ class DailyStats extends StatelessWidget {
                                 width: size.width / 2),
                             Container(
                                 child: FittedBox(
-                                  child: Text(
-                                      "Luoghi",
+                                  child: Text("Luoghi",
                                       style: TextStyle(
-                                          fontSize: 12,
-                                          color: secondaryText
-                                      )
-                                  ),
+                                          fontSize: 12, color: secondaryText)),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
                                 height: _overlayLegendTextHeight,
-                                width: size.width / 2
-                            ),
+                                width: size.width / 2),
                             Container(
                                 child: FittedBox(
                                   child: Text("Annotazioni",
                                       style: TextStyle(
-                                          fontSize: 12, color: secondaryText
-                                      )
-                                  ),
+                                          fontSize: 12, color: secondaryText)),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
                                 height: _overlayLegendTextHeight,
-                                width: size.width / 2
-                            ),
+                                width: size.width / 2),
                           ],
                         ),
                       ),
                     ),
                     Positioned(
                       bottom: 16,
-                      right: (MediaQuery.of(context).size.width / 2) - (_chartSize.width / 2),
+                      right: (MediaQuery.of(context).size.width / 2) -
+                          (_chartSize.width / 2),
                       child: IconButton(
-                        icon: Icon(Icons.help_outline, color: secondaryText),
-                        onPressed: () {
-                          _showPlaceLegend(context);
-                        }
-                      ),
+                          icon: Icon(Icons.help_outline, color: secondaryText),
+                          onPressed: () {
+                            _showPlaceLegend(context);
+                          }),
                     ),
                     /*
                     Positioned(
@@ -441,22 +428,20 @@ class DailyStats extends StatelessWidget {
                             minWidth: double.infinity,
                             child: FlatButton(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 16
-                              ),
+                                  vertical: 4.0, horizontal: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(16.0),
                               ),
                               onPressed: () {
-                                context.read<CurrentRootPageNotifier>().changePage(2);
+                                context
+                                    .read<CurrentRootPageNotifier>()
+                                    .changePage(2);
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Text(
-                                    'Annotazioni',
-                                    maxLines: 1,
-                                    style: secondaryStyle
-                                  ),
+                                  Text('Annotazioni',
+                                      maxLines: 1, style: secondaryStyle),
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Row(
@@ -495,13 +480,29 @@ class DailyStats extends StatelessWidget {
     );
   }
 
-  void _showPlaceLegend(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
+  void _showPlaceLegend(BuildContext context) async {
+    await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {
-          return DailyStatsLegend();
-        });
+      return SlidingSheetDialog(
+        elevation: 8,
+        cornerRadius: 16,
+        //minHeight: 400,
+        duration: Duration(milliseconds: 300),
+        snapSpec: const SnapSpec(
+          snap: true,
+          snappings: [SnapSpec.expanded],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (ctx, sheetState) {
+          return Container(
+            child: Material(
+              color: Colors.white,
+              child: DailyStatsLegend(),
+            ),
+          );
+        },
+      );
+    });
   }
 
   // only for developers

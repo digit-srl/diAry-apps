@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -36,11 +37,8 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
         widget.selectPin(widget.locations[index]);
       },
       itemBuilder: (BuildContext context, int itemIndex) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
+        return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-//            mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
@@ -71,13 +69,13 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
               Row(
                 children: <Widget>[
                   Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                       child: Icon(Icons.data_usage)),
                   Expanded(
                     child: AutoSizeText(
                       widget.locations[itemIndex].uuid,
                       maxLines: 1,
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(color: secondaryText),
                     ),
                   ),
                 ],
@@ -85,80 +83,107 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
               Row(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.timelapse,
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
+                      child: Icon(Icons.access_time)),
+                  Expanded(
+                    child: AutoSizeText(
+                      dateFormat.format(widget.locations[itemIndex].dateTime),
+                      maxLines: 1,
+                      style: TextStyle(color: secondaryText),
                     ),
                   ),
-                  Text(dateFormat.format(widget.locations[itemIndex].dateTime)),
                 ],
               ),
               Row(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                     child: Icon(
                       Icons.pin_drop,
                     ),
                   ),
-                  Text(
-                      'Lat: ${widget.locations[itemIndex].coords.latitude.toStringAsFixed(2)} Long: ${widget.locations[itemIndex].coords.longitude.toStringAsFixed(2)}'),
+                  Expanded(
+                    child: AutoSizeText(
+                      'Lat: ${widget.locations[itemIndex].coords.latitude.toStringAsFixed(2)} Long: ${widget.locations[itemIndex].coords.longitude.toStringAsFixed(2)}',
+                      style: TextStyle(color: secondaryText),
+                      maxLines: 1,
+                    ),
+                  ),
                 ],
               ),
               Row(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                     child: Icon(
                       Icons.gps_fixed,
                     ),
                   ),
-                  Text(
-                      'Accuratezza: ${widget.locations[itemIndex].coords.accuracy} m'),
+                  Expanded(
+                    child: AutoSizeText(
+                      'Accuratezza: ${widget.locations[itemIndex].coords.accuracy} m',
+                      style: TextStyle(color: secondaryText),
+                      maxLines: 1,
+                    ),
+                  ),
                 ],
               ),
               Row(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                     child: Icon(
                       Icons.event,
                     ),
                   ),
-                  Text(
-                      'Evento: ${widget.locations[itemIndex].event.toString().replaceFirst('Event.', '')}'),
+                  Expanded(
+                    child: AutoSizeText(
+                      'Evento: ${widget.locations[itemIndex].event.toString().replaceFirst('Event.', '')}',
+                      style: TextStyle(color: secondaryText),
+                      maxLines: 1,
+                    ),
+                  ),
                 ],
               ),
               if (widget.locations[itemIndex]?.activity != null)
                 Row(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                       child: Icon(
                         Icons.directions_walk,
                       ),
                     ),
-                    Text(
-                        'Attività: ${widget.locations[itemIndex].activity.type.toUpperCase()} al ${widget.locations[itemIndex].activity.confidence.toInt()} %'),
+                    Expanded(
+                      child: AutoSizeText(
+                        'Attività: ${widget.locations[itemIndex].activity.type.toUpperCase()} al ${widget.locations[itemIndex].activity.confidence.toInt()} %',
+                        style: TextStyle(color: secondaryText),
+                        maxLines: 1,
+                      ),
+                    ),
                   ],
                 ),
               if (widget.locations[itemIndex]?.battery != null)
                 Row(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
                       child: Icon(
                         widget.locations[itemIndex].battery.isCharging
                             ? Icons.battery_charging_full
                             : Icons.battery_std,
                       ),
                     ),
-                    Text(
-                        '${(widget.locations[itemIndex].battery.level * 100).toInt()} %'),
-                  ],
-                ),
+                    Expanded(
+                      child: AutoSizeText(
+                        '${(widget.locations[itemIndex].battery.level * 100).toInt()} %',
+                        style: TextStyle(color: secondaryText),
+                        maxLines: 1,
+                      ),
+                    ),
+                ],
+              ),
             ],
-          ),
         );
       },
     );

@@ -15,6 +15,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 import '../../../main.dart';
 
@@ -285,36 +286,50 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
-  void _showHelper() {
+  void _showHelper() async {
     print('[AddAnnotationPage] Show helper');
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
+    await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {
+      return SlidingSheetDialog(
+        elevation: 8,
+        cornerRadius: 16,
+        //minHeight: 400,
+        padding: EdgeInsets.all(24),
+        duration: Duration(milliseconds: 300),
+        snapSpec: const SnapSpec(
+          snap: true,
+          snappings: [SnapSpec.expanded],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (ctx, sheetState) {
           return Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    "Cos'è questa schermata?",
-                    style: titleCardStyle,
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Da qui è possibile aggiungere segnalare situazioni "
+            child: Material(
+                color: Colors.white,
+                child:  Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Cos'è questa schermata?",
+                      style: titleCardStyle,
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+              Text(
+                "Da qui è possibile aggiungere segnalare situazioni "
                     "particolari degne di nota. L'annotazione verrà applicata "
                     "alla tua posizione corrente, per cui è necessario autorizzare "
                     "l'accesso alla localizzazione da parte dell'app per poterne "
                     "aggiungere una.",
-                    style: secondaryStyle,
-                  ),
-                ],
-              ));
-        });
+                style: secondaryStyle,
+              ),
+                  ],
+                )
+            ),
+          );
+        },
+      );
+    });
   }
 }

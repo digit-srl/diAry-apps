@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../main.dart';
@@ -493,16 +494,26 @@ class _AddPlacePageState extends State<AddPlacePage> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
-  void _showHelper(BuildContext context) {
+  void _showHelper(BuildContext context) async {
     print('[AddPlacePage] Show helper');
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
+    await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {
+      return SlidingSheetDialog(
+        elevation: 8,
+        cornerRadius: 16,
+        //minHeight: 400,
+        padding: EdgeInsets.all(24),
+        duration: Duration(milliseconds: 300),
+        snapSpec: const SnapSpec(
+          snap: true,
+          snappings: [SnapSpec.expanded],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (ctx, sheetState) {
           return Container(
+            child: Material(
               color: Colors.white,
-              padding: EdgeInsets.all(16),
-              child: Column(
+              child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -515,18 +526,20 @@ class _AddPlacePageState extends State<AddPlacePage> {
                   ),
                   Text(
                     "Da qui è possibile aggiungere o modificare un luogo, così "
-                    "da rendere più preciso l'operato dell'app. Posiziona il "
-                    "luogo premendo in un qualunque punto nella mappa. Puoi "
-                    "inoltre sceglierne il nome, il colore con quale "
-                    "visualizzarlo nella mappa, il raggio, e specificare se è "
-                    "la tua abitazione principale. Passando più tempo nella tua "
-                    "abitazione principale, otterrai un maggior numero di WOM.",
+                        "da rendere più preciso l'operato dell'app. Posiziona il "
+                        "luogo premendo in un qualunque punto nella mappa. Puoi "
+                        "inoltre sceglierne il nome, il colore con quale "
+                        "visualizzarlo nella mappa, il raggio, e specificare se è "
+                        "la tua abitazione principale. Passando più tempo nella tua "
+                        "abitazione principale, otterrai un maggior numero di WOM.",
                     style: secondaryStyle,
                   ),
                 ],
               )
+            ),
           );
-        }
-    );
+        },
+      );
+    });
   }
 }

@@ -38,7 +38,7 @@ class DailyStatsLegend extends StatelessWidget {
           );
         }*/
         return Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(24.0),
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
