@@ -102,9 +102,9 @@ class ImportExportUtils {
       ..addAll(data));
   }
 
-  static Future<List<List<Slice>>> importAndProcessJSON() async {
-    final File file =
-        await FilePicker.getFile(type: FileType.custom, fileExtension: 'json');
+  static Future<AggregationData> importAndProcessJSON() async {
+    final File file = await FilePicker.getFile(
+        type: FileType.custom, allowedExtensions: ['json']);
     final String data = await file.readAsString();
     final map = json.decode(data);
     final locations = List<Map<String, dynamic>>.from(map)
@@ -125,8 +125,8 @@ class ImportExportUtils {
   }
 
   static Future<List<Location>> importJSON() async {
-    final File file =
-        await FilePicker.getFile(type: FileType.custom, fileExtension: 'json');
+    final File file = await FilePicker.getFile(
+        type: FileType.custom, allowedExtensions: ['json']);
     final String data = await file.readAsString();
     final map = json.decode(data);
     final locations = List<Map<String, dynamic>>.from(map)

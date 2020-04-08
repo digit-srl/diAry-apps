@@ -8,15 +8,20 @@ class GenericButton extends StatelessWidget {
   final String text;
   final Function onPressed;
   final bool withBorder;
+  final Color color;
 
   const GenericButton(
-      {Key key, this.text, this.onPressed, this.withBorder = true})
+      {Key key,
+      @required this.text,
+      @required this.onPressed,
+      this.withBorder = true,
+      this.color})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-      color: withBorder ? accentColor : null,
+      color: withBorder ? color ?? accentColor : null,
       padding: const EdgeInsets.symmetric(horizontal: 6.0),
       onPressed: onPressed,
 //      hoverColor: Colors.white,

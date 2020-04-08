@@ -523,20 +523,13 @@ class _MapPageState extends State<MapPage>
         .locationsPerDate[_currentDate];
     if (dailyLocations?.isNotEmpty ?? false) {
       for (Location location in dailyLocations) {
-//      final icon = boxNotes.containsKey(loc.uuid)
-//          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-//          : BitmapDescriptor.defaultMarker;
-//        circles.add(
-//          Circle(
-//              circleId: CircleId(location.uuid),
-//              center: LatLng(
-//                location.coords.latitude,
-//                location.coords.longitude,
-//              ),
-//              fillColor: Colors.black,
-//              radius: 2),
-//        );
-//        final icon = BitmapDescriptor.defaultMarker;
+        if (location.coords.latitude == 0.0 &&
+            location.coords.longitude == 0.0 &&
+            (location.event == Event.Off ||
+                location.event == Event.On ||
+                location.event == Event.Geofence)) {
+          continue;
+        }
         final MarkerId markerId = MarkerId(location.uuid);
         final Marker marker = Marker(
           markerId: markerId,

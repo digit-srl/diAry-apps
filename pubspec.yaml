@@ -11,7 +11,7 @@ description: A new Flutter application.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.0.9+9
+version: 0.1.0+10
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -26,7 +26,6 @@ dependencies:
   flutter_statusbarcolor: ^0.2.3
   flutter_circular_chart: ^0.1.0
   flutter_state_notifier: ^0.3.0
-  flutter_map: ^0.8.2
   rflutter_alert: ^1.0.3
   path_provider: ^1.6.5
   share_extend: ^1.1.1
@@ -43,13 +42,19 @@ dependencies:
   hive_flutter: ^0.3.0+2
   flutter_colorpicker: ^0.3.2
   package_info: ^0.4.0+16
-  file_picker: ^1.5.1
+  file_picker: ^1.6.0
   sliding_sheet: ^0.3.1
+  freezed_annotation: ^0.7.1
+  meta: ^1.1.8
+  dartz:
   intl:
+  dart_geohash: ^1.0.2
+  url_launcher: ^5.4.2
 
 dev_dependencies:
   hive_generator: ^0.7.0+2
-  build_runner: ^1.8.0
+  build_runner: ^1.8.1
+  freezed:
   flutter_test:
     sdk: flutter
 
@@ -63,6 +68,7 @@ flutter:
     - assets/black_circle_pin.png
     - assets/diary_logo.png
     - assets/selected_pin.png
+    - assets/wom_pocket_logo.png
 
   fonts:
     - family: Nunito

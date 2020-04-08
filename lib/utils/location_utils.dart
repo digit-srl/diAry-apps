@@ -1,13 +1,16 @@
+import 'package:dart_geohash/dart_geohash.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
+import 'dart:math';
 
 enum Action { Enter, Exit, Unknown }
 
@@ -39,6 +42,7 @@ class LocationUtils {
     ).then(onDone, onError: onError);
   }
 
+  //TODO spostare per rispettare l'architettura pulita
   static Map<DateTime, Day> aggregateLocationsInDayPerDate(
       Map<DateTime, List<Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
@@ -55,15 +59,22 @@ class LocationUtils {
         locationsPerDay[key],
         yesterdayPlaces: yesterdayPlace,
       );
+      final dailyStatsResponse =
+          Hive.box('dailyStatsResponse').get(key.toIso8601String());
       days[key] = Day(
         date: key,
-        slices: tmp[0],
-        places: tmp[1],
+        slices: tmp.slices,
+        places: tmp.places,
         annotations: Hive.box<Annotation>('annotations')
             .values
             .where((annotation) => annotation.dateTime.isSameDay(key))
             .toList(),
         pointCount: locationsPerDay[key].length,
+        dailyStatsResponse: dailyStatsResponse,
+        sampleCount: tmp.sampleCount,
+        discardedSampleCount: tmp.discardedSampleCount,
+        centroidHash: tmp.centroidHash?.toUpperCase(),
+        boundingBoxDiagonal: tmp.boundingBoxDiagonal,
       );
       i++;
     }
@@ -114,13 +125,13 @@ class LocationUtils {
     DateTime(2020, 3, 27, 17, 25): true,
   };
 
-  static List<List<Slice>> aggregateLocationsInSlices3(
+  static AggregationData aggregateLocationsInSlices3(
     List<Location> locations, {
     List<Slice> partialDaySlices = const [],
     List<Slice> partialDayPlaces = const [],
     Set<String> yesterdayPlaces = const {},
   }) {
-    if (locations.isEmpty) return [[], []];
+    if (locations.isEmpty) return AggregationData();
 
     final currentDay = locations.first.dateTime;
 
@@ -149,9 +160,20 @@ class LocationUtils {
         Hive.box('user').get('postProcessing', defaultValue: true);
     bool waitingOn = false;
 
-    for (int i = 0; i < locations.length; i++) {
-      final Location loc = locations[i];
+    int discardedSampleCount = 0;
+    int sampleCount = 0;
+    int effectiveSampleCount = 0;
+    double lat = 0.0;
+    double long = 0.0;
+    double minLat = 100;
+    double maxLat = -100.0;
+    double minLong = 200;
+    double maxLong = -200.0;
+    List<LatLng> coordinates = [];
 
+    for (int i = 0; i < locations.length; i++) {
+      sampleCount++;
+      final Location loc = locations[i];
       final currentDate = loc.dateTime;
       final currentMinutes = currentDate.toMinutes();
       final partialMinutes = currentMinutes - cumulativeMinutes;
@@ -168,6 +190,33 @@ class LocationUtils {
             : geofence?.action == 'EXIT' ? Action.Exit : Action.Enter;
         final where = geofence?.identifier;
         print('uuid: ${loc.uuid}, identifier: $where, action: $action');
+
+        if (!(event == Event.On ||
+            event == Event.Off ||
+            (event == Event.Geofence &&
+                loc.coords.latitude == 0.0 &&
+                loc.coords.longitude == 0.0))) {
+          final latitude = loc.coords.latitude;
+          final longitude = loc.coords.longitude;
+          lat += latitude;
+          long += longitude;
+          effectiveSampleCount++;
+          coordinates.add(LatLng(latitude, longitude));
+          if (latitude < minLat) {
+            minLat = latitude;
+          }
+          if (latitude > maxLat) {
+            maxLat = latitude;
+          }
+
+          if (longitude < minLong) {
+            minLong = longitude;
+          }
+
+          if (longitude > maxLong) {
+            maxLong = longitude;
+          }
+        }
 
         if (waitingOn) {
           if (event == Event.On) {
@@ -224,7 +273,9 @@ class LocationUtils {
                   ? {where, ...yesterdayPlaces}
                   : yesterdayPlaces,
               activity: action == Action.Unknown
-                  ? currentActivity
+                  ? yesterdayPlaces.isEmpty
+                      ? currentActivity
+                      : MotionActivity.Still
                   : MotionActivity.Still,
               placeRecords: 1,
             ),
@@ -341,6 +392,8 @@ class LocationUtils {
 
         lastAction = action;
         lastWhere = where;
+      } else {
+        discardedSampleCount++;
       }
 
       cumulativePlacesMinutes = currentMinutes;
@@ -436,7 +489,36 @@ class LocationUtils {
 
       places = reduceWalking(places);
     }
-    return [slices, places];
+    lat /= effectiveSampleCount;
+    long /= effectiveSampleCount;
+
+    String centroidHash = '00000';
+    if (!(lat.isNaN || long.isNaN)) {
+      centroidHash = getGeohash(lat, long);
+    }
+    double boundingBoxDiagonal = 0.0;
+
+    if (effectiveSampleCount > 1) {
+      boundingBoxDiagonal =
+          sqrt(pow((maxLat - minLat), 2) + pow((maxLong - minLong), 2));
+    }
+
+    final data = AggregationData(
+      slices: slices,
+      places: places,
+      centroidHash: centroidHash,
+      sampleCount: effectiveSampleCount,
+      discardedSampleCount: discardedSampleCount,
+      boundingBoxDiagonal: boundingBoxDiagonal,
+    );
+    return data;
+  }
+
+  static String getGeohash(double lat, double long) {
+    // Separately you can use only the Geohasher functions
+    GeoHasher geoHasher = GeoHasher();
+    return geoHasher.encode(lat, long,
+        precision: 5); // Returns a string geohash
   }
 
   static List<Slice> reduceOnOff(List<Slice> slices) {
@@ -506,11 +588,9 @@ class LocationUtils {
   }
 
   static Future<Location> insertExitFromGeofenceOnDb(
-      String identifier,
-      DateTime dateTime,
-      double latitude,
-      double longitude,
-      double radius) async {
+    String identifier,
+    DateTime dateTime,
+  ) async {
     final map = <String, dynamic>{
       "event": "geofence",
       "is_moving": false,
@@ -518,8 +598,8 @@ class LocationUtils {
       "timestamp": dateTime.toUtc().toIso8601String(),
       "odometer": 0.0,
       "coords": {
-        "latitude": latitude,
-        "longitude": longitude,
+        "latitude": 0.0,
+        "longitude": 0.0,
         "accuracy": 0.0,
         "speed": 0.0,
         "heading": 0.0,
@@ -531,8 +611,8 @@ class LocationUtils {
         "identifier": identifier,
         "action": "EXIT",
         "extras": {
-          "center": {"latitude": latitude, "longitude": longitude},
-          "radius": radius
+          "center": {"latitude": 0.0, "longitude": 0.0},
+          "radius": 0.0
         }
       },
       "extras": {}
@@ -580,4 +660,24 @@ class LocationUtils {
     print('[ON/OFF] return location');
     return Location.fromJson(map);
   }
+}
+
+class AggregationData {
+  final List<Slice> slices;
+  final List<Slice> places;
+  final String centroidHash;
+  final int discardedSampleCount;
+  final int sampleCount;
+  final LatLngBounds bounds;
+  final double boundingBoxDiagonal;
+
+  AggregationData({
+    this.slices = const [],
+    this.places = const [],
+    this.centroidHash,
+    this.discardedSampleCount,
+    this.sampleCount,
+    this.bounds,
+    this.boundingBoxDiagonal,
+  });
 }

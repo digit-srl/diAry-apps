@@ -1,7 +1,11 @@
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
-import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/infrastructure/data/daily_stats_local_data_sources.dart';
+import 'package:diary/infrastructure/data/daily_stats_remote_data_sources.dart';
+import 'package:diary/infrastructure/data/user_local_data_sources.dart';
+import 'package:diary/domain/repositories/user_repository.dart';
+import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -17,6 +21,8 @@ import 'application/motion_activity_notifier.dart';
 import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
 import 'domain/entities/location.dart';
+import 'domain/repositories/daily_stats_repository.dart';
+import 'infrastructure/repositories/user_repository_impl.dart';
 import 'presentation/widgets/track_shape.dart';
 import 'utils/colors.dart';
 import 'package:provider/provider.dart';
@@ -37,12 +43,17 @@ class _MyDayAppState extends State<MyDayApp> {
   ServiceNotifier serviceNotifier;
 //  DayNotifier dayNotifier;
   UserRepository userRepository;
+  DailyStatsRepository dailyStatsRepository;
   final GlobalKey<UnicornDialerState> dialerKey =
       GlobalKey<UnicornDialerState>(debugLabel: 'prova');
   @override
   void initState() {
     super.initState();
-    userRepository = UserRepositoryImpl(Hive.box('user'));
+    userRepository =
+        UserRepositoryImpl(UserLocalDataSourcesImpl(Hive.box('user')));
+//    dailyStatsRepository = DailyStatsRepositoryImpl(
+//        DailyStatsLocalDataSourcesImpl(Hive.box('dailyStatsResponse')),
+//        DailyStatsRemoteDataSourcesImpl());
     serviceNotifier = ServiceNotifier();
 //    dayNotifier = DayNotifier(widget.days);
   }
@@ -57,6 +68,12 @@ class _MyDayAppState extends State<MyDayApp> {
         ),
         Provider<UserRepositoryImpl>.value(
           value: userRepository,
+        ),
+        Provider<DailyStatsRepositoryImpl>(
+          create: (_) => DailyStatsRepositoryImpl(
+            DailyStatsLocalDataSourcesImpl(Hive.box('dailyStatsResponse')),
+            DailyStatsRemoteDataSourcesImpl(),
+          ),
         ),
         StateNotifierProvider<AnnotationNotifier, AnnotationState>(
           create: (_) => AnnotationNotifier(

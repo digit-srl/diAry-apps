@@ -1,9 +1,9 @@
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:hive/hive.dart';
-
 import 'slice.dart';
 import 'package:meta/meta.dart';
 
@@ -12,19 +12,35 @@ class Day {
   final List<Slice> slices;
   final List<Slice> places;
   final List<Annotation> annotations;
+  final DailyStatsResponse dailyStatsResponse;
+  final int sampleCount;
+  final int discardedSampleCount;
+  final String centroidHash;
+  final double boundingBoxDiagonal;
+  final pointCount;
   int wom;
 
-//  final List<Location> notes;
-  final pointCount;
+  bool get isStatsSended => dailyStatsResponse != null;
 
   Day({
     this.annotations = const [],
     @required this.date,
     this.slices = const [],
     this.places = const [],
+    this.sampleCount,
+    this.discardedSampleCount,
+    this.centroidHash,
     this.pointCount = 0,
+    this.dailyStatsResponse,
+    this.boundingBoxDiagonal,
   }) {
     wom = GenericUtils.getWomCountForThisDay(places);
+  }
+
+  int get locationCount {
+    final list = <String>{};
+    places.forEach((p) => list.addAll(p.places));
+    return list.length;
   }
 
   List<double> get annotationSlices {
@@ -43,17 +59,24 @@ class Day {
     return list;
   }
 
-  copyWith(
+  copyWith({
     List<Slice> slices,
-    List<Slice> places, [
+    List<Slice> places,
+    DailyStatsResponse response,
     int newPoints = 0,
-  ]) {
+  }) {
     return Day(
       date: this.date,
       slices: slices ?? this.slices,
       places: places ?? this.places,
       annotations: this.annotations,
       pointCount: this.pointCount + newPoints,
+//      dailyStats: this.dailyStats,
+      dailyStatsResponse: response ?? this.dailyStatsResponse,
+      sampleCount: this.sampleCount,
+      discardedSampleCount: this.discardedSampleCount,
+      centroidHash: this.centroidHash,
+      boundingBoxDiagonal: this.boundingBoxDiagonal,
     );
   }
 
@@ -86,6 +109,12 @@ class Day {
       places: this.places,
       annotations: list,
       pointCount: this.pointCount,
+//      dailyStats: this.dailyStats,
+      dailyStatsResponse: this.dailyStatsResponse,
+      sampleCount: this.sampleCount,
+      discardedSampleCount: this.discardedSampleCount,
+      centroidHash: this.centroidHash,
+      boundingBoxDiagonal: this.boundingBoxDiagonal,
     );
   }
 

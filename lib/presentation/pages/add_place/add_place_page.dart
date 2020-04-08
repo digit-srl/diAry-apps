@@ -4,7 +4,7 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';

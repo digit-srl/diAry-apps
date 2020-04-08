@@ -1,11 +1,17 @@
 import 'package:diary/application/annotation_notifier.dart';
+import 'package:diary/domain/entities/daily_stats.dart';
+import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/domain/repositories/user_repository.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 import 'package:intl/intl.dart';
 import 'package:diary/utils/extensions.dart';
+import 'package:uuid/uuid.dart';
 
 import 'date_notifier.dart';
 
@@ -62,7 +68,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     }
     final partialSlices = days[date]?.slices ?? [];
     final partialPlaces = days[date]?.places ?? [];
-    final newSlices = LocationUtils.aggregateLocationsInSlices3(
+    final aggregationData = LocationUtils.aggregateLocationsInSlices3(
       [location],
       partialDaySlices: date.isSameDay(openAppDate) && partialSlices.isNotEmpty
           ? partialSlices.sublist(0, partialSlices.length - 1)
@@ -71,7 +77,10 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
           ? partialPlaces.sublist(0, partialPlaces.length - 1)
           : partialPlaces,
     );
-    days[date] = days[date].copyWith(newSlices[0], newSlices[1], 1);
+    days[date] = days[date].copyWith(
+        slices: aggregationData.slices,
+        places: aggregationData.places,
+        newPoints: 1);
 
     if (state.day.date.isSameDay(openAppDate)) {
       if (date.isAfter(openAppDate)) {
@@ -92,5 +101,46 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
         state = DayState(days[date]);
       }
     }
+  }
+
+  Future<DailyStats> buildDailyStats() async {
+    print('[UploadStatsNotifier] sendDailyStats()');
+    final day = state.day;
+    final uuid = await read<UserRepositoryImpl>().getUserUuid();
+    DateTime date = read<DateNotifier>().selectedDate;
+    // TODO leggere anche gli id dei precedenti luoghi intesi come "CASA"
+    // altrimenti cambianddo casa l algo non riconosce i luoghi impostati
+    // come CASA nei giorni passati
+    final homeIdentifier =
+        read<UserRepositoryImpl>().getHomeGeofenceIdentifier();
+    final eventCount = read<UserRepositoryImpl>().getDailyAnnotationCount(date);
+    final int minutesAtHome =
+        GenericUtils.getHomeMinutes(day.places, homeIdentifier);
+    final int totalMinutesTracked =
+        GenericUtils.getTotalMinutesTracked(day.places);
+    final int minutesElseWhere = GenericUtils.getMinutesElsewhere(day.places);
+    final int minutesAtOtherKnownLocations =
+        GenericUtils.getMinutesAtOtherKnownLocations(
+            day.places, homeIdentifier);
+    final dailyStats = DailyStats(
+        installationId: uuid,
+        date: date,
+        locationTracking: LocationTracking(
+          minutesAtHome: minutesAtHome,
+          minutesElsewhere: minutesElseWhere,
+          minutesAtOtherKnownLocations: minutesAtOtherKnownLocations,
+        ),
+        centroidHash: day.centroidHash,
+        totalMinutesTracked: totalMinutesTracked,
+        eventCount: eventCount,
+        locationCount: day.locationCount,
+        sampleCount: day.sampleCount,
+        discardedSampleCount: day.discardedSampleCount,
+        boundingBoxDiagonal: day.boundingBoxDiagonal);
+    return dailyStats;
+  }
+
+  void addWomResponseToDay(DailyStatsResponse response) {
+    state = DayState(state.day.copyWith(response: response));
   }
 }

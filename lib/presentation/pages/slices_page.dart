@@ -44,8 +44,8 @@ class _TabBarDemoState extends State<TabBarDemo> {
     final output = LocationUtils.aggregateLocationsInSlices3(
       widget.locations,
     );
-    slices = output[0];
-    places = output[1];
+    slices = output.slices;
+    places = output.places;
   }
 
   @override

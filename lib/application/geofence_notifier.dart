@@ -3,7 +3,7 @@ import 'dart:ui' show Color;
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:flutter/material.dart' show Colors;
 import 'package:hive/hive.dart';
@@ -105,7 +105,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     final deleted = await bg.BackgroundGeolocation.removeGeofence(identifier);
     if (deleted) {
       final location = await LocationUtils.insertExitFromGeofenceOnDb(
-          identifier, DateTime.now(), 0.0, 0.0, 0.0);
+          identifier, DateTime.now());
       //TODO usare data della location
       read<DayNotifier>()
           .updateDay(location, DateTime.now().withoutMinAndSec());
