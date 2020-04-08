@@ -617,7 +617,7 @@ class _MapPageState extends State<MapPage>
     final Marker marker = Marker(
       markerId: markerId,
       icon: selectedPinMarkerIcon,
-      anchor: Offset(0.5, 0.6),
+      //anchor: Offset(0.5, 0.6),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
@@ -667,7 +667,7 @@ class _MapPageState extends State<MapPage>
                       marker = Marker(
                         markerId: markerId,
                         icon: selectedPinMarkerIcon,
-                        anchor: Offset(0.5, 0.6),
+                        //anchor: Offset(0.5, 0.6),
                         position: LatLng(
                           location.coords.latitude,
                           location.coords.longitude,
