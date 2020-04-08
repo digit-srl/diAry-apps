@@ -6,6 +6,8 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/presentation/pages/map/widgets/annotation_bottomsheet.dart';
+import 'package:diary/presentation/pages/map/widgets/geofence_bottomsheet.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
@@ -190,121 +192,6 @@ class _MapPageState extends State<MapPage>
     addMarker(location);
   }
 
-  void _onGeofenceTap(ColoredGeofence coloredGeofence) async {
-    print('[MapPage] _onGeofenceTap');
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      builder: (context) {
-        return SlidingSheetDialog(
-          backdropColor: Colors.black.withOpacity(0.0),
-          elevation: 8,
-          cornerRadius: 16,
-          padding: const EdgeInsets.all(16.0),
-          //minHeight: 400,
-          duration: Duration(milliseconds: 300),
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [0.4, 0.7, 1.0],
-            positioning: SnapPositioning.relativeToAvailableSpace,
-          ),
-          builder: (ctx, sheetState) {
-            return Container(
-              child: Material(
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: coloredGeofence.color,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                              CustomIcons.map_marker_outline,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: AutoSizeText(
-                                "Luogo",
-                                maxLines: 1,
-                                style:
-                                    TextStyle(fontSize: 30, color: accentColor),
-                              )),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {},
-                          tooltip: "Modifica (coming soon!)",
-                        ),
-                        IconButton(
-                            icon: Icon(CustomIcons.trash_can_outline),
-                            tooltip: "Elimina",
-                            onPressed: () async {
-                              final deleted = await PlaceUtils.removePlace(
-                                  context, coloredGeofence.geofence.identifier);
-                              if (deleted) {
-                                Navigator.of(context).pop();
-                              }
-                            }),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                          child: Icon(
-                            Icons.message,
-                          ),
-                        ),
-                        Text(
-                          "Nome del luogo: " + coloredGeofence.name,
-                          style: TextStyle(color: secondaryText),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                          child: Icon(
-                            Icons.settings_ethernet,
-                            color: accentColor,
-                          ),
-                        ),
-                        AutoSizeText(
-                          'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri',
-                          maxLines: 1,
-                          style: TextStyle(color: secondaryText),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   void _onGeofence(List<ColoredGeofence> geofences) {
     _geofences.clear();
     try {
@@ -322,6 +209,13 @@ class _MapPageState extends State<MapPage>
       updateAllCircles();
     });
   }
+
+
+  void _onGeofenceTap(ColoredGeofence coloredGeofence) async {
+    print('[MapPage] _onGeofenceTap');
+    showGeofenceBottomSheet(coloredGeofence, context);
+  }
+
 
   void _onGeofenceEvent(bg.GeofenceEvent event) {
     print('[MapPage] [_onGeofenceEvent]');
@@ -605,6 +499,11 @@ class _MapPageState extends State<MapPage>
     setState(() {});
   }
 
+  _onAnnotationTap(Annotation annotation) async {
+    print('[MapPage] _onAnnotationTap');
+    showAnnotationBottomSheet(annotation, context);
+  }
+
   _onLocationTap(Location location) async {
     print('[MapPage] _onLocationTap');
     String selectedPinId = '${location.uuid}_tmp';
@@ -636,7 +535,6 @@ class _MapPageState extends State<MapPage>
       builder: (context) {
         return SlidingSheetDialog(
           backdropColor: Colors.black.withOpacity(0.0),
-          padding: EdgeInsets.all(16),
           elevation: 8,
           cornerRadius: 16,
           //minHeight: 400,
@@ -648,7 +546,7 @@ class _MapPageState extends State<MapPage>
           ),
           builder: (ctx, sheetState) {
             return Container(
-              height: 320,
+              height: 380,
               child: Material(
                 color: Colors.white,
                 child: InfoPinWidget(
@@ -732,140 +630,6 @@ class _MapPageState extends State<MapPage>
     setState(() {});
   }
 
-  _onAnnotationTap(Annotation annotation) async {
-    print('[MapPage] _onAnnotationTap');
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      builder: (context) {
-        return SlidingSheetDialog(
-          backdropColor: Colors.black.withOpacity(0.0),
-          elevation: 8,
-          cornerRadius: 16,
-          padding: const EdgeInsets.all(16.0),
-          //minHeight: 400,
-          duration: Duration(milliseconds: 300),
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [0.4, 0.7, 1.0],
-            positioning: SnapPositioning.relativeToAvailableSpace,
-          ),
-          builder: (ctx, sheetState) {
-            return Container(
-              child: Material(
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                              CustomIcons.bookmark_outline,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: AutoSizeText(
-                                "Annotazione",
-                                maxLines: 1,
-                                style:
-                                    TextStyle(fontSize: 30, color: accentColor),
-                              )),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {},
-                          tooltip: "Modifica (coming soon!)",
-                        ),
-                        IconButton(
-                          icon: Icon(CustomIcons.trash_can_outline),
-                          tooltip: "Elimina",
-                          onPressed: () async {
-                            GenericUtils.ask(context,
-                                'Sicuro di volere eliminare questa annotazione?',
-                                () {
-                              context
-                                  .read<AnnotationNotifier>()
-                                  .removeAnnotation(annotation);
-                              Navigator.of(context).pop();
-                            }, () {
-                              Navigator.of(context).pop();
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                          child: Icon(
-                            Icons.message,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            annotation.title,
-                            style: TextStyle(color: secondaryText),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                          child: Icon(
-                            Icons.gps_fixed,
-                          ),
-                        ),
-                        Text(
-                          'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}',
-                          style: TextStyle(color: secondaryText),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                          child: Icon(
-                            Icons.access_time,
-                          ),
-                        ),
-                        Text(
-                          dateFormat.format(annotation.dateTime),
-                          style: TextStyle(color: secondaryText),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
   @override
   void dispose() {

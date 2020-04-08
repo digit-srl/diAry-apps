@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -37,27 +38,59 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
         widget.selectPin(widget.locations[index]);
       },
       itemBuilder: (BuildContext context, int itemIndex) {
-        return Column(
+        return Padding(
+          padding: EdgeInsets.all(16),
+          child:     Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
                 children: <Widget>[
                   IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      color: Colors.black,
+                      icon: Icon(Icons.chevron_left),
+                      color: accentColor,
                       onPressed: () {
                         //TODO change to animatedPage
                         if (itemIndex > 0) {
                           _pageController.jumpToPage(itemIndex - 1);
                         }
                       }),
-                  Spacer(),
-                  Text((itemIndex + 1).toString()),
-                  Spacer(),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        CustomIcons.pin_outline,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AutoSizeText(
+                          "Pin",
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 30, color: accentColor),
+                        )),
+                  ),
+                  Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: AutoSizeText(
+                        (itemIndex + 1).toString() +
+                            "/" +
+                            widget.locations.length.toString(),
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 30, color: accentColor),
+                      )),
                   IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      color: Colors.black,
+                      icon: Icon(Icons.chevron_right),
+                      color: accentColor,
                       onPressed: () {
                         //TODO change to animatedPage
                         if (itemIndex < widget.locations.length - 1) {
@@ -66,6 +99,11 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                       }),
                 ],
               ),
+
+              SizedBox(
+                height: 16,
+              ),
+
               Row(
                 children: <Widget>[
                   Padding(
@@ -181,9 +219,10 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                         maxLines: 1,
                       ),
                     ),
-                ],
-              ),
+                  ],
+                ),
             ],
+          )
         );
       },
     );
