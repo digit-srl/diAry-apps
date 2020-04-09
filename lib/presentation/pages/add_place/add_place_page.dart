@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
-import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/colors.dart';
@@ -25,7 +23,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../main.dart';
 
-import '../../../utils/colors.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;

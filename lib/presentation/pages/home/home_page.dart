@@ -135,14 +135,15 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     width: 8,
                   ),
+
+                  UploadStatsIconButton(),
+
                   IconButton(
                     icon: Icon(CustomIcons.hospital_box_outline),
                     color: accentColor,
                     onPressed: () {},
                     tooltip: "Notifica sanitaria... Coming soon!",
                   ),
-
-                  UploadStatsIconButton(),
 
                   IconButton(
                     icon: Icon(Icons.settings),
@@ -180,6 +181,7 @@ class UploadStatsIconButton extends StatelessWidget {
     final isStatsSended = day.isStatsSended;
 
     return IconButton(
+      tooltip: "Condividi statistiche e riscatta WOM",
       icon: isStatsSended
           ? Container(
 //              height: 30,
@@ -187,7 +189,7 @@ class UploadStatsIconButton extends StatelessWidget {
                 'assets/wom_pocket_logo.png',
               ),
             )
-          : Icon(isToday ? Icons.cloud_off : Icons.cloud_upload),
+          : Icon(isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline),
       color: accentColor,
       onPressed: () => uploadStats(context, response),
     );

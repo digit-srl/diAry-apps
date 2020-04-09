@@ -28,7 +28,6 @@ class CarCard extends StatelessWidget {
                       onPressed: () {},
                       text: 'Auto propria',
                       withBorder: false,
-                      onPressed: null,
                     ),
 
                 GenericButton(
