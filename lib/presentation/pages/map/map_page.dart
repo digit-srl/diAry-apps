@@ -543,6 +543,14 @@ class _MapPageState extends State<MapPage>
         );
         markers[markerId] = marker;
       }
+      if (_currentDate.isToday()) {
+        _updateCurrentPositionMarker(
+          LatLng(
+            dailyLocations.last.coords.latitude,
+            dailyLocations.last.coords.longitude,
+          ),
+        );
+      }
     }
     final annotations = context
         .read<AnnotationNotifier>()
