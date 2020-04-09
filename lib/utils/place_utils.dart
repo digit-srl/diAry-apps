@@ -1,5 +1,5 @@
 import 'package:diary/application/geofence_notifier.dart';
-import 'package:diary/infrastructure/user_repository.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

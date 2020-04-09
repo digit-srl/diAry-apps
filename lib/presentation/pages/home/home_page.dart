@@ -4,15 +4,22 @@ import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
+import 'package:diary/application/upload_stats_notifier.dart';
+import 'package:diary/domain/entities/daily_stats_response.dart';
+import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import '../logs_page.dart';
 import '../slices_page.dart';
 import 'package:provider/provider.dart';
 import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
 import 'widgets/gps_card.dart';
+import 'package:provider/provider.dart';
+import 'package:diary/utils/extensions.dart';
 
 class NoRippleOnScrollBehavior extends ScrollBehavior {
   @override
@@ -68,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                 // -16 compensa il padding naturale del grafico
                 height: kToolbarHeight - 16,
               ),
-              DailyStats(),
+              DailyStatsWidget(),
 
 //              CarCard(),
               GpsCard(),
@@ -135,12 +142,7 @@ class _HomePageState extends State<HomePage> {
                     tooltip: "Notifica sanitaria... Coming soon!",
                   ),
 
-                  IconButton(
-                    icon: Icon(CustomIcons.cloud_upload_outline),
-                    color: accentColor,
-                    onPressed: () {},
-                    tooltip: "Condividi dati con la community... Coming soon!",
-                  ),
+                  UploadStatsIconButton(),
 
                   IconButton(
                     icon: Icon(Icons.settings),
@@ -166,5 +168,99 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+class UploadStatsIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final day = context.watch<DayState>().day;
+    final response = day.dailyStatsResponse;
+    final isToday = day.date.isToday();
+    final isStatsSended = day.isStatsSended;
+
+    return IconButton(
+      icon: isStatsSended
+          ? Container(
+//              height: 30,
+              child: Image.asset(
+                'assets/wom_pocket_logo.png',
+              ),
+            )
+          : Icon(isToday ? Icons.cloud_off : Icons.cloud_upload),
+      color: accentColor,
+      onPressed: () => uploadStats(context, response),
+    );
+  }
+
+  uploadStats(BuildContext context, DailyStatsResponse response) async {
+    final dailyStats = await context.read<DayNotifier>().buildDailyStats();
+
+    await showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
+      builder: (context) {
+        return SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: Duration(milliseconds: 300),
+          minHeight: MediaQuery.of(context).size.height * 0.9,
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.9],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          builder: (context, state) {
+            return StateNotifierProvider(
+              create: (BuildContext context) =>
+                  UploadStatsNotifier(dailyStats, response),
+              child: Material(
+                child: InfoStatsWidget(
+                  dailyStats: dailyStats,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+//                      either.fold((failure) {
+//                        Alert(
+//                          context: context,
+//                          title: 'Errore',
+//                          desc:
+//                              '${failure is UnknownFailure ? failure.message : failure}',
+//                          buttons: [
+//                            DialogButton(
+//                              child: Text('Ok'),
+//                              onPressed: () {
+//                                Navigator.of(context).pop();
+//                              },
+//                            ),
+//                          ],
+//                        ).show();
+//                      }, (DailyStatsResponse response) {
+//                        Alert(
+//                          context: context,
+//                          title: 'Complimenti',
+//                          desc:
+//                              '${response.womLink} |||| ${response.womPassword}',
+//                          buttons: [
+//                            DialogButton(
+//                              child: Text('Grazie'),
+//                              onPressed: () {
+//                                Navigator.of(context).pop();
+//                              },
+//                            ),
+//                            DialogButton(
+//                              child: Text('Apri WOM Pocket'),
+//                              onPressed: () {
+//                                Navigator.of(context).pop();
+//                              },
+//                            ),
+//                          ],
+//                        ).show();
+//                      });
   }
 }

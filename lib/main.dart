@@ -1,3 +1,4 @@
+import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -86,9 +87,11 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AnnotationAdapter());
   Hive.registerAdapter(PlaceAdapter());
+  Hive.registerAdapter(DailyStatsResponseAdapter());
   await Hive.openBox<String>('logs');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
+  await Hive.openBox('dailyStatsResponse');
   final box = await Hive.openBox<Place>('places');
   box.values.forEach(print);
   final Map<DateTime, List<Location>> locationsPerDate =

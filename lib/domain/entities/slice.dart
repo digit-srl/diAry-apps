@@ -17,9 +17,21 @@ class Slice {
     this.minutes = 0,
     this.startTime,
     this.activity,
-    this.places = const {},
+    this.places,
     this.placeRecords = 0,
-  });
+  }) {
+    if (this.places == null) {
+      this.places = {};
+    }
+  }
+
+  removePlace(String place) {
+    places.remove(place);
+  }
+
+  add(String place) {
+    places.add(place);
+  }
 
   String get formattedMinutes => GenericUtils.minutesToString(minutes);
 }

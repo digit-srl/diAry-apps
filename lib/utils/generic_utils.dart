@@ -1,10 +1,11 @@
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
-import 'package:diary/infrastructure/user_repository.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'constants.dart';
 
 class GenericUtils {
   static showError(BuildContext context, {String error}) {
@@ -101,6 +102,85 @@ class GenericUtils {
     return '$hour h : $min m';
   }
 
+  static int getOffMinutes(List<Slice> slices) {
+    int offMinutes = 0;
+    final offSlices = slices?.where((p) => p.activity == MotionActivity.Off);
+    if (offSlices.isNotEmpty) {
+      offMinutes = offSlices
+          ?.map((slice) => slice.minutes)
+          ?.reduce((curr, next) => curr + next);
+    }
+    return offMinutes;
+  }
+
+  static int getUnknownMinutes(List<Slice> slices) {
+    int unknownMinutes = 0;
+    final unknownSlices =
+        slices?.where((p) => p.activity == MotionActivity.Unknown);
+    if (unknownSlices.isNotEmpty) {
+      unknownMinutes = unknownSlices
+          ?.map((slice) => slice.minutes)
+          ?.reduce((curr, next) => curr + next);
+    }
+    return unknownMinutes;
+  }
+
+  static int getHomeMinutes(List<Slice> slices, String homeIdentifier) {
+    int homeMinutes = 0;
+    final homeSlices = slices.where((p) => p.places.contains(homeIdentifier));
+    if (homeSlices.isNotEmpty) {
+      homeMinutes = homeSlices
+          .map((slice) => slice.minutes)
+          .reduce((curr, next) => curr + next);
+    }
+    return homeMinutes;
+  }
+
+  static int getMinutesAtOtherKnownLocations(
+      List<Slice> slices, String homeIdentifier) {
+    int minutesAtOtherKnownLocations = 0;
+    final otherKnownLocationsSlices =
+        slices.where((p) => p.places.isNotEmpty).toList();
+    otherKnownLocationsSlices.removeWhere(
+        (p) => p.places.length == 1 && p.places.contains(homeIdentifier));
+    if (otherKnownLocationsSlices.isNotEmpty) {
+      minutesAtOtherKnownLocations = otherKnownLocationsSlices
+          .map((slice) => slice.minutes)
+          .reduce((curr, next) => curr + next);
+    }
+    return minutesAtOtherKnownLocations;
+  }
+
+  static int getTotalMinutesTracked(List<Slice> slices) {
+    final int offMinutes = GenericUtils.getOffMinutes(slices);
+    final int unknownMinutes = GenericUtils.getUnknownMinutes(slices);
+    final int totalMinutesTracked =
+        maxDailyMinutes - offMinutes - unknownMinutes;
+    if (totalMinutesTracked < 0) {
+      throw Exception(
+          '[GeneriUtils] totalMinutesTracked cannont to be less that zero');
+    }
+    return totalMinutesTracked;
+  }
+
+  static int getMinutesElsewhere(List<Slice> slices) {
+    int minutesElsewhere = 0;
+    final slicesElseWhere = slices.where((p) =>
+        p.places.isEmpty &&
+        p.activity != MotionActivity.Off &&
+        p.activity != MotionActivity.Unknown);
+    if (slicesElseWhere.isNotEmpty) {
+      minutesElsewhere = slicesElseWhere
+          .map((slice) => slice.minutes)
+          .reduce((curr, next) => curr + next);
+    }
+    if (minutesElsewhere < 0) {
+      throw Exception(
+          '[GeneriUtils] totalMinutesTracked cannont to be less that zero');
+    }
+    return minutesElsewhere;
+  }
+
   static int getWomCountForThisDay(List<Slice> places) {
     try {
       int offMinutes = 0;
@@ -123,6 +203,9 @@ class GenericUtils {
 
       print('[GeneriUtils] offMinutes : $offMinutes');
 
+      // TODO leggere anche gli id dei precedenti luoghi intesi come "CASA"
+      // altrimenti cambianddo casa l algo non riconosce i luoghi impostati
+      // come CASA nei giorni passati
       final homeIdentifier = Hive.box('user').get(homeGeofenceKey);
 
       int homeMinutes = 0;

@@ -17,7 +17,7 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 
-class DailyStats extends StatelessWidget {
+class DailyStatsWidget extends StatelessWidget {
   final DateFormat dateFormat = DateFormat('HH:mm');
 
   @override
@@ -35,7 +35,7 @@ class DailyStats extends StatelessWidget {
         print('StateNotifierBuilder STATS DETAILS');
 
         Day day = value.day;
-        print('[DailyStats] selected day: $day');
+        print('[DailyStatsWidget] selected day: $day');
         List<CircularSegmentEntry> stationarySliceSegments = [];
         List<CircularSegmentEntry> movementSliceSegments = [];
         List<CircularSegmentEntry> annotationSegments = [];
