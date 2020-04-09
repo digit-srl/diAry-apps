@@ -127,11 +127,23 @@ class LocationUtils {
 
   static AggregationData aggregateLocationsInSlices3(
     List<Location> locations, {
-    List<Slice> partialDaySlices = const [],
-    List<Slice> partialDayPlaces = const [],
-    Set<String> yesterdayPlaces = const {},
+    List<Slice> partialDaySlices,
+    List<Slice> partialDayPlaces,
+    Set<String> yesterdayPlaces,
   }) {
     if (locations.isEmpty) return AggregationData();
+
+    if (partialDaySlices == null) {
+      partialDaySlices = [];
+    }
+
+    if (partialDayPlaces == null) {
+      partialDayPlaces = [];
+    }
+
+    if (yesterdayPlaces == null) {
+      yesterdayPlaces = {};
+    }
 
     final currentDay = locations.first.dateTime;
 
