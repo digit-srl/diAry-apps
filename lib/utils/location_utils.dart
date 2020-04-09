@@ -531,17 +531,21 @@ class LocationUtils {
 
   static double distance(
       {double minLat, double minLong, double maxLat, double maxLong}) {
-    final minLatRad = toRadians(minLat);
-    final minLonRad = toRadians(minLong);
-    final maxLatRad = toRadians(maxLat);
-    final maxLonRad = toRadians(maxLong);
-    double radius = 6371;
+    try {
+      final minLatRad = toRadians(minLat);
+      final minLonRad = toRadians(minLong);
+      final maxLatRad = toRadians(maxLat);
+      final maxLonRad = toRadians(maxLong);
+      double radius = 6371;
 
-    double dist = acos(sin(minLatRad) * sin(maxLatRad) +
-            cos(minLatRad) * cos(maxLatRad) * cos(maxLonRad - minLonRad)) *
-        radius;
+      double dist = acos(sin(minLatRad) * sin(maxLatRad) +
+              cos(minLatRad) * cos(maxLatRad) * cos(maxLonRad - minLonRad)) *
+          radius;
 
-    return dist * 1000;
+      return dist * 1000;
+    } catch (ex) {
+      return 0.0;
+    }
   }
 
   static double toRadians(double degree) {
