@@ -73,7 +73,7 @@ class InfoStatsWidget extends StatelessWidget {
               StatText('Campioni scartati: ',
                   dailyStats.discardedSampleCount.toString()),
               StatText('Diagonale bb in metri: ',
-                  dailyStats.boundingBoxDiagonal.toStringAsFixed(4)),
+                  dailyStats.boundingBoxDiagonal.toStringAsFixed(2)),
               StateNotifierBuilder<UploadStatsState>(
                 stateNotifier: context.read<UploadStatsNotifier>(),
                 builder: (contest, state, child) {

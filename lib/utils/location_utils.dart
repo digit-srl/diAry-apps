@@ -511,8 +511,11 @@ class LocationUtils {
     double boundingBoxDiagonal = 0.0;
 
     if (effectiveSampleCount > 1) {
-      boundingBoxDiagonal =
-          sqrt(pow((maxLat - minLat), 2) + pow((maxLong - minLong), 2));
+//      boundingBoxDiagonal =
+//          sqrt(pow((maxLat - minLat), 2) + pow((maxLong - minLong), 2));
+
+      boundingBoxDiagonal = distance(
+          minLat: minLat, maxLat: maxLat, minLong: minLong, maxLong: maxLong);
     }
 
     final data = AggregationData(
@@ -524,6 +527,26 @@ class LocationUtils {
       boundingBoxDiagonal: boundingBoxDiagonal,
     );
     return data;
+  }
+
+  static double distance(
+      {double minLat, double minLong, double maxLat, double maxLong}) {
+    final minLatRad = toRadians(minLat);
+    final minLonRad = toRadians(minLong);
+    final maxLatRad = toRadians(maxLat);
+    final maxLonRad = toRadians(maxLong);
+    double radius = 6371;
+
+    double dist = acos(sin(minLatRad) * sin(maxLatRad) +
+            cos(minLatRad) * cos(maxLatRad) * cos(maxLonRad - minLonRad)) *
+        radius;
+
+    return dist * 1000;
+  }
+
+  static double toRadians(double degree) {
+    double oneDeg = (pi) / 180;
+    return (oneDeg * degree);
   }
 
   static String getGeohash(double lat, double long) {
@@ -541,6 +564,7 @@ class LocationUtils {
     if (slices.isEmpty) {
       return output;
     }
+
     if (slices.first.activity != MotionActivity.Off) {
       output.add(slices.first);
       final x = reduceOnOff(slices.sublist(1));
