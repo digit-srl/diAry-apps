@@ -73,7 +73,7 @@ class LocationUtils {
         dailyStatsResponse: dailyStatsResponse,
         sampleCount: tmp.sampleCount,
         discardedSampleCount: tmp.discardedSampleCount,
-        centroidHash: tmp.centroidHash?.toUpperCase(),
+        centroidHash: tmp.centroidHash,
         boundingBoxDiagonal: tmp.boundingBoxDiagonal,
       );
       i++;
