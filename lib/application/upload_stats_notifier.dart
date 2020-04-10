@@ -27,7 +27,6 @@ class UploadStatsNotifier extends StateNotifier<UploadStatsState>
 
   sendDailyStats(DailyStats dailyStats) async {
     state = Loading();
-    await Future.delayed(Duration(seconds: 2));
 //    state = WomResponse(DailyStatsResponse(
 //        womLink: 'https://google.com', womPassword: '1231', womCount: 24));
     final responseEither =
