@@ -57,7 +57,7 @@ class PlaceLegend extends StatelessWidget {
                   enabled: place.enabled,
                   pinColor: Color(place.color),
                   location:
-                      'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
+                      'Lat: ${place.latitude?.toStringAsFixed(2)} Long: ${place.longitude?.toStringAsFixed(2)}',
 //                  onRemove: () {
 //                    PlaceUtils.removePlace(context, place.identifier);
 //                  },

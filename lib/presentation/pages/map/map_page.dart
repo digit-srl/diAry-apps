@@ -747,7 +747,7 @@ class _MapPageState extends State<MapPage>
                     ),
                   ),
                   Text(
-                      'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}'),
+                      'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}'),
                 ],
               ),
               Row(
