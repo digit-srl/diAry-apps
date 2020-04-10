@@ -507,6 +507,7 @@ class LocationUtils {
     String centroidHash = '00000';
     if (!(lat.isNaN || long.isNaN)) {
       centroidHash = getGeohash(lat, long);
+      print('$centroidHash');
     }
     double boundingBoxDiagonal = 0.0;
 
@@ -556,7 +557,8 @@ class LocationUtils {
   static String getGeohash(double lat, double long) {
     // Separately you can use only the Geohasher functions
     GeoHasher geoHasher = GeoHasher();
-    return geoHasher.encode(lat, long,
+    print('$lat $long');
+    return geoHasher.encode(long, lat,
         precision: 5); // Returns a string geohash
   }
 
