@@ -24,6 +24,7 @@ class DailyStatsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
+    final bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     // misure euristiche, dipendenti dal valore di height
     final _chartSize = Size(height / 3, height / 3);
@@ -175,7 +176,7 @@ class DailyStatsWidget extends StatelessWidget {
                   color = Colors.black;
                   break;
                 case MotionActivity.Inactive:
-                  color = Colors.grey[100];
+                  color = Colors.grey.withOpacity(0.3);
                   break;
                 case MotionActivity.Still:
                   if (e.places.isEmpty) {
@@ -185,7 +186,7 @@ class DailyStatsWidget extends StatelessWidget {
                   }
                   break;
                 default:
-                  color = Colors.orange[100];
+                  color = Colors.orange.withOpacity(0.3);
               }
             }
 
@@ -212,8 +213,8 @@ class DailyStatsWidget extends StatelessWidget {
                         e.activity == MotionActivity.OnBicycle)
                     ? Colors.blue
                     : e.activity == MotionActivity.Inactive
-                        ? Colors.grey[100]
-                        : Colors.blue[100]);
+                        ? Colors.grey.withOpacity(0.3)
+                        : Colors.blue.withOpacity(0.3));
           }).toList();
 
           final annotationSlices = day.annotationSlices;
@@ -237,26 +238,28 @@ class DailyStatsWidget extends StatelessWidget {
 //        day.notes.forEach((element) => print(element.dateTime));
           for (int i = 0; i < annotationSlices.length; i++) {
             if (annotationSlices[i] == 0.0) {
-              annotationSegments.add(CircularSegmentEntry(5, Colors.black));
+              annotationSegments.add(CircularSegmentEntry(5,
+                 isDark ? Colors.white : Colors.black
+              ));
             } else {
               annotationSegments.add(
-                  CircularSegmentEntry(annotationSlices[i], Colors.grey[100]));
+                  CircularSegmentEntry(annotationSlices[i], Colors.grey.withOpacity(0.3)));
             }
           }
         }
 
         if (stationarySliceSegments.isEmpty) {
           stationarySliceSegments
-              .add(CircularSegmentEntry(1440, Colors.grey[100]));
+              .add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
         }
 
         if (movementSliceSegments.isEmpty) {
           movementSliceSegments
-              .add(CircularSegmentEntry(1440, Colors.grey[100]));
+              .add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
         }
 
         if (annotationSegments.isEmpty) {
-          annotationSegments.add(CircularSegmentEntry(1440, Colors.grey[100]));
+          annotationSegments.add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
         }
 
         final data = [

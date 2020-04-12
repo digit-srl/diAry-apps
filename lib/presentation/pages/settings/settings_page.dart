@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
@@ -33,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
     items = [
       SettingItem(
         Icons.file_download,
-        'Exporta CSV spostamenti',
+        'Exporta i dati degli spostamenti',
         'Salva in locale i dati relativi agli spostamenti effettuati. Puoi decidere periodo e formato di esportazione.',
         onTap: exportJson,
       ),
@@ -208,24 +209,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
     print(permissionStatus);
     if (permissionStatus == PermissionStatus.neverAskAgain) {
-      Alert(
-        context: context,
-        title: 'Attenzione',
-        desc: 'In precedenza hai disabilitato la richiesta del permesso. '
-            'Ora per abilitare il permesso di scrittura va in impostazioni',
-        buttons: [
-          DialogButton(
-            child: Text(
-              'Impostazioni',
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-              PermissionHandler().openAppSettings();
-            },
-          ),
-        ],
-      ).show();
+      Alerts.showAlertWithPosNegActions(
+          context,
+          "Attenzione",
+          "In percedenza hai disabilitato il permesso di archiviazione. E' "
+          "necessario abilitarlo manualmente dalle impostazioni di sistema.",
+          "Vai a Impostazioni",
+          () {
+            PermissionHandler().openAppSettings();
+          });
       return;
     } else if (permissionStatus != PermissionStatus.granted) {
       final permissions = await PermissionHandler()
@@ -250,36 +242,21 @@ class _SettingsPageState extends State<SettingsPage> {
     final csvPath = csvFile.path;
     final jsonPath = jsonFile.path;
 
-    Alert(
-      context: context,
-      title: 'Condividi il file',
-      buttons: [
-        DialogButton(
-          child: Text(
-            'CSV',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-//            ShareExtend.share(path, 'file');
-            Share.file('Il mio file CSV', csvPath.split('/').last,
-                csvFile.readAsBytesSync(), 'application/*');
-          },
-        ),
-        DialogButton(
-          child: Text(
-            'JSON',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-//            ShareExtend.share(path, 'file');
-            Share.file('Il mio file CSV', jsonPath.split('/').last,
-                jsonFile.readAsBytesSync(), 'application/*');
-          },
-        ),
-      ],
-    ).show();
+    Alerts.showAlertWithTwoActions(
+        context,
+        "Esporta dati",
+        "Seleziona il formato per l'esportazione dei dati.",
+        "CSV",
+        () {
+          Share.file('Il mio file CSV', csvPath.split('/').last,
+              csvFile.readAsBytesSync(), 'application/*');
+        },
+        "JSON",
+        () {
+          Share.file('Il mio file JSON', jsonPath.split('/').last,
+              jsonFile.readAsBytesSync(), 'application/*');
+        }
+    );
   }
 
   void _scrollListener() {

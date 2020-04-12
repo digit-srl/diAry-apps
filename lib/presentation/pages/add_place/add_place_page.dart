@@ -7,6 +7,7 @@ import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/styles.dart';
@@ -198,7 +199,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     ),
                     Switch(
                       activeColor: Theme.of(context).iconTheme.color,
-                      inactiveThumbColor: Theme.of(context).iconTheme.color,
+                      inactiveThumbColor: Theme.of(context).colorScheme.secondary,
                       inactiveTrackColor: Theme.of(context).colorScheme.secondary,
                       value: _isHome,
                       onChanged: _isHomeEnabled
@@ -366,14 +367,14 @@ class _AddPlacePageState extends State<AddPlacePage> {
           }
           Navigator.of(context).pop();
         } else {
-          GenericUtils.showError(context);
+          Alerts.showAlertWithSingleAction(context, "Si è verificato un errore!");
         }
       },
     ).catchError(
       (error) {
         print('[addGeofence] ERROR: $error');
-        GenericUtils.showError(context, error: error.toString());
-      },
+        Alerts.showAlertWithSingleAction(context, "Si è verificato un errore!", error.toString());
+        },
     );
   }
 
@@ -400,55 +401,36 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void _selectColor() async {
     Color tmpColor = _currentColor;
-    await Alert(
-      style: AlertStyle(
-        animationType: AnimationType.grow,
-      ),
-      context: context,
-      title: 'Scegli il colore',
-      content: BlockPicker(
-        onColorChanged: (Color value) {
-          tmpColor = value;
-        },
-        pickerColor: tmpColor,
-        layoutBuilder:
-            (BuildContext context, List<Color> colors, PickerItem child) {
-          Orientation orientation = MediaQuery.of(context).orientation;
-          return Container(
-            width: orientation == Orientation.portrait ? 300.0 : 300.0,
-            height: orientation == Orientation.portrait ? 300.0 : 200.0,
-            child: GridView.count(
-              crossAxisCount: orientation == Orientation.portrait ? 5 : 6,
-              crossAxisSpacing: 5.0,
-              mainAxisSpacing: 5.0,
-              children: colors.map((Color color) => child(color)).toList(),
-            ),
-          );
-        },
-      ),
-      buttons: [
-        DialogButton(
-          color: Colors.white,
-          child: Text('Annulla'),
-          onPressed: () {
-            Navigator.of(context).pop();
+    Alerts.showAlertWithContent(
+        context,
+        "Scegli il colore",
+        BlockPicker(
+          onColorChanged: (Color value) {
+            tmpColor = value;
+          },
+          pickerColor: tmpColor,
+          layoutBuilder:
+              (BuildContext context, List<Color> colors, PickerItem child) {
+            Orientation orientation = MediaQuery.of(context).orientation;
+            return Container(
+              width: orientation == Orientation.portrait ? 300.0 : 300.0,
+              height: orientation == Orientation.portrait ? 240.0 : 200.0,
+              child: GridView.count(
+                crossAxisCount: orientation == Orientation.portrait ? 5 : 6,
+                crossAxisSpacing: 5.0,
+                mainAxisSpacing: 5.0,
+                children: colors.map((Color color) => child(color)).toList(),
+              ),
+            );
           },
         ),
-        DialogButton(
-          child: Text(
-            'Conferma',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            setState(() {
-              this._currentColor = tmpColor;
-              _addCircle(_lastLocation);
-            });
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    ).show();
+        "Conferma",
+          () {
+        setState(() {
+          this._currentColor = tmpColor;
+          _addCircle(_lastLocation);
+        });
+      },);
   }
 
   void _getCurrentLocationAndUpdateMap() {

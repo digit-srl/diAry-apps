@@ -1,3 +1,4 @@
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -49,10 +50,15 @@ class LogsPage extends StatelessWidget {
         onPressed: () {
 //          Hive.box<Place>('places').clear();
           if (!isEmpty) {
-            GenericUtils.ask(context, 'Sicuro di voler eliminare tutti i log',
+            Alerts.showAlertWithPosNegActions(
+                context,
+                "Elimina log",
+                "Sei sicuro di voler eliminare tutti i log?",
+                "Sì, elimina",
                 () {
-              Hive.box<String>('logs').clear();
-            }, () {});
+                    Hive.box<String>('logs').clear();
+                }
+            );
           }
         },
       ),

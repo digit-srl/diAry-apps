@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/generic_utils.dart';
@@ -74,15 +75,14 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                         icon: Icon(CustomIcons.trash_can_outline),
                         tooltip: "Elimina",
                         onPressed: () async {
-                          GenericUtils.ask(context,
-                              'Sicuro di volere eliminare questa annotazione?',
-                              () {
-                            Provider.of<AnnotationNotifier>(context,
-                                    listen: false)
+                          Alerts.showAlertWithPosNegActions(
+                              context,
+                              "Elimina annotazione",
+                              "Sei sicuro di voler eliminare questa annotazione?",
+                              "Sì, elimina", () {
+                            context
+                                .read<AnnotationNotifier>()
                                 .removeAnnotation(annotation);
-                            Navigator.of(context).pop();
-                          }, () {
-                            Navigator.of(context).pop();
                           });
                         },
                       ),

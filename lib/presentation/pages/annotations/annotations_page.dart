@@ -3,6 +3,7 @@ import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/application/location_notifier.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/colors.dart';
@@ -94,8 +95,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
               return ListView.separated(
                 // draw below statusbar and appbar
                 padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).padding.top + kToolbarHeight
-                ),
+                    top: MediaQuery.of(context).padding.top + kToolbarHeight),
                 itemCount: annotations.length,
                 controller: _controller,
 
@@ -113,16 +113,18 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                     ),
                     onTap: () {},
                     trailing: IconButton(
-                      color: Theme.of(context).iconTheme.color,
+                        color: Theme.of(context).iconTheme.color,
                         icon: Icon(CustomIcons.trash_can_outline),
                         onPressed: () {
-                          GenericUtils.ask(context,
-                              'Sicuro di volere eliminare questa annotazione?',
-                              () {
+                          Alerts.showAlertWithPosNegActions(
+                              context,
+                              "Elimina annotazione",
+                              "Sei sicuro di voler eliminare questa annotazione?",
+                              "Sì, elimina", () {
                             context
                                 .read<AnnotationNotifier>()
                                 .removeAnnotation(annotation);
-                          }, () {});
+                          });
                         }),
                     subtitle: Text(
                       'Ore: ${dateFormat.format(annotation.dateTime)}',
