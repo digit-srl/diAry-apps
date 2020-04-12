@@ -17,7 +17,6 @@ class CarCard extends StatelessWidget {
           return GenericCard(
               enabled: true,
               iconData: Icons.directions_car,
-              iconColor: accentColor,
 //              title: 'Ti stai muovendo con un veicolo',
               title:
                   value.activity.toString().replaceAll('MotionActivity.', ''),

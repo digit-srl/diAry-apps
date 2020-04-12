@@ -11,6 +11,7 @@ import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
@@ -49,6 +50,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
   bool _isHomeEnabled;
   String _locationError;
   bool _canSave = false;
+  String _darkMapStyle;
+  String _normalMapStyle;
 
   @override
   void initState() {
@@ -76,6 +79,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
         _getCurrentLocationAndUpdateMap();
       });
     }
+
+    rootBundle.loadString('assets/dark_map_style.json').then((string) {
+      _darkMapStyle = string;
+    });
+    rootBundle.loadString('assets/normal_map_style.json').then((string) {
+      _normalMapStyle = string;
+    });
   }
 
   @override
@@ -87,15 +97,16 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
 //    _createMarkerImageFromAsset(context);
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: accentColor),
         title: Text(
           'Aggiungi luogo',
-          style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.title,
         ),
         centerTitle: true,
         actions: <Widget>[
@@ -132,15 +143,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
                       ),
                     ),
                     Expanded(
-                      child: Theme(
-                        data: ThemeData(primaryColor: accentColor),
-                        child: TextField(
-                          cursorColor: accentColor,
+                      child: TextField(
+                          cursorColor: Theme.of(context).iconTheme.color,
                           controller: _placeEditingController,
                           expands: false,
                           maxLines: 1,
                           maxLength: 20,
-                          style: TextStyle(fontFamily: "Nunito"),
+                          style: Theme.of(context).textTheme.body2,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -150,8 +159,11 @@ class _AddPlacePageState extends State<AddPlacePage> {
                               ),
                             ),
                             filled: true,
-                            fillColor: baseCard,
+                            fillColor: Theme.of(context).colorScheme.secondary,
                             hintText: "Inserisci qui il nome del luogo",
+                            hintStyle: Theme.of(context).textTheme.body1,
+                            //counterText: "",
+                            counterStyle: Theme.of(context).textTheme.caption
                           ),
                           onChanged: (text) {
                             setState(() {
@@ -163,7 +175,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
                           },
                         ),
                       ),
-                    ),
                   ],
                 ),
                 SizedBox( height: 4 ),
@@ -179,14 +190,16 @@ class _AddPlacePageState extends State<AddPlacePage> {
                           Text(
                             "Abitazione principale",
                             textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.subhead,
                           ),
 
                         ],
                       ),
                     ),
                     Switch(
+                      activeColor: Theme.of(context).iconTheme.color,
+                      inactiveThumbColor: Theme.of(context).iconTheme.color,
+                      inactiveTrackColor: Theme.of(context).colorScheme.secondary,
                       value: _isHome,
                       onChanged: _isHomeEnabled
                           ? (bool value) {
@@ -205,7 +218,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                 Text(
                   "Raggio",
                   textAlign: TextAlign.left,
-                  style: secondaryStyle,
+                  style: Theme.of(context).textTheme.subhead,
                 ),
                 Slider(
                   min: 10.0,
@@ -230,6 +243,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addPlaceIfPossible,
         child: Icon(Icons.check),
+        backgroundColor: Theme.of(context).accentColor,
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -245,6 +259,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
            // });
            //},
             onMapCreated: (controller) {
+              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
               _controller.complete(controller);
             },
             onTap: (location) {
@@ -546,6 +561,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         elevation: 8,
         cornerRadius: 16,
         //minHeight: 400,
+        color: Theme.of(context).primaryColor,
         padding: EdgeInsets.all(24),
         duration: Duration(milliseconds: 300),
         snapSpec: const SnapSpec(
@@ -556,14 +572,14 @@ class _AddPlacePageState extends State<AddPlacePage> {
         builder: (ctx, sheetState) {
           return Container(
             child: Material(
-              color: Colors.white,
-              child:  Column(
+                color: Theme.of(context).primaryColor,
+                child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
                     "Cos'è questa schermata?",
-                    style: titleCardStyle,
+                    style: Theme.of(context).textTheme.headline,
                   ),
                   SizedBox(
                     height: 8,
@@ -576,7 +592,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                         "visualizzarlo nella mappa, il raggio, e specificare se è "
                         "la tua abitazione principale. Passando più tempo nella tua "
                         "abitazione principale, otterrai un maggior numero di WOM.",
-                    style: secondaryStyle,
+                    style: Theme.of(context).textTheme.body1,
                   ),
                 ],
               )

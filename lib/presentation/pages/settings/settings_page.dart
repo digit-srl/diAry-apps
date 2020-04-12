@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingItem(Icons.gps_fixed, 'Calibra Sensori',
           'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
           enabled: false),
-      SettingItem(Icons.local_hospital, 'Allerta sanitaria:',
+      SettingItem(CustomIcons.hospital_box_outline, 'Allerta sanitaria:',
           'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
           enabled: false),
     ];
@@ -71,7 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final titleStyle = TextStyle(fontWeight: FontWeight.w600);
 
-  final titlePadding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0);
+  final titlePadding = const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0);
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +80,9 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(
           'Impostazioni',
-          style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.title,
         ),
-        centerTitle: false,
+        centerTitle: true,
         elevation: _elevation,
       ),
       body: SingleChildScrollView(
@@ -94,18 +95,23 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             for (SettingItem item in items) ...[
               ListTile(
-                leading: Icon(
-                  item.iconData,
-                  color: item.enabled ? accentColor : secondaryText,
-                ),
+                leading: Icon(item.iconData,
+                    color: item.enabled
+                        ? Theme.of(context).iconTheme.color
+                        : secondaryText),
                 title: Text(
                   item.title,
-                  style: titleStyle.copyWith(
-                      color: item.enabled ? Colors.black : secondaryText),
+                  style: Theme.of(context).textTheme.subhead.copyWith(
+                      color: item.enabled
+                          ? Theme.of(context).textTheme.subhead.color
+                          : secondaryText),
                 ),
                 subtitle: Text(
                   item.subtitle,
-                  style: TextStyle(color: secondaryText),
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                      color: item.enabled
+                          ? Theme.of(context).textTheme.body1.color
+                          : secondaryText),
                 ),
                 onTap: item.onTap,
               ),
@@ -119,7 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: titlePadding,
               child: Text(
                 'Informazioni utili',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                style: Theme.of(context).textTheme.body2,
               ),
             ),
             for (SettingItem item in utils) ...[
@@ -127,21 +133,30 @@ class _SettingsPageState extends State<SettingsPage> {
                 leading: item.iconData != null
                     ? Icon(
                         item.iconData,
-                        color: item.enabled ? accentColor : secondaryText,
+                        color: item.enabled
+                            ? Theme.of(context).iconTheme.color
+                            : secondaryText,
                       )
                     : Image.asset(
                         item.customImageIconAsset,
+                        color: item.enabled
+                            ? Theme.of(context).iconTheme.color
+                            : secondaryText,
                         width: 24,
                       ),
                 title: Text(
                   item.title,
-                  style: titleStyle.copyWith(
-                    color: item.enabled ? accentColor : secondaryText,
-                  ),
+                  style: Theme.of(context).textTheme.subhead.copyWith(
+                      color: item.enabled
+                          ? Theme.of(context).textTheme.subhead.color
+                          : secondaryText),
                 ),
                 subtitle: Text(
                   item.subtitle,
-                  style: TextStyle(color: secondaryText),
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                      color: item.enabled
+                          ? Theme.of(context).textTheme.body1.color
+                          : secondaryText),
                 ),
                 onTap: item.onTap,
               ),
@@ -155,20 +170,23 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: titlePadding,
               child: Text(
                 'Informazioni Legali',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                style: Theme.of(context).textTheme.body2,
               ),
             ),
             for (SettingItem item in legals) ...[
               ListTile(
                 leading: Icon(
                   item.iconData,
-                  color: item.enabled ? accentColor : secondaryText,
+                  color: item.enabled
+                      ? Theme.of(context).iconTheme.color
+                      : secondaryText,
                 ),
                 title: Text(
                   item.title,
-                  style: titleStyle.copyWith(
-                    color: item.enabled ? accentColor : secondaryText,
-                  ),
+                  style: Theme.of(context).textTheme.subhead.copyWith(
+                      color: item.enabled
+                          ? Theme.of(context).textTheme.subhead.color
+                          : secondaryText),
                 ),
                 onTap: item.onTap,
               ),

@@ -19,7 +19,7 @@ class GpsSmallFabButton  extends StatelessWidget {
       height: 40.0,
       width: 40.0,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(color: Colors.black26, blurRadius: 4),
@@ -29,7 +29,6 @@ class GpsSmallFabButton  extends StatelessWidget {
         child: IconButton(
           icon: Icon(Icons.gps_fixed),
           iconSize: 16,
-          color: accentColor,
           onPressed: onPressed,
         ),
       ),

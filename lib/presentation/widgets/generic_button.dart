@@ -19,37 +19,36 @@ class GenericButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return withBorder ? RaisedButton(
-      color: color ?? accentColor,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      onPressed: onPressed,
-      hoverColor: Colors.grey,
-      splashColor:Colors.grey,
-      shape: RoundedRectangleBorder(
-        borderRadius: new BorderRadius.circular(10.0),
-      ),
-      child: AutoSizeText(
-        text,
-        maxLines: 1,
-        textAlign: TextAlign.center,
-        style: buttonStyle,
-      ),
-    )
-
+    return withBorder
+        ? RaisedButton(
+            color: color ?? Theme.of(context).accentColor,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            onPressed: onPressed,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(10.0),
+            ),
+            child: AutoSizeText(
+              text,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.button,
+            ),
+          )
         : FlatButton(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      onPressed: onPressed,
-      hoverColor: Colors.white,
-      splashColor: Colors.white,
-      shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            onPressed: onPressed,
+            shape: RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(16.0),
             ),
-      child: AutoSizeText(
-        text,
-        maxLines: 1,
-        textAlign: TextAlign.center,
-          style: buttonStyle.copyWith(color: accentColor),
-      ),
-    );
+            child: AutoSizeText(
+              text,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .button
+                  .copyWith(color: Theme.of(context).textTheme.body1.color),
+            ),
+          );
   }
 }

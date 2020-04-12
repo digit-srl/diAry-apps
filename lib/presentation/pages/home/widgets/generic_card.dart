@@ -30,7 +30,7 @@ class GenericCard extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16,8,16,8),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      color: enabled ? baseCard : deactivatedCard,
+      color: enabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.secondaryVariant,
 
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8,16,8,0),
@@ -47,11 +47,13 @@ class GenericCard extends StatelessWidget {
                         if (iconData != null) {
                           return Icon(
                             iconData,
-                            color: iconColor,
                             size: constraint.maxWidth,
                           );
                         }
-                        return Image.asset('assets/diary_logo.png');
+                        return Image.asset(
+                            'assets/diary_logo.png',
+                          color: Theme.of(context).iconTheme.color,
+                        );
                       },
                   ),
                     ),
@@ -66,12 +68,13 @@ class GenericCard extends StatelessWidget {
                         AutoSizeText(title,
                             textAlign: TextAlign.start,
                             maxLines: 1,
-                            style: titleCardStyle),
+                            style: Theme.of(context).textTheme.headline
+                        ),
                         SizedBox(height: 8),
                         AutoSizeText(
                           description,
                           maxLines: 2,
-                          style: enabled ? secondaryStyle : secondaryStyleDark,
+                          style: enabled ? Theme.of(context).textTheme.body1 : Theme.of(context).textTheme.body2,
                           textAlign: TextAlign.start,
                         ),
                       ],

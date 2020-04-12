@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
         ),
       bottomNavigationBar: Material(
         elevation: 16,
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
         child: Container(
           height: 60 + MediaQuery.of(context).padding.bottom,
           child: Column(
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Color(0xFFEFF2F7),
+                      color: Theme.of(context).cardTheme.color,
                       //border: Border.all(width: 1.0),
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
@@ -116,6 +116,7 @@ class _HomePageState extends State<HomePage> {
                         children: <Widget>[
                           Image.asset(
                             'assets/wom_pin.png',
+                            color: Theme.of(context).iconTheme.color,
                             width: 16,
                           ),
                           SizedBox(
@@ -126,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                                 value?.day?.wom != null
                                     ? value.day.wom.toString()
                                     : '-'),
-                            style: TextStyle(fontSize: 20, color: accentColor),
+                            style: Theme.of(context).textTheme.body2,
                           )
                         ],
                       ),
@@ -139,15 +140,15 @@ class _HomePageState extends State<HomePage> {
                   UploadStatsIconButton(),
 
                   IconButton(
-                    icon: Icon(CustomIcons.hospital_box_outline),
-                    color: accentColor,
+                    icon: Icon(
+                      CustomIcons.hospital_box_outline,
+                    ),
                     onPressed: () {},
                     tooltip: "Notifica sanitaria... Coming soon!",
                   ),
 
                   IconButton(
                     icon: Icon(Icons.settings),
-                    color: accentColor,
                     tooltip: "Impostazioni",
                     onPressed: () {
                       Navigator.push(
@@ -187,10 +188,13 @@ class UploadStatsIconButton extends StatelessWidget {
 //              height: 30,
               child: Image.asset(
                 'assets/wom_pocket_logo.png',
+                color: Theme.of(context).iconTheme.color,
               ),
             )
-          : Icon(isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline),
-      color: accentColor,
+          : Icon(
+          isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
+      ),
+
       onPressed: () => uploadStats(context, response),
     );
   }
@@ -205,6 +209,7 @@ class UploadStatsIconButton extends StatelessWidget {
         return SlidingSheetDialog(
           elevation: 8,
           cornerRadius: 16,
+          color: Theme.of(context).primaryColor,
           duration: Duration(milliseconds: 300),
           minHeight: MediaQuery.of(context).size.height * 0.9,
           snapSpec: const SnapSpec(
@@ -217,6 +222,7 @@ class UploadStatsIconButton extends StatelessWidget {
               create: (BuildContext context) =>
                   UploadStatsNotifier(dailyStats, response),
               child: Material(
+                color: Theme.of(context).primaryColor,
                 child: InfoStatsWidget(
                   dailyStats: dailyStats,
                 ),

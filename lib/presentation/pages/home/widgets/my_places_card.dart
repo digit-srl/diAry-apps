@@ -32,7 +32,7 @@ class MyPlacesCard extends StatelessWidget {
             elevation: 2,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0)),
-            color: baseCard,
+            color: Theme.of(context).cardTheme.color,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Column(
@@ -41,12 +41,12 @@ class MyPlacesCard extends StatelessWidget {
                   AutoSizeText("I tuoi luoghi",
                       textAlign: TextAlign.start,
                       maxLines: 1,
-                      style: titleCardStyle),
+                      style: Theme.of(context).textTheme.headline),
 
                   AutoSizeText("Vengono qua visualizzati tutti i luoghi che hai aggiunto alla mappa.",
                       textAlign: TextAlign.start,
                       maxLines: 2,
-                      style: secondaryStyle),
+                      style:  Theme.of(context).textTheme.body1),
 
                   Container(
                     height: 8,
@@ -146,7 +146,7 @@ class PlaceRowLegend extends StatelessWidget {
                 child: Center(
                   child: Icon(
                     isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                    color: Colors.white,
+                    color: Theme.of(context).primaryColor,
                     size: 24,
                   ),
                 ),
@@ -161,14 +161,14 @@ class PlaceRowLegend extends StatelessWidget {
                         child: AutoSizeText(
                           title,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 20),
+                          style: Theme.of(context).textTheme.subhead,
                         ),
                       ),
                       Container(
                         child: AutoSizeText(
                           geoRadius, // location,
                           maxLines: 1,
-                          style: secondaryStyle,
+                          style: Theme.of(context).textTheme.body1,
                         ),
                       ),
                     ],
@@ -178,7 +178,6 @@ class PlaceRowLegend extends StatelessWidget {
 
               IconButton(
                 icon: Icon(CustomIcons.trash_can_outline),
-                color: accentColor,
                 onPressed: onRemove,
                 tooltip: "Elimina luogo",
               ),

@@ -283,11 +283,7 @@ class DailyStatsWidget extends StatelessWidget {
                         initialChartData: data,
                         edgeStyle: SegmentEdgeStyle.flat,
                         chartType: CircularChartType.Radial,
-                        labelStyle: TextStyle(
-                            fontSize: 30,
-                            fontFamily: 'Nunito',
-                            color: accentColor,
-                            fontWeight: FontWeight.bold),
+                        labelStyle: Theme.of(context).textTheme.headline,
                         holeLabel: value.isToday
                             ? dateFormat.format(DateTime.now())
                             : null,
@@ -296,7 +292,7 @@ class DailyStatsWidget extends StatelessWidget {
                     Positioned(
                       top: 0,
                       child: Container(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
                         width: size.width / 2,
                         padding: EdgeInsets.only(
                             top: _overlayLegendPaddingTop, right: 2),
@@ -305,9 +301,10 @@ class DailyStatsWidget extends StatelessWidget {
                           children: <Widget>[
                             Container(
                                 child: FittedBox(
-                                  child: Text("Spostamenti",
-                                      style: TextStyle(
-                                          fontSize: 12, color: secondaryText)),
+                                  child: Text(
+                                      "Spostamenti",
+                                      style: Theme.of(context).textTheme.caption
+                                  ),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -315,9 +312,10 @@ class DailyStatsWidget extends StatelessWidget {
                                 width: size.width / 2),
                             Container(
                                 child: FittedBox(
-                                  child: Text("Luoghi",
-                                      style: TextStyle(
-                                          fontSize: 12, color: secondaryText)),
+                                  child: Text(
+                                      "Luoghi",
+                                      style: Theme.of(context).textTheme.caption
+                                  ),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -325,9 +323,10 @@ class DailyStatsWidget extends StatelessWidget {
                                 width: size.width / 2),
                             Container(
                                 child: FittedBox(
-                                  child: Text("Annotazioni",
-                                      style: TextStyle(
-                                          fontSize: 12, color: secondaryText)),
+                                  child: Text(
+                                      "Annotazioni",
+                                      style: Theme.of(context).textTheme.caption
+                                ),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -342,7 +341,10 @@ class DailyStatsWidget extends StatelessWidget {
                       right: (MediaQuery.of(context).size.width / 2) -
                           (_chartSize.width / 2),
                       child: IconButton(
-                          icon: Icon(Icons.help_outline, color: secondaryText),
+                          icon: Icon(
+                              Icons.help_outline,
+                              color: Theme.of(context).textTheme.body1.color
+                          ),
                           onPressed: () {
                             _showPlaceLegend(context);
                           }),
@@ -374,6 +376,8 @@ class DailyStatsWidget extends StatelessWidget {
                           child: ButtonTheme(
                             minWidth: double.infinity,
                             child: FlatButton(
+                              highlightColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+                              splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 4.0, horizontal: 16),
                               shape: RoundedRectangleBorder(
@@ -390,7 +394,7 @@ class DailyStatsWidget extends StatelessWidget {
                                   Text(
                                     'Campionamenti',
                                     maxLines: 1,
-                                    style: secondaryStyle,
+                                    style: Theme.of(context).textTheme.body1,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
@@ -399,14 +403,14 @@ class DailyStatsWidget extends StatelessWidget {
                                       children: <Widget>[
                                         Icon(
                                           CustomIcons.map_marker_outline,
-                                          color: accentColor,
+                                          color: Theme.of(context).iconTheme.color,
                                         ),
                                         SizedBox(
                                           width: 4,
                                         ),
                                         Text(
                                           day.pointCount.toString(),
-                                          style: numberStyle,
+                                          style: Theme.of(context).textTheme.headline,
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
@@ -418,15 +422,15 @@ class DailyStatsWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      VerticalDivider(
-                        color: secondaryText,
-                      ),
+                      VerticalDivider(),
                       Flexible(
                         child: Container(
                           alignment: Alignment.center,
                           child: ButtonTheme(
                             minWidth: double.infinity,
                             child: FlatButton(
+                              highlightColor:  Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+                              splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 4.0, horizontal: 16),
                               shape: RoundedRectangleBorder(
@@ -440,8 +444,11 @@ class DailyStatsWidget extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Text('Annotazioni',
-                                      maxLines: 1, style: secondaryStyle),
+                                  Text(
+                                      'Annotazioni',
+                                      maxLines: 1,
+                                      style: Theme.of(context).textTheme.body1
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Row(
@@ -449,7 +456,7 @@ class DailyStatsWidget extends StatelessWidget {
                                       children: <Widget>[
                                         Icon(
                                           CustomIcons.bookmark_outline,
-                                          color: accentColor,
+                                          color: Theme.of(context).iconTheme.color,
                                         ),
                                         SizedBox(
                                           width: 4,
@@ -458,7 +465,7 @@ class DailyStatsWidget extends StatelessWidget {
                                           (day?.annotations?.length ?? 0)
                                               .toString(),
                                           textAlign: TextAlign.center,
-                                          style: numberStyle,
+                                          style: Theme.of(context).textTheme.headline,
                                         ),
                                       ],
                                     ),

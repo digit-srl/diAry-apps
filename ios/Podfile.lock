@@ -65,9 +65,6 @@ PODS:
     - Flutter
   - flutter_statusbarcolor (0.0.1):
     - Flutter
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
   - google_maps_flutter (0.0.1):
     - Flutter
     - GoogleMaps
@@ -120,9 +117,12 @@ PODS:
   - PromisesObjC (1.2.8)
   - share_extend (0.0.1):
     - Flutter
-  - sqflite (0.0.1):
+  - url_launcher (0.0.1):
     - Flutter
-    - FMDB (~> 2.7.2)
+  - url_launcher_macos (0.0.1):
+    - Flutter
+  - url_launcher_web (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
@@ -140,7 +140,9 @@ DEPENDENCIES:
   - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - share_extend (from `.symlinks/plugins/share_extend/ios`)
-  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
+  - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
 
 SPEC REPOS:
   trunk:
@@ -154,7 +156,6 @@ SPEC REPOS:
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstallations
     - FirebaseInstanceID
-    - FMDB
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
@@ -194,8 +195,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   share_extend:
     :path: ".symlinks/plugins/share_extend/ios"
-  sqflite:
-    :path: ".symlinks/plugins/sqflite/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
+  url_launcher_macos:
+    :path: ".symlinks/plugins/url_launcher_macos/ios"
+  url_launcher_web:
+    :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
   background_fetch: c0d7c541f8495527ed7f167eb9ee2eeab0790703
@@ -217,7 +222,6 @@ SPEC CHECKSUMS:
   flutter_background_geolocation: 003af3f973a6a6cc8d7b19ddedad13210083466f
   flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   google_maps_flutter: d0dd62f5a7d39bae61057eb9f52dd778d99c7c6c
   GoogleAppMeasurement: a08a43b8677b95ed51fcef880e36737334d804fd
   GoogleDataTransport: 574a983e829327d7c18f2627f65d9e80164ea8a4
@@ -231,7 +235,9 @@ SPEC CHECKSUMS:
   permission_handler: d5d46b2ca93671e8dcf870b949e304c7ddb65ad0
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   share_extend: b6748dc53695587891126a89533b862b92548c7b
-  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
+  url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
+  url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
+  url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
 PODFILE CHECKSUM: df843281060625850c17c2081dc2de7d232ce6ee
 

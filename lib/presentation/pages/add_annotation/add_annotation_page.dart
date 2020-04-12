@@ -10,6 +10,7 @@ import 'package:diary/presentation/widgets/manual_detection_position_layer.dart'
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -45,6 +46,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   bool _canSave = false;
 
   DateTime selectedDate;
+  String _darkMapStyle;
+  String _normalMapStyle;
 
   @override
   void initState() {
@@ -53,6 +56,13 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         Provider.of<DateNotifier>(context, listen: false).selectedDate;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getCurrentLocationAndUpdateMap();
+    });
+
+    rootBundle.loadString('assets/dark_map_style.json').then((string) {
+      _darkMapStyle = string;
+    });
+    rootBundle.loadString('assets/normal_map_style.json').then((string) {
+      _normalMapStyle = string;
     });
   }
 
@@ -65,6 +75,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     // _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -72,10 +84,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       appBar: AppBar(
           title: Text(
             'Aggiungi annotazione',
-            style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
-          ),
-          iconTheme: IconThemeData(
-            color: accentColor,
+            style: Theme.of(context).textTheme.title,
           ),
           centerTitle: true,
           actions: <Widget>[
@@ -94,35 +103,34 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               child: Column(
                 children: <Widget>[
-                  Theme(
-                    data: ThemeData(primaryColor: accentColor),
-                    child: TextField(
-                      cursorColor: accentColor,
-                      controller: annotationEditingController,
-                      expands: false,
-                      maxLines: 7,
-                      minLines: 7,
-                      style: TextStyle(fontFamily: "Nunito"),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            width: 0,
-                            style: BorderStyle.none,
-                          ),
+                  TextField(
+                    cursorColor: Theme.of(context).iconTheme.color,
+                    style: Theme.of(context).textTheme.body2,
+                    controller: annotationEditingController,
+                    expands: false,
+                    maxLines: 7,
+                    minLines: 7,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
                         ),
-                        filled: true,
-                        fillColor: baseCard,
-                        hintText:
-                            "Che episodio desideri segnalare? Descrivilo in questo box.",
                       ),
-                      onChanged: (text) {
-                        setState(() {
-                          _canSave = (text.trim().length >= 3 && _foundLocation != null);
-                        });
-                      },
-                      onSubmitted: (text) {},
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.secondary,
+                      hintStyle: Theme.of(context).textTheme.body1,
+                      hintText:
+                          "Che episodio desideri segnalare? Descrivilo in questo box.",
                     ),
+                    onChanged: (text) {
+                      setState(() {
+                        _canSave =
+                            (text.trim().length >= 3 && _foundLocation != null);
+                      });
+                    },
+                    onSubmitted: (text) {},
                   ),
                 ],
               ),
@@ -132,8 +140,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addAnnotationIfPossible,
         child: Icon(Icons.check),
+        backgroundColor: Theme.of(context).accentColor,
       ),
-
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -144,30 +152,29 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             tiltGesturesEnabled: false,
             myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
-              target: _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
+              target:
+                  _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
               zoom: _zoom,
             ),
             onMapCreated: (controller) {
+              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
               _controller.complete(controller);
             },
             markers: _markers,
           ),
-
           ManualDetectionPositionLayer(),
-          
-          DetectionErrorPositionLayer(!context.watch<GpsState>().manualPositionDetection &&
-              _foundLocation == null),
-
+          DetectionErrorPositionLayer(
+              !context.watch<GpsState>().manualPositionDetection &&
+                  _foundLocation == null),
           Positioned(
             top: 42,
             right: 25,
-            child: GpsSmallFabButton( onPressed: _gpsClick ),
-            ),
+            child: GpsSmallFabButton(onPressed: _gpsClick),
+          ),
         ],
       ),
     );
   }
-
 
   void _gpsClick() {
     // mostra una snackbar nel caso in cui il gps non sia disponibile
@@ -177,9 +184,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       });
 
       _showLocationErrorSnackbar();
-    } else if (Provider.of<GpsState>(context, listen: false).manualPositionDetection) {
+    } else if (Provider.of<GpsState>(context, listen: false)
+        .manualPositionDetection) {
       _showWaitPositionSnackbar();
-
     } else {
       _getCurrentLocationAndUpdateMap();
     }
@@ -191,7 +198,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       setState(() {
         _locationError = "No gps";
       });
-
     } else {
       setState(() {
         _locationError = null;
@@ -255,10 +261,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
       _addAnnotation();
     } else if (_locationError != null) {
       _showLocationErrorSnackbar();
-
     } else if (_foundLocation == null) {
       _showWaitPositionSnackbar();
-
     } else if (annotationEditingController.text.trim().length < 3) {
       _showShortTextSnackbar();
     }
@@ -283,39 +287,37 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   void _showLocationErrorSnackbar() {
     print('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
-      'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
-      _getCurrentLocationAndUpdateMap,
-      'Riprova'
-    );
+        'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
+        _getCurrentLocationAndUpdateMap,
+        'Riprova');
   }
 
   void _showShortTextSnackbar() {
     print('[AddAnnotationPage] Show short text Snackbar');
-    _showSnackbar("Il testo dell'annotazione deve avere una lunghezza minima di 3 caratteri.");
+    _showSnackbar(
+        "Il testo dell'annotazione deve avere una lunghezza minima di 3 caratteri.");
   }
-
 
   void _showWaitPositionSnackbar() {
     print('[AddAnnotationPage] Show short text Snackbar');
-    _showSnackbar("Rilevamento della posizione in corso. Attendine la terminazione.");
+    _showSnackbar(
+        "Rilevamento della posizione in corso. Attendine la terminazione.");
   }
 
   void _showSnackbar(String text, [Function action, String actionText]) {
     _scaffoldKey.currentState.hideCurrentSnackBar();
     final snackBar = SnackBar(
-      content: Text(
-        text,
-        style: TextStyle(fontFamily: "Nunito"),
-      ),
-
-      action: (action != null && actionText != null)
-          ? SnackBarAction(
-              textColor: Colors.white,
-              label: actionText,
-              onPressed: action,
-            )
-          : null
-    );
+        content: Text(
+          text,
+          style: TextStyle(fontFamily: "Nunito"),
+        ),
+        action: (action != null && actionText != null)
+            ? SnackBarAction(
+                textColor: Colors.white,
+                label: actionText,
+                onPressed: action,
+              )
+            : null);
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
@@ -328,6 +330,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         cornerRadius: 16,
         //minHeight: 400,
         padding: EdgeInsets.all(24),
+        color: Theme.of(context).primaryColor,
         duration: Duration(milliseconds: 300),
         snapSpec: const SnapSpec(
           snap: true,
@@ -337,29 +340,28 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         builder: (ctx, sheetState) {
           return Container(
             child: Material(
-                color: Colors.white,
-                child:  Column(
+                color: Theme.of(context).primaryColor,
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
                       "Cos'è questa schermata?",
-                      style: titleCardStyle,
+                      style: Theme.of(context).textTheme.headline,
                     ),
                     SizedBox(
                       height: 8,
                     ),
-              Text(
-                "Da qui è possibile aggiungere segnalare situazioni "
-                    "particolari degne di nota. L'annotazione verrà applicata "
-                    "alla tua posizione corrente, per cui è necessario autorizzare "
-                    "l'accesso alla localizzazione da parte dell'app per poterne "
-                    "aggiungere una.",
-                style: secondaryStyle,
-              ),
+                    Text(
+                      "Da qui è possibile aggiungere segnalare situazioni "
+                      "particolari degne di nota. L'annotazione verrà applicata "
+                      "alla tua posizione corrente, per cui è necessario autorizzare "
+                      "l'accesso alla localizzazione da parte dell'app per poterne "
+                      "aggiungere una.",
+                      style: Theme.of(context).textTheme.body1,
+                    ),
                   ],
-                )
-            ),
+                )),
           );
         },
       );

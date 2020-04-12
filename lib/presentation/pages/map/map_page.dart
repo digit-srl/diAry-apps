@@ -29,6 +29,7 @@ import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'widgets/info_pin.dart';
 
@@ -80,6 +81,8 @@ class _MapPageState extends State<MapPage>
   CameraPosition _initialPosition;
   List<Annotation> annotations = [];
   List<Location> locations = [];
+  String _darkMapStyle;
+  String _normalMapStyle;
 
   @override
   void initState() {
@@ -95,6 +98,12 @@ class _MapPageState extends State<MapPage>
         zoom: 16,
       );
     }
+    rootBundle.loadString('assets/dark_map_style.json').then((string) {
+      _darkMapStyle = string;
+    });
+    rootBundle.loadString('assets/normal_map_style.json').then((string) {
+      _normalMapStyle = string;
+    });
   }
 
   @override
@@ -420,6 +429,9 @@ class _MapPageState extends State<MapPage>
     super.build(context);
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
+
+    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -430,6 +442,7 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
+              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
               _controller.complete(controller);
               _loadInitialDailyMarkers();
             },
@@ -538,6 +551,7 @@ class _MapPageState extends State<MapPage>
           backdropColor: Colors.black.withOpacity(0.0),
           elevation: 8,
           cornerRadius: 16,
+          color: Theme.of(context).primaryColor,
           //minHeight: 400,
           duration: Duration(milliseconds: 300),
           snapSpec: const SnapSpec(
@@ -549,7 +563,7 @@ class _MapPageState extends State<MapPage>
             return Container(
               height: 380,
               child: Material(
-                color: Colors.white,
+                color: Theme.of(context).primaryColor,
                 child: InfoPinWidget(
                   locations: dailyLocations,
                   initialPage: initialPage,

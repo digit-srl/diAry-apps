@@ -41,15 +41,12 @@ class _BetaCardState extends State<BetaCard> {
         return GenericCard(
           enabled: true,
           iconData: CustomIcons.flask_outline,
-          iconColor: accentColor,
           title: 'diAry ' + version + " Beta",
           description:
           'Scheda mostrata solo ai beta tester. Contiene funzioni per il test.',
           bottomButtons: <Widget>[
             IconButton(
               icon: Icon(Icons.bug_report),
-              color: accentColor,
-              iconSize: 28,
               tooltip: "Log report",
               onPressed: () {
                 Navigator.push(

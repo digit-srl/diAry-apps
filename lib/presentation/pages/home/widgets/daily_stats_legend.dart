@@ -39,35 +39,35 @@ class DailyStatsLegend extends StatelessWidget {
         }*/
         return Container(
           padding: const EdgeInsets.all(24.0),
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
                 'Legenda del grafico',
-                style: titleCardStyle,
+                style: Theme.of(context).textTheme.headline,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
                 "L'anello più esterno del grafico mostra gli spostamenti della giornata. Il colore blu rappresenta un generico spostamento.",
-                style: secondaryStyle,
+                style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
                 "L'anello più interno mostra le segnalazioni piazzate durante la giornata.",
-                style: secondaryStyle,
+                style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
                 "L'anello centrale del grafico mostra gli i luoghi nei quali si è sostato. Nella giornata di riferimento, si è passato per i seguenti luoghi:",
-                style: secondaryStyle,
+                style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
                 height: 16,
@@ -108,14 +108,14 @@ class DailyStatsLegend extends StatelessWidget {
                   height: 200,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.0),
-                    color: baseCard,
+                    color: Theme.of(context).cardTheme.color,
                   ),
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.all(16),
                       child: Text(
                         "Non ci sono luoghi da visualizzare per questa giornata.",
-                        style: secondaryStyle,
+                        style: Theme.of(context).textTheme.body1,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -170,7 +170,7 @@ class PlaceRowDailyLegend extends StatelessWidget {
                     isHome
                         ? CustomIcons.home_outline
                         : CustomIcons.map_marker_outline,
-                    color: Colors.white,
+                    color: Theme.of(context).primaryColor,
                     size: 24,
                   ),
                 ),
@@ -185,14 +185,14 @@ class PlaceRowDailyLegend extends StatelessWidget {
                         child: AutoSizeText(
                           title,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 20),
+                          style: Theme.of(context).textTheme.subhead,
                         ),
                       ),
                       Container(
                         child: AutoSizeText(
                           geoRadius, // location,
                           maxLines: 1,
-                          style: secondaryStyle,
+                          style: Theme.of(context).textTheme.body1,
                         ),
                       ),
                     ],

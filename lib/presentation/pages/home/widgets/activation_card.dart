@@ -15,7 +15,6 @@ class ActivationCard extends StatelessWidget {
         final isEnabled = value.isEnabled;
         return GenericCard(
               enabled: isEnabled,
-              iconColor: accentColor,
               title:
                   '${value.isEnabled ? 'Tracciamento Attivo' : 'Tracciam. non attivo'}',
               description:

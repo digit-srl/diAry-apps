@@ -75,15 +75,15 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                       children: <Widget>[
                         Icon(
                           CustomIcons.bookmark_outline,
+                          color: Theme.of(context).textTheme.body1.color,
                           size: 60,
-                          color: secondaryText,
                         ),
                         SizedBox(
                           height: 16,
                         ),
                         Text(
                           'Nessuna annotazione presente per questa giornata.',
-                          style: secondaryStyle,
+                          style: Theme.of(context).textTheme.body1,
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -105,16 +105,16 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                     contentPadding: EdgeInsets.all(16),
                     title: Text(
                       annotation.title,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.subhead,
                     ),
                     leading: Icon(
                       Icons.bookmark_border,
-                      color: secondaryText,
+                      color: Theme.of(context).textTheme.body1.color,
                     ),
                     onTap: () {},
                     trailing: IconButton(
+                      color: Theme.of(context).iconTheme.color,
                         icon: Icon(CustomIcons.trash_can_outline),
-                        color: accentColor,
                         onPressed: () {
                           GenericUtils.ask(context,
                               'Sicuro di volere eliminare questa annotazione?',
@@ -126,7 +126,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                         }),
                     subtitle: Text(
                       'Ore: ${dateFormat.format(annotation.dateTime)}',
-                      style: TextStyle(color: secondaryText),
+                      style: Theme.of(context).textTheme.body1,
                     ),
                   );
                 },

@@ -48,18 +48,16 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
         child: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
           child: AppBar(
-              backgroundColor: Colors.white.withOpacity(0.85),
+              backgroundColor: Theme.of(context).appBarTheme.color.withOpacity(0.85),
               elevation:
                   context.watch<ElevationState>().elevations[_currentPage],
               leading: (_currentPage == 0)
                   ? IconButton(
-                      color: accentColor,
                       icon: Icon(CustomIcons.map_outline),
                       onPressed: () {
                         context.read<CurrentRootPageNotifier>().changePage(1);
                       })
                   : IconButton(
-                      color: accentColor,
                       icon: Icon(Icons.arrow_back),
                       onPressed: () {
                         context.read<CurrentRootPageNotifier>().changePage(0);
@@ -70,6 +68,8 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                     child: Container(),
                   ),
                   FlatButton.icon(
+                    highlightColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+                    splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
                     onPressed: () async {
                       final selected = await showDatePicker(
                         context: context,
@@ -89,8 +89,9 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                         builder: (context, child) => Theme(
                           data: ThemeData(
                             fontFamily: "Nunito",
+
                             primarySwatch: Colors.blueGrey,
-                            primaryColor: accentColor,
+                            primaryColor: Colors.white,
                             //  HEADER COLOR
                             accentColor: accentColor,
                             // DATE COLOR
@@ -111,15 +112,13 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                     ),
                     icon: Icon(
                       CustomIcons.calendar_outline,
-                      color: accentColor,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                     label: Text(
                         context.select((DateState value) =>
                             value.isToday ? 'Oggi' : value.dateFormatted),
-                        style: TextStyle(
-                            color: accentColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
+                        style: Theme.of(context).textTheme.title
+                    )
                   ),
                   Expanded(
                     child: Container(),
@@ -147,14 +146,12 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 //                }),
                 if (_currentPage == 0)
                   IconButton(
-                      color: accentColor,
                       icon: Icon(CustomIcons.bookmark_multiple_outline),
                       onPressed: () {
                         context.read<CurrentRootPageNotifier>().changePage(2);
                       })
                 else if (_currentPage == 1)
                   IconButton(
-                      color: accentColor,
                       icon: Icon(Icons.gps_fixed),
                       onPressed: () {
                         context
@@ -163,7 +160,6 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
                       })
                 else if (_currentPage == 2)
                   IconButton(
-                      color: accentColor,
                       icon: Icon(Icons.search),
                       onPressed: () {})
               ]),

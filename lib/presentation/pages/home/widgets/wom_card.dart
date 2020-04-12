@@ -17,8 +17,6 @@ class WomCard extends StatelessWidget {
         return GenericCard(
           enabled: true,
           iconData: Icons.favorite_border,
-          iconColor: accentColor,
-//              title: 'Ti stai muovendo con un veicolo',
           title: "Ottieni xx WOM",
           description:
               'Condividere i tuoi dati ci permette di incrociarli con gli altri.',

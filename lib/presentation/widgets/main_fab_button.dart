@@ -30,29 +30,30 @@ class MainFabButton extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
           //key: dialerKey,
           onMainButtonPressed: onMainButtonTap,
           hasBackground: true,
-          parentButtonBackground: accentColor,
+          parentButtonBackground: Theme.of(context).accentColor,
           orientation: UnicornOrientation.VERTICAL,
-          parentButton: Icon(Icons.add, color: Colors.black),
+          parentButton: Icon(Icons.add),
           childButtons: _buildMenuItems(context)),
     );
   }
 
   List<UnicornButton> _buildMenuItems(BuildContext context) {
-    Color bgColor = Theme.of(context).bottomAppBarColor;
-
     return <UnicornButton>[
       UnicornButton(
+        labelShadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
         hasLabel: true,
         labelText: "Aggiungi luogo",
-        labelColor: accentColor,
+        labelColor:  Theme.of(context).textTheme.body2.color,
+        labelBackgroundColor:  Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi luogo",
 //              heroTag: null,
-          backgroundColor: bgColor,
-          foregroundColor: accentColor,
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,
           child: Icon(CustomIcons.map_marker_plus_outline),
           onPressed: () => _goToAddPlace(context),
@@ -61,12 +62,14 @@ class MainFabButton extends StatelessWidget {
       UnicornButton(
         hasLabel: true,
         labelText: "Aggiungi annotazione",
-        labelColor: accentColor,
+        labelColor: Theme.of(context).textTheme.body2.color,
+        labelShadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
+        labelBackgroundColor: Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi annotazione",
 //              heroTag: null,
-          backgroundColor: bgColor,
-          foregroundColor: accentColor,
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,
           child: Icon(CustomIcons.bookmark_plus_outline),
           onPressed: () => _goToAddAnnotation(context),

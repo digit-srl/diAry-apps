@@ -17,6 +17,7 @@ void showGeofenceBottomSheet(
         backdropColor: Colors.black.withOpacity(0.0),
         elevation: 8,
         cornerRadius: 16,
+        color: Theme.of(context).primaryColor,
         padding: const EdgeInsets.all(16.0),
         //minHeight: 400,
         duration: Duration(milliseconds: 300),
@@ -28,7 +29,7 @@ void showGeofenceBottomSheet(
         builder: (ctx, sheetState) {
           return Container(
             child: Material(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
@@ -47,7 +48,7 @@ void showGeofenceBottomSheet(
                           child: Icon(
                             //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
                             CustomIcons.map_marker_outline,
-                            color: Colors.white,
+                            color: Theme.of(context).primaryColor,
                             size: 24,
                           ),
                         ),
@@ -58,8 +59,7 @@ void showGeofenceBottomSheet(
                             child: AutoSizeText(
                               "Luogo",
                               maxLines: 1,
-                              style:
-                                  TextStyle(fontSize: 30, color: accentColor),
+                              style: Theme.of(context).textTheme.headline,
                             )),
                       ),
                       IconButton(
@@ -92,7 +92,7 @@ void showGeofenceBottomSheet(
                       ),
                       Text(
                         "Nome del luogo: " + coloredGeofence.name,
-                        style: TextStyle(color: secondaryText),
+                        style: Theme.of(context).textTheme.body1,
                       ),
                     ],
                   ),
@@ -102,13 +102,12 @@ void showGeofenceBottomSheet(
                         padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
                         child: Icon(
                           Icons.settings_ethernet,
-                          color: accentColor,
                         ),
                       ),
                       AutoSizeText(
                         'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri',
                         maxLines: 1,
-                        style: TextStyle(color: secondaryText),
+                        style: Theme.of(context).textTheme.body1,
                       ),
                     ],
                   ),

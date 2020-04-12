@@ -35,10 +35,6 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.white,
-        systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
 
@@ -103,24 +99,16 @@ void main() async {
     days[today] = Day(date: today);
   }
 
+  //final darkModeEnabled = MediaQuery.of(context).platformBrightness = Brightness.dark;
+
   runApp(
-      // i campi di status e navigation bar a volte diventano bianchi.
-      // annotatedRegion in questa configurazione risolve il bug
-      // https://github.com/flutter/flutter/issues/21265#issuecomment-500142587
-      AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Colors.white,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-        child: MyDayApp(locationsPerDate: locationsPerDate, days: days),
+
+      MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    DevicePreview(
 //      enabled: !kReleaseMode,
 //      builder: (context) =>
 //          MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    ),
-      ),
+
   );
 }

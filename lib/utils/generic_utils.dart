@@ -8,6 +8,26 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'constants.dart';
 
 class GenericUtils {
+  static AlertStyle customStyle(BuildContext context) {
+    AlertStyle(
+      animationType: AnimationType.grow,
+      isCloseButton: false,
+      isOverlayTapDismiss: true,
+      descStyle: Theme.of(context).textTheme.body1,
+      backgroundColor: Theme.of(context).primaryColor,
+      animationDuration: Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+        side: BorderSide(
+          color: Theme.of(context).primaryColor,
+        ),
+      ),
+      titleStyle: Theme.of(context).textTheme.headline,
+    );
+  }
+
+
+
   static showError(BuildContext context, {String error}) {
     Alert(
       context: context,

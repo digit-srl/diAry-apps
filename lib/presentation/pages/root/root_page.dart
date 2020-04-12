@@ -2,6 +2,7 @@ import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/presentation/pages/annotations/annotations_page.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:diary/presentation/widgets/my_day_app_bar.dart';
 
@@ -15,9 +16,23 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
+    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
 
-    return WillPopScope(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        // i campi di status e navigation bar a volte diventano bianchi.
+        // annotatedRegion in questa configurazione risolve il bug
+        // https://github.com/flutter/flutter/issues/21265#issuecomment-500142587
+        value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDark ? Brightness.light: Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: Theme.of(context).primaryColor,
+    systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    ),
+    child:
+
+      WillPopScope(
       onWillPop: () => goBackToHomeOrExit(context, _currentPage),
       child: Scaffold(
         body: SafeArea(
@@ -43,6 +58,7 @@ class _RootPageState extends State<RootPage> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

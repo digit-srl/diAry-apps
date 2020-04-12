@@ -9,7 +9,9 @@ import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/utils/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
@@ -119,39 +121,24 @@ class _MyDayAppState extends State<MyDayApp> {
       child: MaterialApp(
 //        locale: DevicePreview.of(context).locale, // <--- Add the locale
 //        builder: DevicePreview.appBuilder, // <--- Add the builder
-        title: 'diAry',
-        theme: ThemeData(
-          accentColor: accentColor,
-          primaryColor: Colors.white,
-          fontFamily: 'Nunito',
-          scaffoldBackgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: accentColor),
-          sliderTheme: SliderThemeData(
-            trackShape: CustomTrackShape(),
-            activeTrackColor: accentColor,
-            inactiveTrackColor: Color(0xFFC0CCDA),
-            inactiveTickMarkColor: Color(0xFFC0CCDA),
-            thumbColor: accentColor,
-            overlayColor: Color(0xFFC0CCDA).withOpacity(0.4),
-            overlappingShapeStrokeColor: accentColor,
-            valueIndicatorColor: accentColor,
+          title: 'diAry',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+
+          // home: WillPopScope(
+          //  onWillPop: () {
+          //    final wasOpened = dialerKey.currentState.close();
+          //    print(wasOpened);
+          //    return Future.value(!wasOpened);
+          //  },
+          //  child: Scaffold(...)),
+
+          home: Scaffold(
+            body: RootPage(),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: MainFabButton(/*dialerKey: dialerKey*/),
           ),
         ),
-
-        // home: WillPopScope(
-        //  onWillPop: () {
-        //    final wasOpened = dialerKey.currentState.close();
-        //    print(wasOpened);
-        //    return Future.value(!wasOpened);
-        //  },
-        //  child: Scaffold(...)),
-
-        home: Scaffold(
-          body: RootPage(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton: MainFabButton(/*dialerKey: dialerKey*/),
-        ),
-      ),
     );
   }
 

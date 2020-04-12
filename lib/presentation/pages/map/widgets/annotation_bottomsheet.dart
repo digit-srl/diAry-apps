@@ -21,6 +21,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
         backdropColor: Colors.black.withOpacity(0.0),
         elevation: 8,
         cornerRadius: 16,
+        color: Theme.of(context).primaryColor,
         padding: const EdgeInsets.all(16.0),
         //minHeight: 400,
         duration: Duration(milliseconds: 300),
@@ -32,7 +33,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
         builder: (ctx, sheetState) {
           return Container(
             child: Material(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
@@ -50,7 +51,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                           child: Icon(
                             //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
                             CustomIcons.bookmark_outline,
-                            color: Colors.white,
+                            color: Theme.of(context).primaryColor,
                             size: 24,
                           ),
                         ),
@@ -61,8 +62,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                             child: AutoSizeText(
                               "Annotazione",
                               maxLines: 1,
-                              style:
-                                  TextStyle(fontSize: 30, color: accentColor),
+                              style: Theme.of(context).textTheme.headline,
                             )),
                       ),
                       IconButton(
@@ -102,7 +102,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                       Expanded(
                         child: Text(
                           annotation.title,
-                          style: TextStyle(color: secondaryText),
+                          style: Theme.of(context).textTheme.body1,
                         ),
                       ),
                     ],
@@ -117,7 +117,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                       ),
                       Text(
                         'Lat: ${annotation.latitude.toStringAsFixed(2)} Long: ${annotation.longitude.toStringAsFixed(2)}',
-                        style: TextStyle(color: secondaryText),
+                        style: Theme.of(context).textTheme.body1,
                       ),
                     ],
                   ),
@@ -131,7 +131,7 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                       ),
                       Text(
                         dateFormat.format(annotation.dateTime),
-                        style: TextStyle(color: secondaryText),
+                        style: Theme.of(context).textTheme.body1,
                       ),
                     ],
                   ),
