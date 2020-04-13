@@ -11,6 +11,7 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
 
 class MyDayAppBar extends StatefulWidget {
   const MyDayAppBar({Key key}) : super(key: key);
@@ -51,17 +52,7 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
               backgroundColor: Theme.of(context).appBarTheme.color.withOpacity(0.85),
               elevation:
                   context.watch<ElevationState>().elevations[_currentPage],
-              leading: (_currentPage == 0)
-                  ? IconButton(
-                      icon: Icon(CustomIcons.map_outline),
-                      onPressed: () {
-                        context.read<CurrentRootPageNotifier>().changePage(1);
-                      })
-                  : IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        context.read<CurrentRootPageNotifier>().changePage(0);
-                      }),
+              leading: _getLeftIcon(_currentPage),
               title: Row(
                 children: <Widget>[
                   Expanded(
@@ -144,27 +135,80 @@ class _MyDayAppBarState extends State<MyDayAppBar> {
 ////
 ////                  });
 //                }),
-                if (_currentPage == 0)
-                  IconButton(
-                      icon: Icon(CustomIcons.bookmark_multiple_outline),
-                      onPressed: () {
-                        context.read<CurrentRootPageNotifier>().changePage(2);
-                      })
-                else if (_currentPage == 1)
-                  IconButton(
-                      icon: Icon(Icons.gps_fixed),
-                      onPressed: () {
-                        context
-                            .read<GpsNotifier>()
-                            .getCurrentLoc((location) {}, (error) {});
-                      })
-                else if (_currentPage == 2)
-                  IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: () {})
+                _getRightIcon(_currentPage)
               ]),
 
       ),
     );
+  }
+
+  // builds the icon on the left
+  Widget _getLeftIcon(int currentPage) {
+    if (currentPage == 0) {
+      // case home
+      return IconButton(
+        tooltip: "Mappa",
+        icon: Icon(CustomIcons.map_outline),
+        onPressed: () {
+          context.read<CurrentRootPageNotifier>().changePage(1);
+        }
+      );
+      
+    } else if (currentPage == 1) {
+      // case map
+      return IconButton(
+        tooltip: "Centra mappa nella tua posizione",
+        icon: Icon(Icons.gps_fixed),
+        onPressed: () {
+          context.read<GpsNotifier>().getCurrentLoc((location) {}, (error) {});
+        }
+      );
+      
+    } else {
+      // case annotations
+      return IconButton(
+        tooltip: "Torna alla home",
+        icon: Icon(
+            Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios
+        ),
+        onPressed: () {
+          context.read<CurrentRootPageNotifier>().changePage(0);
+        }
+      );
+    }
+  }
+
+  // builds the icon on the right
+  Widget _getRightIcon(int currentPage) {
+    if (currentPage == 0) {
+      // case home
+      return IconButton(
+        tooltip: "Annotazioni",
+        icon: Icon(CustomIcons.bookmark_multiple_outline),
+        onPressed: () {
+          context.read<CurrentRootPageNotifier>().changePage(2);
+        }
+      );
+
+    } else if (currentPage == 1) {
+      // case map
+      return IconButton(
+        tooltip: "Torna alla home",
+        icon: Icon(
+            Platform.isAndroid ? Icons.arrow_forward : Icons.arrow_forward_ios
+        ),
+        onPressed: () {
+          context.read<CurrentRootPageNotifier>().changePage(0);
+        }
+      );
+
+    } else {
+      // case annotations
+      return IconButton(
+        tooltip: "Cerca annotazione (coming soon!)",
+        icon: Icon(Icons.search),
+        onPressed: () {}
+      );
+    }
   }
 }

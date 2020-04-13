@@ -127,7 +127,7 @@ class SlicesPage extends StatelessWidget {
                     .map(
                       (slice) => Card(
                         color: slice.activity == MotionActivity.Off
-                            ? Colors.red
+                            ? Theme.of(context).colorScheme.secondaryVariant
                             : null,
                         child: ListTile(
                           leading: Text(slice.placeRecords.toString()),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:diary/presentation/widgets/my_day_app_bar.dart';
+import 'package:diary/presentation/widgets/root_app_bar.dart';
 
 import '../map/map_page.dart';
 
