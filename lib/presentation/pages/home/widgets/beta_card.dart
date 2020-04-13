@@ -8,6 +8,7 @@ import 'package:diary/application/motion_activity_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../slices_page.dart';
 import 'generic_card.dart';
 
@@ -30,7 +31,7 @@ class _BetaCardState extends State<BetaCard> {
   @override
   void initState() {
     super.initState();
-    readVersion();
+    _readVersion();
   }
 
   @override
@@ -73,9 +74,7 @@ class _BetaCardState extends State<BetaCard> {
 
             GenericButton(
               text: "Changelog",
-              onPressed: (){
-                // todo link a changelog
-              },
+              onPressed: _launchChangelogURL,
             ),
           ],
         );
@@ -83,7 +82,17 @@ class _BetaCardState extends State<BetaCard> {
     );
   }
 
-  void readVersion() async {
+  _launchChangelogURL() async {
+    // todo modify with the specific page at each release
+    const url = 'https://covid19app.uniurb.it/category/news/';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  _readVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {

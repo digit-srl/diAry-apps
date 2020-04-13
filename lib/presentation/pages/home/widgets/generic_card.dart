@@ -27,21 +27,22 @@ class GenericCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.fromLTRB(16,8,16,8),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      color: enabled ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.secondaryVariant,
-
+      color: enabled
+          ? Theme.of(context).colorScheme.secondary
+          : Theme.of(context).colorScheme.secondaryVariant,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8,16,8,0),
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 0),
         child: Column(
           children: <Widget>[
             Row(
               children: <Widget>[
                 Flexible(
                   flex: 3,
-                    child:Padding(
-                      padding: EdgeInsets.only(right: 16, left: 8),
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16, left: 8),
                     child: LayoutBuilder(
                       builder: (ctx, constraint) {
                         if (iconData != null) {
@@ -51,12 +52,12 @@ class GenericCard extends StatelessWidget {
                           );
                         }
                         return Image.asset(
-                            'assets/diary_logo.png',
+                          'assets/diary_logo.png',
                           color: Theme.of(context).iconTheme.color,
                         );
                       },
-                  ),
                     ),
+                  ),
                 ),
                 Flexible(
                   flex: 8,
@@ -68,13 +69,13 @@ class GenericCard extends StatelessWidget {
                         AutoSizeText(title,
                             textAlign: TextAlign.start,
                             maxLines: 1,
-                            style: Theme.of(context).textTheme.headline
-                        ),
+                            style: Theme.of(context).textTheme.headline),
                         SizedBox(height: 8),
-                        AutoSizeText(
+                        Text(
                           description,
-                          maxLines: 2,
-                          style: enabled ? Theme.of(context).textTheme.body1 : Theme.of(context).textTheme.body2,
+                          style: enabled
+                              ? Theme.of(context).textTheme.body1
+                              : Theme.of(context).textTheme.body2,
                           textAlign: TextAlign.start,
                         ),
                       ],
@@ -84,10 +85,10 @@ class GenericCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: 8),
-             ButtonBar(
+            ButtonBar(
               children:
                   // modificato in maniera tale da prendere una lista di buttons
-              bottomButtons == null ? <Widget>[] : bottomButtons,
+                  bottomButtons == null ? <Widget>[] : bottomButtons,
             )
           ],
         ),

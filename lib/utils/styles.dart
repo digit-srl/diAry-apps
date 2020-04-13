@@ -28,7 +28,7 @@ const secondaryStyleLight = TextStyle(
 
 // body generic text with a darker color
 const secondaryStyleDarker =
-TextStyle(fontSize: 17, color: accentColor, fontWeight: FontWeight.normal, fontFamily: "Nunito");
+TextStyle(fontSize: 15, color: accentColor, fontWeight: FontWeight.normal, fontFamily: "Nunito");
 
 // used for small caption text such as the character counter of the TextField
 const captionStyle = TextStyle(

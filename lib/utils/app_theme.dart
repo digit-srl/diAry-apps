@@ -44,6 +44,11 @@ class AppTheme {
       color: Colors.white,
     ),
 
+    snackBarTheme: SnackBarThemeData(
+        contentTextStyle: secondaryStyleLight,
+        actionTextColor: Colors.white,
+    ),
+
     sliderTheme: SliderThemeData(
       trackShape: CustomTrackShape(),
       activeTrackColor: accentColor,
@@ -100,6 +105,14 @@ class AppTheme {
 
     accentIconTheme: IconThemeData(
       color: Colors.white,
+    ),
+
+    dividerColor: Colors.grey,
+
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.black,
+      contentTextStyle: secondaryStyleLight,
+      actionTextColor: Colors.white
     ),
 
     sliderTheme: SliderThemeData(

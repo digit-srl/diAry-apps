@@ -24,7 +24,8 @@ class DailyStatsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
-    final bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final bool isDark =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     // misure euristiche, dipendenti dal valore di height
     final _chartSize = Size(height / 3, height / 3);
@@ -293,7 +294,9 @@ class DailyStatsWidget extends StatelessWidget {
                     Positioned(
                       top: 0,
                       child: Container(
-                        color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.6),
                         width: size.width / 2,
                         padding: EdgeInsets.only(
                             top: _overlayLegendPaddingTop, right: 2),
@@ -302,10 +305,9 @@ class DailyStatsWidget extends StatelessWidget {
                           children: <Widget>[
                             Container(
                                 child: FittedBox(
-                                  child: Text(
-                                      "Spostamenti",
-                                      style: Theme.of(context).textTheme.caption
-                                  ),
+                                  child: Text("Spostamenti",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -313,10 +315,9 @@ class DailyStatsWidget extends StatelessWidget {
                                 width: size.width / 2),
                             Container(
                                 child: FittedBox(
-                                  child: Text(
-                                      "Luoghi",
-                                      style: Theme.of(context).textTheme.caption
-                                  ),
+                                  child: Text("Luoghi",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -324,10 +325,9 @@ class DailyStatsWidget extends StatelessWidget {
                                 width: size.width / 2),
                             Container(
                                 child: FittedBox(
-                                  child: Text(
-                                      "Annotazioni",
-                                      style: Theme.of(context).textTheme.caption
-                                ),
+                                  child: Text("Annotazioni",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
                                   fit: BoxFit.none,
                                   alignment: Alignment.centerRight,
                                 ),
@@ -342,10 +342,8 @@ class DailyStatsWidget extends StatelessWidget {
                       right: (MediaQuery.of(context).size.width / 2) -
                           (_chartSize.width / 2),
                       child: IconButton(
-                          icon: Icon(
-                              Icons.help_outline,
-                              color: Theme.of(context).textTheme.body1.color
-                          ),
+                          icon: Icon(Icons.help_outline,
+                              color: Theme.of(context).textTheme.body1.color),
                           onPressed: () {
                             _showPlaceLegend(context);
                           }),
@@ -368,117 +366,111 @@ class DailyStatsWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // 20
-                child: IntrinsicHeight(
-                  child: Row(
-                    children: <Widget>[
-                      Flexible(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: ButtonTheme(
-                            minWidth: double.infinity,
-                            child: FlatButton(
-                              highlightColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                              splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(16.0),
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<CurrentRootPageNotifier>()
-                                    .changePage(1);
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FlatButton(
+                        highlightColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        splashColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(16.0),
+                        ),
+                        onPressed: () {
+                          context.read<CurrentRootPageNotifier>().changePage(1);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            AutoSizeText(
+                              'Campionamenti',
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.body1,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(
-                                    'Campionamenti',
-                                    maxLines: 1,
-                                    style: Theme.of(context).textTheme.body1,
+                                  Icon(
+                                    CustomIcons.map_marker_outline,
+                                    color: Theme.of(context).iconTheme.color,
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Icon(
-                                          CustomIcons.map_marker_outline,
-                                          color: Theme.of(context).iconTheme.color,
-                                        ),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
-                                        Text(
-                                          day.pointCount.toString(),
-                                          style: Theme.of(context).textTheme.headline,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    day.pointCount.toString(),
+                                    style: Theme.of(context).textTheme.headline,
+                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                      VerticalDivider(),
-                      Flexible(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: ButtonTheme(
-                            minWidth: double.infinity,
-                            child: FlatButton(
-                              highlightColor:  Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                              splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(16.0),
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<CurrentRootPageNotifier>()
-                                    .changePage(2);
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                    ),
+                    Expanded(
+                      child: FlatButton(
+                        highlightColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        splashColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(16.0),
+                        ),
+                        onPressed: () {
+                          context.read<CurrentRootPageNotifier>().changePage(2);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            AutoSizeText('Annotazioni',
+                                maxLines: 1,
+                                style: Theme.of(context).textTheme.body1),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(
-                                      'Annotazioni',
-                                      maxLines: 1,
-                                      style: Theme.of(context).textTheme.body1
+                                  Icon(
+                                    CustomIcons.bookmark_outline,
+                                    color: Theme.of(context).iconTheme.color,
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Icon(
-                                          CustomIcons.bookmark_outline,
-                                          color: Theme.of(context).iconTheme.color,
-                                        ),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
-                                        Text(
-                                          (day?.annotations?.length ?? 0)
-                                              .toString(),
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context).textTheme.headline,
-                                        ),
-                                      ],
-                                    ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    (day?.annotations?.length ?? 0).toString(),
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.headline,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

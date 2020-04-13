@@ -288,7 +288,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     print('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
         'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
-        _getCurrentLocationAndUpdateMap,
+        _gpsClick,
         'Riprova');
   }
 
@@ -309,11 +309,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     final snackBar = SnackBar(
         content: Text(
           text,
-          style: TextStyle(fontFamily: "Nunito"),
         ),
         action: (action != null && actionText != null)
             ? SnackBarAction(
-                textColor: Colors.white,
                 label: actionText,
                 onPressed: action,
               )

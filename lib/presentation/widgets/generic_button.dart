@@ -35,10 +35,14 @@ class GenericButton extends StatelessWidget {
             ),
           )
         : FlatButton(
+            highlightColor:
+                Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+            splashColor:
+                Theme.of(context).textTheme.body1.color.withOpacity(0.3),
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             onPressed: onPressed,
             shape: RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(16.0),
+              borderRadius: new BorderRadius.circular(10.0),
             ),
             child: AutoSizeText(
               text,

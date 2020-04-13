@@ -500,7 +500,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
     print('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
         'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
-        _getCurrentLocationAndUpdateMap,
+        _gpsClick,
         'Riprova'
     );
   }
@@ -519,14 +519,14 @@ class _AddPlacePageState extends State<AddPlacePage> {
   void _showSnackbar(String text, [Function action, String actionText]) {
     _scaffoldKey.currentState.hideCurrentSnackBar();
     final snackBar = SnackBar(
+
         content: Text(
           text,
-          style: TextStyle(fontFamily: "Nunito"),
+          //style: Theme.of(context).textTheme.body2,
         ),
 
         action: (action != null && actionText != null)
             ? SnackBarAction(
-          textColor: Colors.white,
           label: actionText,
           onPressed: action,
         )

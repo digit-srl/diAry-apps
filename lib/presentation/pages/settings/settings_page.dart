@@ -118,9 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               items.indexOf(item) == items.length - 1
                   ? Container()
-                  : Divider(
-                      indent: 20,
-                    ),
+                  : Divider(indent: 72, endIndent: 16,),
             ],
             Padding(
               padding: titlePadding,
@@ -163,9 +161,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               utils.indexOf(item) == utils.length - 1
                   ? Container()
-                  : Divider(
-                      indent: 20,
-                    ),
+                  : Divider(indent: 72, endIndent: 16,),
             ],
             Padding(
               padding: titlePadding,
@@ -193,9 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               legals.indexOf(item) == legals.length - 1
                   ? Container()
-                  : Divider(
-                      indent: 20,
-                    ),
+                  : Divider(indent: 72, endIndent: 16,),
             ],
           ],
         ),

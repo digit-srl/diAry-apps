@@ -71,31 +71,32 @@ class InfoStatsWidget extends StatelessWidget {
                       initial: (_) {
                         if (dailyStats.date.isToday()) {
                           return Card(
-                            elevation: 2.0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.warning,
-                                      color: Colors.orange,
-                                      size: 60,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                          'I dati statistici possono essere\ninviati solo a giornata conclusa',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .body1),
-                                    ),
-                                  ],
+                              elevation: 2.0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0)),
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.orange,
+                                        size: 60,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            'I dati statistici possono essere\ninviati solo a giornata conclusa',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .body1),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
                             ),
                           );
                         }
@@ -110,8 +111,16 @@ class InfoStatsWidget extends StatelessWidget {
                       loading: (_) {
                         return Container(
                           height: 200,
-                          child: Center(
-                            child: CircularProgressIndicator(),
+                          child: Card(
+                            elevation: 2.0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -176,27 +185,32 @@ class ErrorResponseWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 60,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(error, style: Theme.of(context).textTheme.body1),
-              ),
-            ],
+        elevation: 2.0,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.error,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      error,
+                      style: Theme.of(context).textTheme.body1,
+                      textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 }
@@ -208,7 +222,6 @@ class WomResponseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final link = _dailyStatsResponse.womLink;
     return Column(
       children: <Widget>[
         Card(
@@ -224,24 +237,26 @@ class WomResponseWidget extends StatelessWidget {
                   Text(
                     'Complimenti! Hai ottenuto',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
+                    style: Theme.of(context).textTheme.body2
+                        .copyWith(fontSize: 20),
                   ),
                   SizedBox(
                     height: 16,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         _dailyStatsResponse.womCount.toString(),
-                        style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.body2
+                            .copyWith(fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Image.asset(
                           'assets/wom_pin.png',
                           color: Theme.of(context).iconTheme.color,
-                          height: 70,
+                          height: 60,
                         ),
                       ),
                     ],
@@ -265,13 +280,13 @@ class WomResponseWidget extends StatelessWidget {
                   Text.rich(
                     TextSpan(
                       text: 'Pin: ',
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.body2
+                          .copyWith(fontSize: 35, fontWeight: FontWeight.w600),
                       children: [
                         TextSpan(
                           text: _dailyStatsResponse.womPassword,
-                          style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold),
+                          style:Theme.of(context).textTheme.body2
+                              .copyWith(fontSize: 40, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
