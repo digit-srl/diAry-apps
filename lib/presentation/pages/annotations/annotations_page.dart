@@ -121,9 +121,10 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                               "Elimina annotazione",
                               "Sei sicuro di voler eliminare questa annotazione?",
                               "Sì, elimina", () {
-                            context
-                                .read<AnnotationNotifier>()
-                                .removeAnnotation(annotation);
+                            Provider.of<AnnotationNotifier>(
+                                context,
+                                listen: false
+                            ).removeAnnotation(annotation);
                           });
                         }),
                     subtitle: Text(

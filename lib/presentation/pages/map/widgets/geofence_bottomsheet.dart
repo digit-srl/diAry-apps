@@ -71,11 +71,12 @@ void showGeofenceBottomSheet(
                           icon: Icon(CustomIcons.trash_can_outline),
                           tooltip: "Elimina",
                           onPressed: () async {
-                            final deleted = await PlaceUtils.removePlace(
-                                context, coloredGeofence.geofence.identifier);
-                            if (deleted) {
-                              Navigator.of(context).pop();
-                            }
+                            await PlaceUtils.showRemovePlaceAlert(
+                                context,
+                                coloredGeofence.geofence.identifier
+                            );
+                            // chiude il bottomsheet
+                            Navigator.pop(context);
                           }),
                     ],
                   ),

@@ -176,7 +176,7 @@ class DailyStatsWidget extends StatelessWidget {
                   color = Colors.black;
                   break;
                 case MotionActivity.Inactive:
-                  color = Colors.grey.withOpacity(0.3);
+                  color = Colors.grey[100];
                   break;
                 case MotionActivity.Still:
                   if (e.places.isEmpty) {
@@ -186,7 +186,7 @@ class DailyStatsWidget extends StatelessWidget {
                   }
                   break;
                 default:
-                  color = Colors.orange.withOpacity(0.3);
+                  color = Colors.orange[100];
               }
             }
 
@@ -213,8 +213,8 @@ class DailyStatsWidget extends StatelessWidget {
                         e.activity == MotionActivity.OnBicycle)
                     ? Colors.blue
                     : e.activity == MotionActivity.Inactive
-                        ? Colors.grey.withOpacity(0.3)
-                        : Colors.blue.withOpacity(0.3));
+                        ? Colors.grey[100]
+                        : Colors.blue[100]);
           }).toList();
 
           final annotationSlices = day.annotationSlices;
@@ -238,28 +238,26 @@ class DailyStatsWidget extends StatelessWidget {
 //        day.notes.forEach((element) => print(element.dateTime));
           for (int i = 0; i < annotationSlices.length; i++) {
             if (annotationSlices[i] == 0.0) {
-              annotationSegments.add(CircularSegmentEntry(5,
-                 isDark ? Colors.white : Colors.black
-              ));
+              annotationSegments.add(CircularSegmentEntry(5, Colors.black));
             } else {
               annotationSegments.add(
-                  CircularSegmentEntry(annotationSlices[i], Colors.grey.withOpacity(0.3)));
+                  CircularSegmentEntry(annotationSlices[i], Colors.grey[100]));
             }
           }
         }
 
         if (stationarySliceSegments.isEmpty) {
           stationarySliceSegments
-              .add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
+              .add(CircularSegmentEntry(1440, Colors.grey[100]));
         }
 
         if (movementSliceSegments.isEmpty) {
           movementSliceSegments
-              .add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
+              .add(CircularSegmentEntry(1440, Colors.grey[100]));
         }
 
         if (annotationSegments.isEmpty) {
-          annotationSegments.add(CircularSegmentEntry(1440, Colors.grey.withOpacity(0.3)));
+          annotationSegments.add(CircularSegmentEntry(1440, Colors.grey[100]));
         }
 
         final data = [

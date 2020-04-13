@@ -77,7 +77,7 @@ class DailyStatsLegend extends StatelessWidget {
                   height: 200,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.0),
-                    color: baseCard,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                   child: ListView(
                     shrinkWrap: true,
@@ -97,7 +97,7 @@ class DailyStatsLegend extends StatelessWidget {
                             location:
                                 'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
                             onRemove: () {
-                              PlaceUtils.removePlace(context, place.identifier);
+                              PlaceUtils.showRemovePlaceAlert(context, place.identifier);
                             },
                           )
                     ],

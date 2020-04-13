@@ -80,10 +80,12 @@ showAnnotationBottomSheet(Annotation annotation, BuildContext context) async {
                               "Elimina annotazione",
                               "Sei sicuro di voler eliminare questa annotazione?",
                               "Sì, elimina", () {
-                            context
-                                .read<AnnotationNotifier>()
+                            Provider.of<AnnotationNotifier>(context,
+                                listen: false)
                                 .removeAnnotation(annotation);
                           });
+                          // chiude il bottomsheet
+                          Navigator.pop(context);
                         },
                       ),
                     ],

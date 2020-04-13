@@ -64,7 +64,7 @@ class MyPlacesCard extends StatelessWidget {
                       location:
                       'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
                       onRemove: () {
-                        PlaceUtils.removePlace(context, place.identifier);
+                        PlaceUtils.showRemovePlaceAlert(context, place.identifier);
                       },
                     ),
                 ],
