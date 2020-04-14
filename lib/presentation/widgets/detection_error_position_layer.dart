@@ -1,7 +1,11 @@
-import 'package:diary/application/gps_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+/*
+ * An overlay container displayed over the map, that becomes active when an
+ * error is detected, usually during GPS detection. The fact that an error is
+ * detected is passed from the outside of the widget, using the relative
+ * parameter.
+ */
 class DetectionErrorPositionLayer extends StatelessWidget {
   bool errorDetected;
 
@@ -11,7 +15,8 @@ class DetectionErrorPositionLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     print('[DetectionErrorPositionLayer] build');
 
-    return  errorDetected ? Container(
+    return errorDetected
+        ? Container(
             color: Colors.black.withOpacity(0.5),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -34,6 +39,7 @@ class DetectionErrorPositionLayer extends StatelessWidget {
               ],
             ),
           )
-    : Container();
+
+        : Container();
   }
 }

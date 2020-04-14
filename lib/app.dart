@@ -11,7 +11,6 @@ import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
@@ -27,8 +26,6 @@ import 'application/service_notifier.dart';
 import 'domain/entities/location.dart';
 import 'domain/repositories/daily_stats_repository.dart';
 import 'infrastructure/repositories/user_repository_impl.dart';
-import 'presentation/widgets/track_shape.dart';
-import 'utils/colors.dart';
 import 'package:provider/provider.dart';
 
 import 'domain/entities/day.dart';
@@ -37,7 +34,11 @@ class MyDayApp extends StatefulWidget {
   final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
 
-  const MyDayApp({Key key, this.locationsPerDate, this.days}) : super(key: key);
+  const MyDayApp({
+    Key key,
+    this.locationsPerDate,
+    this.days
+  }) : super(key: key);
 
   @override
   _MyDayAppState createState() => _MyDayAppState();
@@ -48,8 +49,9 @@ class _MyDayAppState extends State<MyDayApp> {
 //  DayNotifier dayNotifier;
   UserRepository userRepository;
   DailyStatsRepository dailyStatsRepository;
-  // todo final GlobalKey<UnicornDialerState> dialerKey =
-  // todo GlobalKey<UnicornDialerState>(debugLabel: 'prova');
+  final GlobalKey<UnicornDialerState> _dialerKey =
+      GlobalKey<UnicornDialerState>(debugLabel: 'prova');
+
   @override
   void initState() {
     super.initState();
@@ -118,27 +120,29 @@ class _MyDayAppState extends State<MyDayApp> {
           create: (_) => CurrentRootPageNotifier(),
         ),
       ],
+
       child: MaterialApp(
-//        locale: DevicePreview.of(context).locale, // <--- Add the locale
-//        builder: DevicePreview.appBuilder, // <--- Add the builder
-          title: 'diAry',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+        // locale: DevicePreview.of(context).locale, // <--- Add the locale
+        // builder: DevicePreview.appBuilder,        // <--- Add the builder
+        title: 'diAry',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,               // <--- Handles dark theme
 
-          // home: WillPopScope(
-          //  onWillPop: () {
-          //    final wasOpened = dialerKey.currentState.close();
-          //    print(wasOpened);
-          //    return Future.value(!wasOpened);
-          //  },
-          //  child: Scaffold(...)),
+        // todo problems configuring dialerkey WillPop scope!
+        // home: WillPopScope(
+        //  onWillPop: () {
+        //    final wasOpened = dialerKey.currentState.close();
+        //    print(wasOpened);
+        //    return Future.value(!wasOpened);
+        //  },
+        //  child: Scaffold(...)),
 
-          home: Scaffold(
-            body: RootPage(),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: MainFabButton(/*dialerKey: dialerKey*/),
-          ),
+        home: Scaffold(
+          body: RootPage(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          floatingActionButton: MainFabButton(dialerKey: _dialerKey),
         ),
+      ),
     );
   }
 

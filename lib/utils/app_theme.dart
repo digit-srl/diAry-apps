@@ -2,35 +2,54 @@ import 'package:diary/presentation/widgets/track_shape.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+
+/*
+ * Static class that implements the specifics of light and dark theme, and 
+ * groups some theme-specific features such as SystemUiOverlayStyle.
+ */
 class AppTheme {
-  AppTheme._();
+
+  static bool isNightModeOn(BuildContext context) {
+    return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
+
+  static SystemUiOverlayStyle systemOverlayStyle(BuildContext context) {
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: isNightModeOn(context)
+          ? Brightness.dark
+          : Brightness.light,
+      statusBarIconBrightness: isNightModeOn(context)
+          ? Brightness.light
+          : Brightness.dark,
+      systemNavigationBarColor: Theme.of(context).primaryColor,
+      systemNavigationBarIconBrightness: isNightModeOn(context)
+          ? Brightness.light
+          : Brightness.dark,
+    );
+  }
 
   static final ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: Colors.white,
-    //primarySwatch: accentColor,
     primaryColor: Colors.white,
     accentColor: accentColor,
     accentColorBrightness: Brightness.dark,
     fontFamily: 'Nunito',
 
     appBarTheme: AppBarTheme(
-      color: Colors.white,
-      iconTheme: IconThemeData(
-        color: accentColor,
-      ),
-      actionsIconTheme: IconThemeData(
-        color: accentColor
-      ),
-      brightness: Brightness.light
+        color: Colors.white,
+        iconTheme: IconThemeData(color: accentColor),
+        actionsIconTheme: IconThemeData(color: accentColor),
+        brightness: Brightness.light
     ),
-
 
     colorScheme: ColorScheme.light(
-      secondary: baseCard,
-      secondaryVariant: deactivatedCard
+        secondary: baseCard,
+        secondaryVariant: deactivatedCard
     ),
-
 
     cardTheme: CardTheme(
       color: baseCard,
@@ -45,8 +64,8 @@ class AppTheme {
     ),
 
     snackBarTheme: SnackBarThemeData(
-        contentTextStyle: secondaryStyleLight,
-        actionTextColor: Colors.white,
+      contentTextStyle: secondaryStyleLight,
+      actionTextColor: Colors.white,
     ),
 
     sliderTheme: SliderThemeData(
@@ -71,7 +90,6 @@ class AppTheme {
     ),
   );
 
-
   static final ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: Colors.black,
     primaryColor: Colors.black,
@@ -80,14 +98,10 @@ class AppTheme {
     fontFamily: 'Nunito',
 
     appBarTheme: AppBarTheme(
-        color: Colors.black,
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        actionsIconTheme: IconThemeData(
-            color:  Colors.white
-        ),
-        brightness: Brightness.dark
+      color: Colors.black,
+      iconTheme: IconThemeData(color: Colors.white,),
+      actionsIconTheme: IconThemeData(color: Colors.white),
+      brightness: Brightness.dark
     ),
 
     colorScheme: ColorScheme.light(
@@ -125,7 +139,6 @@ class AppTheme {
       overlappingShapeStrokeColor: accentColor,
       valueIndicatorColor: accentColor,
     ),
-
 
     textTheme: TextTheme(
       title: appBarTitleStyleLight,

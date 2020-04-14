@@ -1,12 +1,14 @@
-
-import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-// Clsdd that implements a general behavior for all alertDialogs
+/*
+ * Implements a standard behavior and styling for all dialogs inside the app,
+ * using the ase custom style over rflutter_alert. It provides some standardized
+ * dialog templates.
+ */
 class Alerts {
+
+  // alerts' common custom style
   static AlertStyle customStyle(BuildContext context) {
     return AlertStyle(
       animationType: AnimationType.grow,
@@ -26,6 +28,9 @@ class Alerts {
     );
   }
 
+  // alert with a single button. At the end of the passed action, it dismiss the
+  // dialog automatically. If button text or actions are not passed, it
+  // implements a standard behavior (OK as button text, dismiss as action)
   static showAlertWithSingleAction(BuildContext context, String title,
       [String description, String buttonText, Function onButtonPressed]) async {
     return await Alert(
@@ -52,6 +57,10 @@ class Alerts {
         ]).show();
   }
 
+  // alert with a main action button, and a secondary one.
+  // At the end of the passed actions, it dismiss the dialog automatically.
+  // If button text for secondary action is not passed, it
+  // implements a standard behavior in it (dismiss)
   static showAlertWithPosNegActions(BuildContext context, String title,
       String description, String positiveButtonText, Function onPositive,
       [String negativeButtonText, Function onNegative]) async {
@@ -95,6 +104,9 @@ class Alerts {
         ]).show();
   }
 
+  // Alert with two equally important actions.
+  // At the end of the passed actions, it dismiss the dialog automatically.
+  // Both actions must be passed in order for the button to work
   static showAlertWithTwoActions(
       BuildContext context,
       String title,
@@ -137,6 +149,10 @@ class Alerts {
   }
 
 
+  // Alert a content, passed as widget, and an action button
+  // At the end of the passed actions, it dismiss the dialog automatically.
+  // If button text or actions are not passed, it implements a standard behavior
+  // (OK as button text, dismiss as action)
   static showAlertWithContent(BuildContext context, String title,
       Widget content, String positiveButtonText, Function onPositive) async {
 

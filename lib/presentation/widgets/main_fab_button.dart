@@ -3,30 +3,37 @@ import 'dart:io';
 import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:diary/utils/custom_icons.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
 
+/*
+ * The main expandable FAB of the app, that brings possibility to add places
+ * and annotations.
+ */
 class MainFabButton extends StatelessWidget {
   final double bottomPadding;
   final Function onMainButtonTap;
   final GlobalKey dialerKey;
 
-  MainFabButton(
-      {Key key, this.onMainButtonTap, this.dialerKey, this.bottomPadding});
+  MainFabButton({
+    Key key,
+    this.onMainButtonTap,
+    this.dialerKey,
+    this.bottomPadding
+  });
 
   bool isOpen = false;
 
   @override
   Widget build(BuildContext context) {
-//    double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
-//    var mediaQueryData = MediaQuery.of(context);
-//    if (_isIPhoneX(mediaQueryData)) {
-//      // fallback for all non iPhone X
-//      buttonBottomPadding += 30.0;
-//    }
-    print('MAIN MENU BUTTON BUILD');
+     // double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
+     // var mediaQueryData = MediaQuery.of(context);
+     // if (_isIPhoneX(mediaQueryData)) {
+     //   // fallback for all non iPhone X
+     //   buttonBottomPadding += 30.0;
+     // }
+    print('[MainFabButton] build');
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
@@ -37,7 +44,8 @@ class MainFabButton extends StatelessWidget {
           parentButtonBackground: Theme.of(context).accentColor,
           orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add),
-          childButtons: _buildMenuItems(context)),
+          childButtons: _buildMenuItems(context)
+      ),
     );
   }
 
@@ -51,7 +59,7 @@ class MainFabButton extends StatelessWidget {
         labelBackgroundColor:  Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi luogo",
-//              heroTag: null,
+        // heroTag: null,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,
@@ -67,7 +75,7 @@ class MainFabButton extends StatelessWidget {
         labelBackgroundColor: Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi annotazione",
-//              heroTag: null,
+         // heroTag: null,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,

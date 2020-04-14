@@ -2,6 +2,9 @@ import 'package:diary/application/gps_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/*
+ * An overlay container displayed over the map during GPS position detection.
+ */
 class ManualDetectionPositionLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class ManualDetectionPositionLayer extends StatelessWidget {
                 CircularProgressIndicator(
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
-                Container(
+                SizedBox(
                   height: 16,
                 ),
                 Text(

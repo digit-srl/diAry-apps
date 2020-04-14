@@ -604,7 +604,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                                 ),
                                 Text(
                                   day.pointCount.toString(),
-                                  style: numberStyle,
+                                  //style: numberStyle,
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -642,7 +642,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                                 Text(
                                   (day?.annotations?.length ?? 0).toString(),
                                   textAlign: TextAlign.center,
-                                  style: numberStyle,
+                                  //style: numberStyle,
                                 ),
                               ],
                             ),

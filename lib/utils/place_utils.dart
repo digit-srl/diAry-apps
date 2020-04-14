@@ -1,12 +1,11 @@
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/alerts.dart';
-import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 class PlaceUtils {
+  // todo modified following new alert standard
   static showRemovePlaceAlert(BuildContext context, String identifier) async {
     return Alerts.showAlertWithPosNegActions(
         context,

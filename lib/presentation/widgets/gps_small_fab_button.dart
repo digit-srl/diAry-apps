@@ -1,11 +1,9 @@
-import 'package:diary/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/date_notifier.dart';
-import 'package:diary/utils/extensions.dart';
-import 'package:provider/provider.dart';
 
+/*
+ * A small fab displayed inside add pages, used to trigger GPS action.
+ */
 class GpsSmallFabButton  extends StatelessWidget {
   final Function onPressed;
 

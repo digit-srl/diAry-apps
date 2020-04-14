@@ -45,7 +45,7 @@ class PlaceLegend extends StatelessWidget {
             children: <Widget>[
               Text(
                 'Luoghi',
-                style: titleCardStyle,
+                style: headlineStyle,
               ),
               SizedBox(
                 height: 10,
