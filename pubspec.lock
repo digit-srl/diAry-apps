@@ -759,9 +759,11 @@ packages:
   unicorndial:
     dependency: "direct main"
     description:
-      name: unicorndial
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "7a337cc57dd483a06462079b39009672dd5a3689"
+      url: "git://github.com/giandifra/unicornspeeddial.git"
+    source: git
     version: "1.1.5"
   universal_platform:
     dependency: transitive

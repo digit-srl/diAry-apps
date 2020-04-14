@@ -32,7 +32,8 @@ dependencies:
   esys_flutter_share: ^1.0.2
   device_preview: ^0.4.4
   sized_context: ^0.2.1+1
-  unicorndial: ^1.1.5
+  unicorndial:
+    git: git://github.com/giandifra/unicornspeeddial.git
   firebase_analytics: ^5.0.11
   permission_handler: ^4.4.0+hotfix.4
   firebase_crashlytics: ^0.1.3+3
