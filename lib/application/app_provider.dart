@@ -23,24 +23,25 @@ class AppProvider with LocatorMixin {
 //    bg.BackgroundGeolocation.onProviderChange(_onProviderChange);
 
     bg.BackgroundGeolocation.ready(bg.Config(
-        reset: false,
-        debug: !kReleaseMode,
-        persistMode: bg.Config.PERSIST_MODE_ALL,
-        logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-        distanceFilter: 30.0,
-        stopTimeout: 1,
-        stopOnTerminate: false,
-        startOnBoot: true,
-        enableHeadless: false,
-        maxDaysToPersist: 30,
-        notification: bg.Notification(
-          priority: -2, // bassa priorità: l'icona risulta meno invasiva (ridotta, quando possibile)
-          title: "Funzione di tracciamento attivata",
-          text: "L'app lavorerà in background senza disturbarti!",
-          smallIcon: "mipmap/notification_icon", // <-- defaults to app icon
-          largeIcon: "mipmap/notification_icon"
-        ))).then((bg.State state) {
+      reset: false,
+      debug: !kReleaseMode,
+      persistMode: bg.Config.PERSIST_MODE_ALL,
+      logLevel: bg.Config.LOG_LEVEL_VERBOSE,
+      desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 30.0,
+      stopTimeout: 1,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      enableHeadless: false,
+      maxDaysToPersist: 30,
+      stationaryRadius: 25,
+      notification: bg.Notification(
+        priority: -2, // bassa priorità: l'icona risulta meno invasiva (ridotta, quando possibile)
+        title: "Funzione di tracciamento attivata",
+        text: "L'app lavorerà in background senza disturbarti!",
+        smallIcon: "mipmap/notification_icon", // <-- defaults to app icon
+        largeIcon: "mipmap/notification_icon"
+      ))).then((bg.State state) {
       print("[ready] ${state.toMap()}");
       print(state.enabled);
       serviceNotifier.setEnabled(state.enabled);

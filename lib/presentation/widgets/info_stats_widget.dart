@@ -45,25 +45,25 @@ class InfoStatsWidget extends StatelessWidget {
               children: <Widget>[
                 StatText('Data ', dailyStats.formattedDate),
                 StatText('Minuti di servizio attivo ',
-                    dailyStats.totalMinutesTracked.toString()),
+                    dailyStats.totalMinutesTracked?.toString()),
                 StatText('Centroide', dailyStats.centroidHash),
                 StatText('Minuti a casa',
-                    dailyStats.locationTracking.minutesAtHome.toString()),
+                    dailyStats.locationTracking.minutesAtHome?.toString()),
                 StatText(
                     'Minuti passati in altri miei luoghi',
                     dailyStats.locationTracking.minutesAtOtherKnownLocations
-                        .toString()),
+                        ?.toString()),
                 StatText('Minuti fuori dai miei luoghi',
-                    dailyStats.locationTracking.minutesElsewhere.toString()),
+                    dailyStats.locationTracking.minutesElsewhere?.toString()),
                 StatText(
-                    'Luoghi visitati: ', dailyStats.locationCount.toString()),
+                    'Luoghi visitati: ', dailyStats.locationCount?.toString()),
                 StatText(
-                    'Numero di annotazioni', dailyStats.eventCount.toString()),
-                StatText('Campionamenti', dailyStats.sampleCount.toString()),
+                    'Numero di annotazioni', dailyStats.eventCount?.toString()),
+                StatText('Campionamenti', dailyStats.sampleCount?.toString()),
                 StatText('Campioni scartati',
-                    dailyStats.discardedSampleCount.toString()),
+                    dailyStats.discardedSampleCount?.toString()),
                 StatText('Diagonale bb in metri',
-                    dailyStats.boundingBoxDiagonal.toStringAsFixed(4)),
+                    dailyStats.boundingBoxDiagonal?.toStringAsFixed(2) ?? '-'),
                 StateNotifierBuilder<UploadStatsState>(
                   stateNotifier: context.read<UploadStatsNotifier>(),
                   builder: (contest, state, child) {

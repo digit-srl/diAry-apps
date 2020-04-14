@@ -73,7 +73,7 @@ class LocationUtils {
         dailyStatsResponse: dailyStatsResponse,
         sampleCount: tmp.sampleCount,
         discardedSampleCount: tmp.discardedSampleCount,
-        centroidHash: tmp.centroidHash?.toUpperCase(),
+        centroidHash: tmp.centroidHash,
         boundingBoxDiagonal: tmp.boundingBoxDiagonal,
       );
       i++;
@@ -507,12 +507,16 @@ class LocationUtils {
     String centroidHash = '00000';
     if (!(lat.isNaN || long.isNaN)) {
       centroidHash = getGeohash(lat, long);
+      print('$centroidHash');
     }
     double boundingBoxDiagonal = 0.0;
 
     if (effectiveSampleCount > 1) {
-      boundingBoxDiagonal =
-          sqrt(pow((maxLat - minLat), 2) + pow((maxLong - minLong), 2));
+//      boundingBoxDiagonal =
+//          sqrt(pow((maxLat - minLat), 2) + pow((maxLong - minLong), 2));
+
+      boundingBoxDiagonal = distance(
+          minLat: minLat, maxLat: maxLat, minLong: minLong, maxLong: maxLong);
     }
 
     final data = AggregationData(
@@ -526,10 +530,35 @@ class LocationUtils {
     return data;
   }
 
+  static double distance(
+      {double minLat, double minLong, double maxLat, double maxLong}) {
+    try {
+      final minLatRad = toRadians(minLat);
+      final minLonRad = toRadians(minLong);
+      final maxLatRad = toRadians(maxLat);
+      final maxLonRad = toRadians(maxLong);
+      double radius = 6371;
+
+      double dist = acos(sin(minLatRad) * sin(maxLatRad) +
+              cos(minLatRad) * cos(maxLatRad) * cos(maxLonRad - minLonRad)) *
+          radius;
+
+      return dist * 1000;
+    } catch (ex) {
+      return 0.0;
+    }
+  }
+
+  static double toRadians(double degree) {
+    double oneDeg = (pi) / 180;
+    return (oneDeg * degree);
+  }
+
   static String getGeohash(double lat, double long) {
     // Separately you can use only the Geohasher functions
     GeoHasher geoHasher = GeoHasher();
-    return geoHasher.encode(lat, long,
+    print('$lat $long');
+    return geoHasher.encode(long, lat,
         precision: 5); // Returns a string geohash
   }
 
@@ -541,6 +570,7 @@ class LocationUtils {
     if (slices.isEmpty) {
       return output;
     }
+
     if (slices.first.activity != MotionActivity.Off) {
       output.add(slices.first);
       final x = reduceOnOff(slices.sublist(1));

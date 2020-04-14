@@ -32,11 +32,17 @@ void main() async {
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-      ),
-    );
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      //ANDROID
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      //iOS
+      statusBarBrightness: Brightness.light,
+    ),
+  );
 
 //  final List<bg.Location> locations = List<bg.Location>.unmodifiable(
 //      (await bg.BackgroundGeolocation.locations)
@@ -102,13 +108,11 @@ void main() async {
   //final darkModeEnabled = MediaQuery.of(context).platformBrightness = Brightness.dark;
 
   runApp(
-
-      MyDayApp(locationsPerDate: locationsPerDate, days: days),
+    MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    DevicePreview(
 //      enabled: !kReleaseMode,
 //      builder: (context) =>
 //          MyDayApp(locationsPerDate: locationsPerDate, days: days),
 //    ),
-
   );
 }
