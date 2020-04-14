@@ -33,6 +33,7 @@ class AppProvider with LocatorMixin {
       startOnBoot: true,
       enableHeadless: false,
       maxDaysToPersist: 30,
+      stationaryRadius: 25,
     )).then((bg.State state) {
       print("[ready] ${state.toMap()}");
       print(state.enabled);
