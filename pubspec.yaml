@@ -11,7 +11,7 @@ description: A new Flutter application.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.1.0+10
+version: 0.1.1+11
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_background_geolocation: ^1.7.2
+  flutter_background_geolocation: ^1.7.3
   auto_size_text: ^2.1.0
   google_maps_flutter: ^0.5.25+3
   flutter_statusbarcolor: ^0.2.3
@@ -44,7 +44,7 @@ dependencies:
   flutter_colorpicker: ^0.3.2
   package_info: ^0.4.0+16
   file_picker: ^1.6.2
-  sliding_sheet: ^0.3.1
+  sliding_sheet: ^0.3.3
   freezed_annotation: ^0.7.1
   meta: ^1.1.8
   dartz:

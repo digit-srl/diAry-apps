@@ -13,11 +13,14 @@ import 'domain/entities/annotation.dart';
 import 'domain/entities/day.dart';
 import 'domain/entities/location.dart';
 import 'domain/entities/place.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 BitmapDescriptor currentPositionMarkerIcon;
 BitmapDescriptor annotationPositionMarkerIcon;
 BitmapDescriptor pinPositionMarkerIcon;
 BitmapDescriptor selectedPinMarkerIcon;
+
+FirebaseAnalytics analytics = FirebaseAnalytics();
 
 /*
  * Entry point for the application.
@@ -32,7 +35,6 @@ void main() async {
 
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
-
 
 //  final List<bg.Location> locations = List<bg.Location>.unmodifiable(
 //      (await bg.BackgroundGeolocation.locations)
@@ -84,8 +86,8 @@ void main() async {
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox('dailyStatsResponse');
-  final box = await Hive.openBox<Place>('places');
-  box.values.forEach(print);
+  await Hive.openBox<Place>('places');
+  await Hive.openBox<String>('pinNotes');
   final Map<DateTime, List<Location>> locationsPerDate =
       await LocationUtils.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);

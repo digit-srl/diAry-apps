@@ -104,7 +104,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                   return ListTile(
                     contentPadding: EdgeInsets.all(16),
                     title: Text(
-                      annotation.title,
+                      annotation?.title ?? 'Errore',
                       style: Theme.of(context).textTheme.subhead,
                     ),
                     leading: Icon(

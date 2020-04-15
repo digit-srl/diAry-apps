@@ -11,6 +11,7 @@ import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
 import 'dart:math';
+import 'package:diary/main.dart';
 
 enum Action { Enter, Exit, Unknown }
 
@@ -48,34 +49,42 @@ class LocationUtils {
     Map<DateTime, Day> days = {};
     int i = 0;
     for (DateTime key in locationsPerDay.keys) {
-      final yesterdayPlace = <String>{};
-      if (i > 0 &&
-          days[locationsPerDay.keys.toList()[i - 1]].places.isNotEmpty) {
-        final oldPlaceIdentifiers =
-            days[locationsPerDay.keys.toList()[i - 1]].places.last.places;
-        yesterdayPlace.addAll(oldPlaceIdentifiers);
+      try {
+        final yesterdayPlace = <String>{};
+        if (i > 0 &&
+            days[locationsPerDay.keys.toList()[i - 1]].places.isNotEmpty) {
+          final oldPlaceIdentifiers =
+              days[locationsPerDay.keys.toList()[i - 1]].places.last.places;
+          yesterdayPlace.addAll(oldPlaceIdentifiers);
+        }
+        final tmp = aggregateLocationsInSlices3(
+          locationsPerDay[key],
+          yesterdayPlaces: yesterdayPlace,
+        );
+        final dailyStatsResponse =
+            Hive.box('dailyStatsResponse').get(key.toIso8601String());
+        days[key] = Day(
+          date: key,
+          slices: tmp.slices,
+          places: tmp.places,
+          annotations: Hive.box<Annotation>('annotations')
+                  .values
+                  ?.where((annotation) => annotation.dateTime.isSameDay(key))
+                  ?.toList() ??
+              [],
+          pointCount: locationsPerDay[key].length,
+          dailyStatsResponse: dailyStatsResponse,
+          sampleCount: tmp.sampleCount,
+          discardedSampleCount: tmp.discardedSampleCount,
+          centroidHash: tmp.centroidHash,
+          boundingBoxDiagonal: tmp.boundingBoxDiagonal,
+        );
+      } catch (ex) {
+        analytics.logEvent(
+            name: '[LocationUtils] aggregateLocationsInDayPerDate',
+            parameters: {'error': ex.toString()});
+        print(ex);
       }
-      final tmp = aggregateLocationsInSlices3(
-        locationsPerDay[key],
-        yesterdayPlaces: yesterdayPlace,
-      );
-      final dailyStatsResponse =
-          Hive.box('dailyStatsResponse').get(key.toIso8601String());
-      days[key] = Day(
-        date: key,
-        slices: tmp.slices,
-        places: tmp.places,
-        annotations: Hive.box<Annotation>('annotations')
-            .values
-            .where((annotation) => annotation.dateTime.isSameDay(key))
-            .toList(),
-        pointCount: locationsPerDay[key].length,
-        dailyStatsResponse: dailyStatsResponse,
-        sampleCount: tmp.sampleCount,
-        discardedSampleCount: tmp.discardedSampleCount,
-        centroidHash: tmp.centroidHash,
-        boundingBoxDiagonal: tmp.boundingBoxDiagonal,
-      );
       i++;
     }
     return days;

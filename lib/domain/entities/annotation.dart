@@ -6,7 +6,7 @@ class Annotation extends HiveObject {
   @HiveField(0)
   final String id;
   @HiveField(1)
-  final String title;
+  String title;
   @HiveField(2)
   final DateTime dateTime;
   @HiveField(3)

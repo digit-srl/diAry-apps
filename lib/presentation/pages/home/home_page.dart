@@ -6,7 +6,7 @@ import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
-import 'package:diary/application/upload_stats_notifier.dart';
+import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:flutter/material.dart';

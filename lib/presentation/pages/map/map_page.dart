@@ -3,21 +3,18 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/info_pin/info_annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
-import 'package:diary/presentation/pages/map/widgets/info_annotation_2.dart';
-import 'package:diary/presentation/pages/map/widgets/info_geofence_2.dart';
-import 'package:diary/utils/app_theme.dart';
-import 'package:diary/utils/bottom_sheets.dart';
-import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -31,7 +28,6 @@ import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 import 'widgets/info_pin.dart';
 
@@ -61,7 +57,6 @@ class _MapPageState extends State<MapPage>
   Function removeAnnotationListener;
 
   DateTime _currentDate = DateTime.now().withoutMinAndSec();
-  DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
   String log = "";
   Completer<GoogleMapController> _controller = Completer();
   Set<Circle> circles = {};
@@ -83,8 +78,6 @@ class _MapPageState extends State<MapPage>
   CameraPosition _initialPosition;
   List<Annotation> annotations = [];
   List<Location> locations = [];
-  String _darkMapStyle;
-  String _normalMapStyle;
 
   @override
   void initState() {
@@ -100,12 +93,6 @@ class _MapPageState extends State<MapPage>
         zoom: 16,
       );
     }
-    rootBundle.loadString('assets/dark_map_style.json').then((string) {
-      _darkMapStyle = string;
-    });
-    rootBundle.loadString('assets/normal_map_style.json').then((string) {
-      _normalMapStyle = string;
-    });
   }
 
   @override
@@ -203,6 +190,96 @@ class _MapPageState extends State<MapPage>
     addMarker(location);
   }
 
+  void _onGeofenceTap(ColoredGeofence coloredGeofence) {
+    print('[MapPage] _onGeofenceTap');
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.person_pin,
+                      size: 35,
+                      color: coloredGeofence.color,
+                    ),
+                  ),
+                  Text(
+                    coloredGeofence.name,
+                    style: TextStyle(fontSize: 30),
+                  ),
+//                    coloredGeofence.isHome
+//                        ? Padding(
+//                            padding: const EdgeInsets.all(8.0),
+//                            child: Icon(
+//                              Icons.person_pin,
+//                              size: 35,
+//                              color: color,
+//                            ),
+//                          )
+//                        : Container(),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.settings_ethernet,
+                      color: coloredGeofence.color,
+                    ),
+                  ),
+                  Text(
+                      'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri'),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  children: <Widget>[
+                    Spacer(),
+                    GenericButton(
+                      text: 'Elimina',
+                      onPressed: () async {
+                        final deleted = await PlaceUtils.removePlace(
+                            context, coloredGeofence.geofence.identifier);
+                        if (deleted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+//                    GenericButton(
+//                      text: 'Modifica',
+//                      onPressed: () async {
+//                        final place = Hive.box<Place>('places')
+//                            .get(coloredGeofence.geofence.identifier);
+//                        await Navigator.of(context).push(MaterialPageRoute(
+//                            builder: (BuildContext context) => AddPlacePage(
+//                                  place: place,
+//                                )));
+//                        Navigator.of(context).pop();
+//                      },
+//                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _onGeofence(List<ColoredGeofence> geofences) {
     _geofences.clear();
     try {
@@ -220,16 +297,6 @@ class _MapPageState extends State<MapPage>
       updateAllCircles();
     });
   }
-
-
-  void _onGeofenceTap(ColoredGeofence coloredGeofence) async {
-    print('[MapPage] _onGeofenceTap');
-    BottomSheets.showMapBottomSheet(
-        context,
-        InfoGeofence(coloredGeofence: coloredGeofence)
-    );
-  }
-
 
   void _onGeofenceEvent(bg.GeofenceEvent event) {
     print('[MapPage] [_onGeofenceEvent]');
@@ -363,9 +430,13 @@ class _MapPageState extends State<MapPage>
     }
 
     if (selectedPinMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context);
-
+      final ImageConfiguration imageConfiguration = ImageConfiguration(
+        bundle: DefaultAssetBundle.of(context),
+        devicePixelRatio: 2.5,
+        locale: Localizations.localeOf(context, nullOk: true),
+        textDirection: Directionality.of(context),
+        platform: defaultTargetPlatform,
+      );
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/selected_pin.png')
           .then(_updateSelectedBitmap);
@@ -434,7 +505,6 @@ class _MapPageState extends State<MapPage>
     super.build(context);
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -445,10 +515,6 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
-              controller.setMapStyle(AppTheme.isNightModeOn(context)
-                  ? _darkMapStyle
-                  : _normalMapStyle
-              );
               _controller.complete(controller);
               _loadInitialDailyMarkers();
             },
@@ -519,14 +585,6 @@ class _MapPageState extends State<MapPage>
     setState(() {});
   }
 
-  _onAnnotationTap(Annotation annotation) async {
-    print('[MapPage] _onAnnotationTap');
-    BottomSheets.showMapBottomSheet(
-        context,
-        InfoAnnotation(annotation: annotation)
-    );
-  }
-
   _onLocationTap(Location location) async {
     print('[MapPage] _onLocationTap');
     String selectedPinId = '${location.uuid}_tmp';
@@ -535,7 +593,7 @@ class _MapPageState extends State<MapPage>
     final Marker marker = Marker(
       markerId: markerId,
       icon: selectedPinMarkerIcon,
-      //anchor: Offset(0.5, 0.6),
+      anchor: Offset(0.5, 0.5),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
@@ -552,47 +610,141 @@ class _MapPageState extends State<MapPage>
     final initialPage = dailyLocations
         .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
 
-    BottomSheets.showMapBottomSheet(
-        context,
-        InfoPinWidget(
-          locations: dailyLocations,
-          initialPage: initialPage,
-          selectPin: (location) {
-            Marker marker;
-            setState(() {
-              markers.removeWhere((k, v) => k.value == selectedPinId);
-              selectedPinId = '${location.uuid}_tmp';
-              final MarkerId markerId = MarkerId(selectedPinId);
-              marker = Marker(
-                markerId: markerId,
-                icon: selectedPinMarkerIcon,
-                //anchor: Offset(0.5, 0.6),
-                position: LatLng(
-                  location.coords.latitude,
-                  location.coords.longitude,
+    await showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
+      builder: (context) {
+        return SlidingSheetDialog(
+          backdropColor: Colors.black.withOpacity(0.2),
+          elevation: 8,
+          cornerRadius: 16,
+          minHeight: 400,
+          duration: Duration(milliseconds: 300),
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.7, 1.0],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          builder: (ctx, sheetState) {
+            return Container(
+              height: 450,
+              child: Material(
+                child: InfoPinPageView(
+                  locations: dailyLocations,
+                  initialPage: initialPage,
+                  selectPin: (location) {
+                    Marker marker;
+                    setState(() {
+                      markers.removeWhere((k, v) => k.value == selectedPinId);
+                      selectedPinId = '${location.uuid}_tmp';
+                      final MarkerId markerId = MarkerId(selectedPinId);
+                      marker = Marker(
+                        markerId: markerId,
+                        icon: selectedPinMarkerIcon,
+                        anchor: Offset(0.5, 0.5),
+                        position: LatLng(
+                          location.coords.latitude,
+                          location.coords.longitude,
+                        ),
+                        zIndex: 0.4,
+                      );
+                      markers[markerId] = marker;
+                      // zoom in to the selected camera position
+                    });
+                    _controller.future.then((controller) {
+                      controller.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          bearing: 0,
+                          target: marker.position,
+                          zoom: 19,
+                        ),
+                      ));
+                    });
+                  },
                 ),
-                zIndex: 0.4,
-              );
-              markers[markerId] = marker;
-              // zoom in to the selected camera position
-            });
-            _controller.future.then((controller) {
-              controller.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  bearing: 0,
-                  target: marker.position,
-                  zoom: 19,
-                ),
-              ));
-            });
+              ),
+            );
           },
-        ),
-        384);
-
+        );
+      },
+    );
+//    await showModalBottomSheet(
+//      context: context,
+//      builder: (context) {
+//        return InfoPinWidget(
+//          locations: dailyLocations,
+//          initialPage: initialPage,
+//          selectPin: (location) {
+//            Marker marker;
+//            setState(() {
+//              markers.removeWhere((k, v) => k.value == selectedPinId);
+//              selectedPinId = '${location.uuid}_tmp';
+//              final MarkerId markerId = MarkerId(selectedPinId);
+//              marker = Marker(
+//                markerId: markerId,
+//                icon: selectedPinMarkerIcon,
+//                anchor: Offset(0.5, 0.5),
+//                position: LatLng(
+//                  location.coords.latitude,
+//                  location.coords.longitude,
+//                ),
+//                zIndex: 0.4,
+//              );
+//              markers[markerId] = marker;
+//              // zoom in to the selected camera position
+//            });
+//            _controller.future.then((controller) {
+//              controller.animateCamera(CameraUpdate.newCameraPosition(
+//                CameraPosition(
+//                  bearing: 0,
+//                  target: marker.position,
+//                  zoom: 19,
+//                ),
+//              ));
+//            });
+//          },
+//        );
+//      },
+//    );
     markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }
 
+  _onAnnotationTap(Annotation annotation) {
+    print('[MapPage] _onAnnotationTap');
+    showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
+      builder: (context) {
+        return SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: Duration(milliseconds: 300),
+//          minHeight: MediaQuery.of(context).size.height * 0.9,
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.9],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          builder: (context, state) => Material(
+            child: StateNotifierProvider(
+              create: (BuildContext context) =>
+                  InfoAnnotationNotifier(annotation),
+              child: InfoAnnotationWidget(
+                annotation: annotation,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+//    showModalBottomSheet(
+//      context: context,
+//      builder: (context) => AnnotationInfoWidget(
+//        annotation: annotation,
+//      ),
+//    );
+  }
 
   @override
   void dispose() {

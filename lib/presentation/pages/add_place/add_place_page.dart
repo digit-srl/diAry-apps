@@ -30,7 +30,9 @@ import '../../../main.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
-  const AddPlacePage({Key key, this.location}) : super(key: key);
+  final Place place;
+
+  const AddPlacePage({Key key, this.location, this.place}) : super(key: key);
 
   @override
   _AddPlacePageState createState() => _AddPlacePageState();
@@ -55,6 +57,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
   bool _canSave = false;
   String _darkMapStyle;
   String _normalMapStyle;
+
+  bool get editingMode => widget.place != null;
 
   @override
   void initState() {
@@ -82,13 +86,22 @@ class _AddPlacePageState extends State<AddPlacePage> {
         _getCurrentLocationAndUpdateMap();
       });
     }
-
     rootBundle.loadString('assets/dark_map_style.json').then((string) {
       _darkMapStyle = string;
     });
     rootBundle.loadString('assets/normal_map_style.json').then((string) {
       _normalMapStyle = string;
     });
+//
+//    if (editingMode) {
+//      isHomeEnabled = isHomeEnabled ||
+//          Provider.of<UserRepositoryImpl>(context, listen: false)
+//                  .getHomeGeofenceIdentifier() ==
+//              widget.place.identifier;
+//      _isHome = widget.place.isHome;
+//      placeEditingController.text = widget.place.name;
+//      currentColor = Color(widget.place.color);
+//    }
   }
 
   @override
@@ -107,7 +120,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
-          'Aggiungi luogo',
+          editingMode ? 'Modifica Luogo' : 'Aggiungi luogo',
           style: Theme.of(context).textTheme.title,
         ),
         centerTitle: true,
@@ -261,8 +274,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
            // });
            //},
             onMapCreated: (controller) {
-              controller.setMapStyle(AppTheme.isNightModeOn(context) 
-                  ? _darkMapStyle 
+              controller.setMapStyle(AppTheme.isNightModeOn(context)
+                  ? _darkMapStyle
                   : _normalMapStyle);
               _controller.complete(controller);
             },

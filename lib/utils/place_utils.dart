@@ -24,34 +24,9 @@ class PlaceUtils {
                 Provider.of<UserRepositoryImpl>(context, listen: false)
                     .removeHomeGeofence();
             }
-        }
-    );
-
-//    showPlatformDialog(
-//      context: context,
-//      builder: (_) => BasicDialogAlert(
-//        title: Text("Sicuro di voler cancellare questo luogo?"),
-//        actions: <Widget>[
-//          BasicDialogAction(
-//            title: Text("Si"),
-//            onPressed: () {
-//              Provider.of<GeofenceNotifier>(context, listen: false)
-//                  .removeGeofence(identifier);
-//              if (identifier == homeIdentifier) {
-//                Provider.of<UserRepositoryImpl>(context, listen: false)
-//                    .removeHomeGeofence();
-//              }
-//              Navigator.pop(context);
-//            },
-//          ),
-//          BasicDialogAction(
-//            title: Text("No"),
-//            onPressed: () {
-//              Navigator.pop(context);
-//            },
-//          ),
-//        ],
-//      ),
-//    );
+          },
+        ),
+      ],
+    ).show();
   }
 }
