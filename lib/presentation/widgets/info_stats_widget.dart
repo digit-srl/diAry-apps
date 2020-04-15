@@ -1,5 +1,6 @@
 import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
@@ -15,129 +16,147 @@ class InfoStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return StandardBottomSheetColumn(
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Opacity(
-              child: IconButton(
-                padding: const EdgeInsets.all(0),
-                icon: Icon(Icons.clear),
-                color: Colors.white,
-                iconSize: 24.0,
-                onPressed: null,
-              ),
-              opacity: 0.0,
-            ),
-            Spacer(),
-            Text(
-              'Caricamento statistiche',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            Spacer(),
-            IconButton(
-                padding: const EdgeInsets.all(0),
-                icon: Icon(Icons.clear),
-                color: Colors.black,
-                iconSize: 24.0,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-          ],
-        ),
-        Divider(
-          height: 2,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              StatText('Data: ', dailyStats.formattedDate),
-              StatText('Minuti di servizio attivo: ',
-                  dailyStats.totalMinutesTracked?.toString()),
-              StatText('Centroide: ', dailyStats.centroidHash),
-              StatText('Minuti a casa: ',
-                  dailyStats.locationTracking.minutesAtHome?.toString()),
-              StatText(
-                  'Minuti passati in altri miei luoghi: ',
-                  dailyStats.locationTracking.minutesAtOtherKnownLocations
-                      ?.toString()),
-              StatText('Minuti fuori dai miei luoghi: ',
-                  dailyStats.locationTracking.minutesElsewhere?.toString()),
-              StatText(
-                  'Luoghi visitati: ', dailyStats.locationCount?.toString()),
-              StatText(
-                  'Numero di annotazioni: ', dailyStats.eventCount?.toString()),
-              StatText('Campionamenti: ', dailyStats.sampleCount?.toString()),
-              StatText('Campioni scartati: ',
-                  dailyStats.discardedSampleCount?.toString()),
-              StatText('Diagonale bb in metri: ',
-                  dailyStats.boundingBoxDiagonal?.toStringAsFixed(2) ?? '-'),
-              StateNotifierBuilder<UploadStatsState>(
-                stateNotifier: context.read<UploadStatsNotifier>(),
-                builder: (contest, state, child) {
-                  return state.map(
-                    initial: (_) {
-                      if (dailyStats.date.isToday()) {
+          Text(
+            'Caricamento statistiche',
+            style: Theme.of(context).textTheme.headline,
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "Da questa schermata è possibile caricare nel database a disposizione "
+            "delle autorità sanitarie le seguenti statistiche anonime di utilizzo. "
+            "Le statistiche possono essere caricate solo dopo aver concluso una "
+            "giornata di utilizzo (quindi dopo la mezzanotte). Il contributo "
+            "verrà ricompensato tramite WOM.",
+            style: Theme.of(context).textTheme.body1,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+         Column(
+              children: <Widget>[
+                StatText(
+                    'Data',
+                    dailyStats.formattedDate
+                ),
+                StatText(
+                    'Minuti di servizio attivo',
+                    dailyStats.totalMinutesTracked?.toString()
+                ),
+                StatText(
+                    'Centroide: ',
+                    dailyStats.centroidHash
+                ),
+                StatText(
+                    'Minuti a casa',
+                    dailyStats.locationTracking.minutesAtHome?.toString()
+                ),
+                StatText(
+                    'Minuti passati in altri miei luoghi',
+                    dailyStats.locationTracking.minutesAtOtherKnownLocations
+                        ?.toString()
+                ),
+                StatText(
+                    'Minuti fuori dai miei luoghi',
+                    dailyStats.locationTracking.minutesElsewhere?.toString()
+                ),
+                StatText(
+                    'Luoghi visitati',
+                    dailyStats.locationCount?.toString()
+                ),
+                StatText(
+                    'Numero di annotazioni',
+                    dailyStats.eventCount?.toString()
+                ),
+                StatText(
+                    'Campionamenti',
+                    dailyStats.sampleCount?.toString(),
+                ),
+                StatText(
+                    'Campioni scartati',
+                    dailyStats.discardedSampleCount?.toString()
+                ),
+                StatText(
+                    'Diagonale bb in metri',
+                    dailyStats.boundingBoxDiagonal?.toStringAsFixed(2),
+                    true
+                ),
+                SizedBox(height: 16),
+                StateNotifierBuilder<UploadStatsState>(
+                  stateNotifier: context.read<UploadStatsNotifier>(),
+                  builder: (contest, state, child) {
+                    return state.map(
+                      initial: (_) {
+                        if (dailyStats.date.isToday()) {
+                          return Card(
+                              elevation: 2.0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0)),
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.orange,
+                                        size: 60,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            'I dati statistici possono essere\ninviati solo a giornata conclusa',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .body1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: GenericButton(
+                            text: 'Carica i dati',
+                            onPressed: () => _sendDailyStats(context),
+                          ),
+                        );
+                      },
+                      loading: (_) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
                           height: 200,
                           child: Card(
-                            elevation: 4.0,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.warning,
-                                    color: Colors.orange,
-                                    size: 60,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'I dati statistici possono essere\ninviati solo a giornata conclusa',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                ],
+                            elevation: 2.0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Center(
+                                child: CircularProgressIndicator(),
                               ),
                             ),
                           ),
                         );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: GenericButton(
-                          text: 'Carica i dati',
-                          onPressed: () => _sendDailyStats(context),
-                        ),
-                      );
-                    },
-                    loading: (_) {
-                      return Container(
-                        height: 200,
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                    error: (error) {
-                      return ErrorResponseWidget(error: error.message);
-                    },
-                    womResponse: (response) {
-                      return WomResponseWidget(response.value);
-                    },
-                  );
-                },
-              )
-            ],
+                      },
+                      error: (error) {
+                        return ErrorResponseWidget(error: error.message);
+                      },
+                      womResponse: (response) {
+                        return WomResponseWidget(response.value);
+                      },
+                    );
+                  },
+                )
+              ],
           ),
-        ),
-      ],
+        ],
     );
   }
 
@@ -149,25 +168,34 @@ class InfoStatsWidget extends StatelessWidget {
 class StatText extends StatelessWidget {
   final String label;
   final String value;
+  final bool lastLine;
   final TextStyle textStyle = const TextStyle(fontSize: 18);
-  const StatText(this.label, this.value);
+  const StatText(this.label, this.value, [this.lastLine = false]);
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Text.rich(
-        TextSpan(
-          text: label,
-          children: [
-            TextSpan(
-              text: value,
-              style: textStyle.copyWith(fontWeight: FontWeight.bold),
+        padding: const EdgeInsets.all(2.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    label ?? "-",
+                    style: Theme.of(context).textTheme.body1,
+                  ),
+                ),
+                Text(
+                    value  ?? "-",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body2
+                        .copyWith(fontWeight: FontWeight.bold))
+              ],
             ),
+            if(!lastLine) Divider()
           ],
-        ),
-        style: textStyle,
-      ),
-    );
+        ));
   }
 }
 
@@ -177,31 +205,33 @@ class ErrorResponseWidget extends StatelessWidget {
   const ErrorResponseWidget({Key key, @required this.error}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-      height: 200,
-      child: Card(
-        elevation: 4.0,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 60,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  error,
-                  style: TextStyle(fontWeight: FontWeight.w600),
+    return Card(
+        elevation: 2.0,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.error,
+                  color: Colors.red,
+                  size: 60,
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      error,
+                      style: Theme.of(context).textTheme.body1,
+                      textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 }
@@ -213,46 +243,45 @@ class WomResponseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final link = _dailyStatsResponse.womLink;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: 200,
-            child: Card(
-              elevation: 4.0,
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Complimenti! Hai ottenuto',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          _dailyStatsResponse.womCount.toString(),
-                          style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold),
+    return Column(
+      children: <Widget>[
+        Card(
+          elevation: 2.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Complimenti! Hai ottenuto',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.body2
+                        .copyWith(fontSize: 20),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        _dailyStatsResponse.womCount.toString(),
+                        style: Theme.of(context).textTheme.body2
+                            .copyWith(fontSize: 40, fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Image.asset(
+                          'assets/wom_pin.png',
+                          color: Theme.of(context).iconTheme.color,
+                          height: 60,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Image.asset(
-                            'assets/wom_pin.png',
-                            height: 70,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
 //                    Container(
 //                      color: Colors.red,
 //                      height: 40,
@@ -266,52 +295,51 @@ class WomResponseWidget extends StatelessWidget {
 //                            fontSize: 30, fontWeight: FontWeight.bold),
 //                      ),
 //                    ),
-                    SizedBox(
-                      height: 10,
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      text: 'Pin: ',
+                      style: Theme.of(context).textTheme.body2
+                          .copyWith(fontSize: 35, fontWeight: FontWeight.w600),
+                      children: [
+                        TextSpan(
+                          text: _dailyStatsResponse.womPassword,
+                          style:Theme.of(context).textTheme.body2
+                              .copyWith(fontSize: 40, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    Text.rich(
-                      TextSpan(
-                        text: 'Pin: ',
-                        style: TextStyle(
-                            fontSize: 35, fontWeight: FontWeight.w600),
-                        children: [
-                          TextSpan(
-                            text: _dailyStatsResponse.womPassword,
-                            style: TextStyle(
-                                fontSize: 40, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: <Widget>[
-              GenericButton(
-                text: 'Lo farò in seguito',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              Spacer(),
-              GenericButton(
-                text: 'Apri il Pocket',
-                color: Color(0xFF0877E5),
-                onPressed: () {
-                  _launchURL(_dailyStatsResponse.womLink);
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Row(
+          children: <Widget>[
+            GenericButton(
+              withBorder: false,
+              text: 'Lo farò in seguito',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            Spacer(),
+            GenericButton(
+              text: 'Apri il Pocket',
+              onPressed: () {
+                _launchURL(_dailyStatsResponse.womLink);
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 

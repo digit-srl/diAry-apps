@@ -1,9 +1,9 @@
 import 'dart:math' show pi, cos, sin, asin, tan, atan2, log;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-///
-/// Geospatial helper functions for calculating Geofence Hit markers on map_view
-///
+/*
+ * Geospatial helper functions for calculating Geofence Hit markers on map_view
+ */
 class Geospatial {
   static LatLng computeOffsetCoordinate(
       LatLng coordinate, double distance, double heading) {

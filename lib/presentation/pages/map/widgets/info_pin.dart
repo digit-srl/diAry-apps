@@ -43,6 +43,7 @@ class _InfoPinPageViewState extends State<InfoPinPageView> {
 
   @override
   Widget build(BuildContext context) {
+    // todo work in progress for new interface!
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.locations.length,
@@ -127,7 +128,6 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   children: <Widget>[
                     IconButton(
                       icon: Icon(Icons.arrow_back),
-                      color: Colors.black,
                       onPressed: widget.onPrevious,
                     ),
                     Spacer(),
@@ -135,7 +135,6 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
-                      color: Colors.black,
                       onPressed: widget.onNext,
                     ),
                   ],
@@ -149,9 +148,10 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                     Expanded(
                       child: Theme(
                         data: ThemeData(
-                          primaryColor: accentColor,
+                          primaryColor: Theme.of(context).textTheme.body1.color,
                         ),
                         child: TextField(
+                          style: Theme.of(context).textTheme.body2,
                           autofocus: true,
                           controller: textController,
                           minLines: 1,
@@ -171,7 +171,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                             child: AutoSizeText(
                           text,
                           maxLines: 1,
-                          style: TextStyle(fontSize: 30),
+                              style: Theme.of(context).textTheme.body1,
                         )),
                       ],
                     )
@@ -185,7 +185,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                 child: AutoSizeText(
                   widget.location.uuid,
                   maxLines: 1,
-                  style: TextStyle(fontSize: 30),
+                  style: Theme.of(context).textTheme.body1,
                 ),
               ),
             ],
@@ -198,7 +198,9 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   Icons.timelapse,
                 ),
               ),
-              Text(dateFormat.format(widget.location.dateTime)),
+              Text(dateFormat.format(widget.location.dateTime),
+                style: Theme.of(context).textTheme.body1,
+              ),
             ],
           ),
           Row(
@@ -210,7 +212,9 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                 ),
               ),
               Text(
-                  'Lat: ${widget.location.coords.latitude.toStringAsFixed(2)} Long: ${widget.location.coords.longitude.toStringAsFixed(2)}'),
+                  'Lat: ${widget.location.coords.latitude.toStringAsFixed(2)} Long: ${widget.location.coords.longitude.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.body1,
+              ),
             ],
           ),
           Row(
@@ -221,7 +225,9 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   Icons.gps_fixed,
                 ),
               ),
-              Text('Accuratezza: ${widget.location.coords.accuracy} m'),
+              Text('Accuratezza: ${widget.location.coords.accuracy} m',
+                style: Theme.of(context).textTheme.body1,
+              ),
             ],
           ),
           Row(
@@ -233,7 +239,9 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                 ),
               ),
               Text(
-                  'Evento: ${widget.location.event.toString().replaceFirst('Event.', '')}'),
+                'Evento: ${widget.location.event.toString().replaceFirst('Event.', '')}',
+                style: Theme.of(context).textTheme.body1,
+              ),
             ],
           ),
           if (widget.location?.activity != null)
@@ -246,7 +254,10 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   ),
                 ),
                 Text(
-                    'Attività: ${widget.location.activity.type.toUpperCase()} al ${widget.location.activity.confidence.toInt()} %'),
+                    'Attività: ${widget.location.activity.type.toUpperCase()} al ${widget.location.activity.confidence.toInt()} %',
+                  style: Theme.of(context).textTheme.body1,
+
+                ),
               ],
             ),
           if (widget.location?.battery != null)
@@ -260,7 +271,9 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                         : Icons.battery_std,
                   ),
                 ),
-                Text('${(widget.location.battery.level * 100).toInt()} %'),
+                Text('${(widget.location.battery.level * 100).toInt()} %',
+                  style: Theme.of(context).textTheme.body1,
+                ),
               ],
             ),
           Row(

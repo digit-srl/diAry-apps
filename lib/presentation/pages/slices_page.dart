@@ -65,7 +65,6 @@ class _TabBarDemoState extends State<TabBarDemo> {
             IconButton(
               icon: Icon(
                   widget.locations != null ? Icons.update : Icons.file_upload),
-              color: Colors.black,
               onPressed: widget.locations != null
                   ? () async {
                       await updateSlices();
@@ -128,7 +127,7 @@ class SlicesPage extends StatelessWidget {
                     .map(
                       (slice) => Card(
                         color: slice.activity == MotionActivity.Off
-                            ? Colors.red
+                            ? Theme.of(context).colorScheme.secondaryVariant
                             : null,
                         child: ListTile(
                           leading: Text(slice.placeRecords.toString()),

@@ -52,6 +52,7 @@ dependencies:
   dart_geohash: ^1.0.2
   url_launcher: ^5.4.2
 
+
 dev_dependencies:
   hive_generator: ^0.7.0+2
   build_runner: ^1.8.1
@@ -70,6 +71,8 @@ flutter:
     - assets/diary_logo.png
     - assets/selected_pin.png
     - assets/wom_pocket_logo.png
+    - assets/normal_map_style.json
+    - assets/dark_map_style.json
 
   fonts:
     - family: Nunito
@@ -105,3 +108,6 @@ flutter:
         - asset: fonts/Nunito-SemiBoldItalic.ttf
           style: italic
           weight: 600
+    - family: CustomIcons
+      fonts:
+        - asset: fonts/CustomIcons.ttf

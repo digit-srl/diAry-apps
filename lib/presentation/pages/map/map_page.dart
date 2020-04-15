@@ -8,12 +8,16 @@ import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
+import 'package:diary/presentation/pages/map/widgets/info_geofence.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
+import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -80,6 +84,9 @@ class _MapPageState extends State<MapPage>
   List<Annotation> annotations = [];
   List<Location> locations = [];
 
+  String _darkMapStyle;
+  String _normalMapStyle;
+
   @override
   void initState() {
     super.initState();
@@ -94,6 +101,12 @@ class _MapPageState extends State<MapPage>
         zoom: 16,
       );
     }
+    rootBundle.loadString('assets/dark_map_style.json').then((string) {
+      _darkMapStyle = string;
+    });
+    rootBundle.loadString('assets/normal_map_style.json').then((string) {
+      _normalMapStyle = string;
+    });
   }
 
   @override
@@ -191,93 +204,13 @@ class _MapPageState extends State<MapPage>
     addMarker(location);
   }
 
+
   void _onGeofenceTap(ColoredGeofence coloredGeofence) {
     print('[MapPage] _onGeofenceTap');
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.person_pin,
-                      size: 35,
-                      color: coloredGeofence.color,
-                    ),
-                  ),
-                  Text(
-                    coloredGeofence.name,
-                    style: TextStyle(fontSize: 30),
-                  ),
-//                    coloredGeofence.isHome
-//                        ? Padding(
-//                            padding: const EdgeInsets.all(8.0),
-//                            child: Icon(
-//                              Icons.person_pin,
-//                              size: 35,
-//                              color: color,
-//                            ),
-//                          )
-//                        : Container(),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.settings_ethernet,
-                      color: coloredGeofence.color,
-                    ),
-                  ),
-                  Text(
-                      'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri'),
-                ],
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Row(
-                  children: <Widget>[
-                    Spacer(),
-                    GenericButton(
-                      text: 'Elimina',
-                      onPressed: () async {
-                        final deleted = await PlaceUtils.removePlace(
-                            context, coloredGeofence.geofence.identifier);
-                        if (deleted) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-//                    GenericButton(
-//                      text: 'Modifica',
-//                      onPressed: () async {
-//                        final place = Hive.box<Place>('places')
-//                            .get(coloredGeofence.geofence.identifier);
-//                        await Navigator.of(context).push(MaterialPageRoute(
-//                            builder: (BuildContext context) => AddPlacePage(
-//                                  place: place,
-//                                )));
-//                        Navigator.of(context).pop();
-//                      },
-//                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+
+    BottomSheets.showMapBottomSheet(
+        context,
+        InfoGeofenceWidget(coloredGeofence: coloredGeofence)
     );
   }
 
@@ -431,23 +364,18 @@ class _MapPageState extends State<MapPage>
     }
 
     if (selectedPinMarkerIcon == null) {
-      final ImageConfiguration imageConfiguration = ImageConfiguration(
-        bundle: DefaultAssetBundle.of(context),
-        devicePixelRatio: 2.5,
-        locale: Localizations.localeOf(context, nullOk: true),
-        textDirection: Directionality.of(context),
-        platform: defaultTargetPlatform,
-      );
+      final ImageConfiguration imageConfiguration =
+      createLocalImageConfiguration(context);
+
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/selected_pin.png')
+          imageConfiguration, 'assets/selected_pin.png')
           .then(_updateSelectedBitmap);
     }
 
     if (genericPinMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
-      // TODO sostituire con immagine corretta
-      BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/wom_pin.png')
+      BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/annotated_pin.png')
           .then(_updateGenericPinWithNoteBitmap);
     }
   }
@@ -530,6 +458,10 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
+              controller.setMapStyle(AppTheme.isNightModeOn(context)
+                  ? _darkMapStyle
+                  : _normalMapStyle
+              );
               _controller.complete(controller);
               _loadInitialDailyMarkers();
             },
@@ -611,7 +543,6 @@ class _MapPageState extends State<MapPage>
     final Marker marker = Marker(
       markerId: markerId,
       icon: selectedPinMarkerIcon,
-      anchor: Offset(0.5, 0.5),
       position: LatLng(
         location.coords.latitude,
         location.coords.longitude,
@@ -628,13 +559,15 @@ class _MapPageState extends State<MapPage>
     final initialPage = dailyLocations
         .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
 
+    // todo work in progress for new interface!
     await showSlidingBottomSheet(
       context,
       useRootNavigator: true,
       builder: (context) {
         return SlidingSheetDialog(
-          backdropColor: Colors.black.withOpacity(0.2),
+          backdropColor: Colors.transparent,
           elevation: 8,
+          color: Theme.of(context).primaryColor,
           cornerRadius: 16,
           minHeight: 400,
           duration: Duration(milliseconds: 300),
@@ -647,6 +580,7 @@ class _MapPageState extends State<MapPage>
             return Container(
               height: 450,
               child: Material(
+                color: Theme.of(context).primaryColor,
                 child: InfoPinPageView(
                   locations: dailyLocations,
                   initialPage: initialPage,
@@ -675,7 +609,6 @@ class _MapPageState extends State<MapPage>
                       marker = Marker(
                         markerId: markerId,
                         icon: selectedPinMarkerIcon,
-                        anchor: Offset(0.5, 0.5),
                         position: LatLng(
                           location.coords.latitude,
                           location.coords.longitude,
@@ -707,6 +640,7 @@ class _MapPageState extends State<MapPage>
   }
 
   _onAnnotationTap(Annotation annotation) {
+    // todo work in progress for new interface!
     print('[MapPage] _onAnnotationTap');
     showSlidingBottomSheet(
       context,
@@ -714,7 +648,10 @@ class _MapPageState extends State<MapPage>
       builder: (context) {
         return SlidingSheetDialog(
           elevation: 8,
+          backdropColor: Colors.transparent,
           cornerRadius: 16,
+          color: Theme.of(context).primaryColor,
+
           duration: Duration(milliseconds: 300),
 //          minHeight: MediaQuery.of(context).size.height * 0.9,
           snapSpec: const SnapSpec(
@@ -723,6 +660,8 @@ class _MapPageState extends State<MapPage>
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
           builder: (context, state) => Material(
+            color: Theme.of(context).primaryColor,
+
             child: StateNotifierProvider(
               create: (BuildContext context) =>
                   InfoAnnotationNotifier(annotation),
@@ -734,6 +673,7 @@ class _MapPageState extends State<MapPage>
         );
       },
     );
+
 //    showModalBottomSheet(
 //      context: context,
 //      builder: (context) => AnnotationInfoWidget(

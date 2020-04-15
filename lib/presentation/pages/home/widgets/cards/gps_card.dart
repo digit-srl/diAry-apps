@@ -3,8 +3,11 @@ import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
-import 'generic_card.dart';
+import 'home_generic_card.dart';
 
+/*
+ * Card shown only if GPS is disabled.
+ */
 class GpsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,27 +15,17 @@ class GpsCard extends StatelessWidget {
       stateNotifier: context.watch<GpsNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         if (!value.gpsEnabled) {
-          return Container(
-            margin: const EdgeInsets.only(top: 16),
-            child: GenericCard(
+          return HomeGenericCard(
               enabled: value.gpsEnabled,
               iconData: Icons.gps_off,
               iconColor: accentColor,
               title: 'GPS non attivo',
-              description:
-                  'Senza GPS, non può essere effettuato il tracciamento',
-              bottomWidget: Container(),
-//              bottomWidget: Align(
-//                alignment: Alignment.centerRight,
-//                child: GenericButton(
-//                  onPressed: () {},
-//                  text: value.gpsEnabled ? 'DISATTIVA' : 'ATTIVA',
-//                ),
-//              ),
-            ),
-          );
+              description: 'Senza GPS, non può essere effettuato il tracciamento',
+              bottomButtons: null,
+            );
+        } else {
+          return Container();
         }
-        return Container();
       },
     );
   }

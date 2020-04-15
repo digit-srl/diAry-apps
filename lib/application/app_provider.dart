@@ -1,3 +1,4 @@
+import 'package:diary/utils/colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -34,7 +35,13 @@ class AppProvider with LocatorMixin {
       enableHeadless: false,
       maxDaysToPersist: 30,
       stationaryRadius: 25,
-    )).then((bg.State state) {
+      notification: bg.Notification(
+        priority: -2, // bassa priorità: l'icona risulta meno invasiva (ridotta, quando possibile)
+        title: "Funzione di tracciamento attivata",
+        text: "L'app lavorerà in background senza disturbarti!",
+        smallIcon: "mipmap/notification_icon", // <-- defaults to app icon
+        largeIcon: "mipmap/notification_icon"
+      ))).then((bg.State state) {
       print("[ready] ${state.toMap()}");
       print(state.enabled);
       serviceNotifier.setEnabled(state.enabled);

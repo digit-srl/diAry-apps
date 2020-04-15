@@ -1,3 +1,4 @@
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -9,7 +10,11 @@ class LogsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Logs Debugger'),
+        title: Text(
+          'Logs Debugger',
+          style: Theme.of(context).textTheme.title,
+        ),
+        centerTitle: true,
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<String>('logs').listenable(),
@@ -32,7 +37,7 @@ class LogsPage extends StatelessWidget {
                     logs[index].substring(0, logs[index].indexOf(' ')),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  leading: Icon(Icons.add),
+                  leading: Icon(Icons.developer_mode),
                   subtitle:
                       Text(logs[index].substring(logs[index].indexOf(' ') + 1)),
                 );
@@ -46,13 +51,19 @@ class LogsPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.clear),
+        backgroundColor: Theme.of(context).accentColor,
         onPressed: () {
 //          Hive.box<Place>('places').clear();
           if (!isEmpty) {
-            GenericUtils.ask(context, 'Sicuro di voler eliminare tutti i log',
+            Alerts.showAlertWithPosNegActions(
+                context,
+                "Elimina log",
+                "Sei sicuro di voler eliminare tutti i log?",
+                "Sì, elimina",
                 () {
-              Hive.box<String>('logs').clear();
-            }, () {});
+                    Hive.box<String>('logs').clear();
+                }
+            );
           }
         },
       ),

@@ -1,8 +1,12 @@
 import 'package:diary/application/date_notifier.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/current_root_page_notifier.dart';
+import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
-import 'package:diary/presentation/pages/home/widgets/place_legend.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/presentation/pages/home/widgets/daily_stats_legend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -10,6 +14,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 import '../../../../utils/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:diary/utils/extensions.dart';
@@ -69,7 +74,11 @@ class DailyStatsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
+
+    // misure euristiche, dipendenti dal valore di height
     final _chartSize = Size(height / 3, height / 3);
+    final _overlayLegendPaddingTop = height / 26;
+    final _overlayLegendTextHeight = height / 48;
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
@@ -163,7 +172,8 @@ class DailyStatsWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                height: _chartSize.height,
+                height: _chartSize.height +
+                    16, // compensa il padding naturale del grafico
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
@@ -175,127 +185,193 @@ class DailyStatsWidget extends StatelessWidget {
                         initialChartData: data,
                         edgeStyle: SegmentEdgeStyle.flat,
                         chartType: CircularChartType.Radial,
-                        labelStyle: TextStyle(
-                            fontSize: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
+                        labelStyle: Theme.of(context).textTheme.headline,
                         holeLabel: value.isToday
                             ? dateFormat.format(DateTime.now())
                             : null,
                       ),
                     ),
                     Positioned(
-//                      alignment: Alignment.bottomCenter,
-                      bottom: 0,
+                      top: 0,
+                      child: Container(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.6),
+                        width: size.width / 2,
+                        padding: EdgeInsets.only(
+                            top: _overlayLegendPaddingTop, right: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Container(
+                                child: FittedBox(
+                                  child: Text("Spostamenti",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2),
+                            Container(
+                                child: FittedBox(
+                                  child: Text("Luoghi",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2),
+                            Container(
+                                child: FittedBox(
+                                  child: Text("Annotazioni",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
+                                  fit: BoxFit.none,
+                                  alignment: Alignment.centerRight,
+                                ),
+                                height: _overlayLegendTextHeight,
+                                width: size.width / 2),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 16,
                       right: (MediaQuery.of(context).size.width / 2) -
-                          (_chartSize.width / 2) -
-                          16,
+                          (_chartSize.width / 2),
                       child: IconButton(
-                          icon: Text(
-                            '?',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20,
-                            ),
-                          ),
+                          icon: Icon(Icons.help_outline,
+                              color: Theme.of(context).textTheme.body1.color),
                           onPressed: () {
                             _showPlaceLegend(context);
                           }),
                     ),
-//                    Positioned(
-////                      alignment: Alignment.bottomCenter,
-//                      bottom: 0,
-//                      left: (MediaQuery.of(context).size.width / 2) -
-//                          (_chartSize.width / 2) -
-//                          16,
-//                      child: IconButton(
-//                          icon: Icon(Icons.settings),
-//                          onPressed: () {
-//                            _showAggregationSettings(context);
-//                          }),
-//                    ),
+                    /*
+                    Positioned(
+                      alignment: Alignment.bottomCenter,
+                      bottom: 0,
+                      left: (MediaQuery.of(context).size.width / 2) - (_chartSize.width / 2),
+                      child: IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {
+                          _showAggregationSettings(context);
+                        }
+                      ),
+                    ),
+                    */
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: IntrinsicHeight(
-                  child: Row(
-                    children: <Widget>[
-                      Flexible(
-//                  fit: FlexFit.loose,
-                        child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'Campionamenti',
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), // 20
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FlatButton(
+                        highlightColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        splashColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(16.0),
+                        ),
+                        onPressed: () {
+                          context.read<CurrentRootPageNotifier>().changePage(1);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            AutoSizeText(
+                              'Campionamenti',
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.body1,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    CustomIcons.map_marker_outline,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    day.pointCount.toString(),
+                                    style: Theme.of(context).textTheme.headline,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: FlatButton(
+                        highlightColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        splashColor: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(16.0),
+                        ),
+                        onPressed: () {
+                          context.read<CurrentRootPageNotifier>().changePage(2);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            AutoSizeText('Annotazioni',
                                 maxLines: 1,
-                                style: secondaryStyle,
+                                style: Theme.of(context).textTheme.body1),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    CustomIcons.bookmark_outline,
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    (day?.annotations?.length ?? 0).toString(),
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.headline,
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(Icons.place),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      day.pointCount.toString(),
-                                      style: numberStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                      Container(
-                        width: 2,
-                        color: Colors.black,
-                      ),
-                      Flexible(
-                        child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text('Segnalazioni',
-                                  maxLines: 1, style: secondaryStyle),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.bookmark_border,
-                                      size: 25,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      (day?.annotations?.length ?? 0)
-                                          .toString(),
-                                      textAlign: TextAlign.center,
-                                      style: numberStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -305,13 +381,29 @@ class DailyStatsWidget extends StatelessWidget {
     );
   }
 
-  void _showPlaceLegend(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
+  void _showPlaceLegend(BuildContext context) async {
+    await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {
-          return PlaceLegend();
-        });
+      return SlidingSheetDialog(
+        elevation: 8,
+        cornerRadius: 16,
+        //minHeight: 400,
+        duration: Duration(milliseconds: 300),
+        snapSpec: const SnapSpec(
+          snap: true,
+          snappings: [SnapSpec.expanded],
+          positioning: SnapPositioning.relativeToAvailableSpace,
+        ),
+        builder: (ctx, sheetState) {
+          return Container(
+            child: Material(
+              color: Colors.white,
+              child: DailyStatsLegend(),
+            ),
+          );
+        },
+      );
+    });
   }
 
   // only for developers
@@ -511,7 +603,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                                 ),
                                 Text(
                                   day.pointCount.toString(),
-                                  style: numberStyle,
+                                  //style: numberStyle,
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -549,7 +641,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                                 Text(
                                   (day?.annotations?.length ?? 0).toString(),
                                   textAlign: TextAlign.center,
-                                  style: numberStyle,
+                                  //style: numberStyle,
                                 ),
                               ],
                             ),

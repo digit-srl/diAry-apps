@@ -23,28 +23,19 @@ BitmapDescriptor genericPinMarkerIcon;
 
 FirebaseAnalytics analytics = FirebaseAnalytics();
 
+/*
+ * Entry point for the application.
+ */
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set `enableInDevMode` to true to see reports while in debug mode
   // This is only to be used for confirming that reports are being
   // submitted as expected. It is not intended to be used for everyday
   // development.
-//  Crashlytics.instance.enableInDevMode = true;
+  //  Crashlytics.instance.enableInDevMode = true;
 
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
-
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      //ANDROID
-      statusBarColor: Colors.white,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      //iOS
-      statusBarBrightness: Brightness.light,
-    ),
-  );
 
 //  final List<bg.Location> locations = List<bg.Location>.unmodifiable(
 //      (await bg.BackgroundGeolocation.locations)
@@ -107,12 +98,21 @@ void main() async {
     days[today] = Day(date: today);
   }
 
+  // makes the status bar in Android transparent. It is necessary to do it from
+  // here. More overlay styles are handled inside the build tree, with
+  // AnnotatedRegion, to keep them synchronized with day-night theme
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ),
+  );
+
   runApp(
-    MyDayApp(locationsPerDate: locationsPerDate, days: days),
-//    DevicePreview(
-//      enabled: !kReleaseMode,
-//      builder: (context) =>
-//          MyDayApp(locationsPerDate: locationsPerDate, days: days),
-//    ),
+    DiAryApp(locationsPerDate: locationsPerDate, days: days),
+    // DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) =>
+    //     MyDayApp(locationsPerDate: locationsPerDate, days: days),
+    // ),
   );
 }
