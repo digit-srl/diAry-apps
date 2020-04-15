@@ -1,4 +1,4 @@
-import 'package:diary/application/upload_stats_notifier.dart';
+import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';

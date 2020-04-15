@@ -122,18 +122,20 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     }
   }
 
-  void editGeofence(String identifier,
-      {String name,
-      bool isHome,
-      double latitude,
-      double longitude,
-      double radius,
-      int color}) async {
+  void editGeofence({
+    String identifier,
+    String name,
+    bool isHome,
+    double latitude,
+    double longitude,
+    double radius,
+    int color,
+  }) async {
     final place = Hive.box<Place>('places').get(identifier);
     final deleted = await bg.BackgroundGeolocation.removeGeofence(identifier);
     if (deleted) {
       final geofence = bg.Geofence(
-        identifier: place.identifier,
+        identifier: identifier,
         radius: radius ?? place.radius,
         latitude: latitude ?? place.latitude,
         longitude: longitude ?? place.longitude,
@@ -178,6 +180,9 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
         }
         place.save();
       }
+      final list = state.geofences;
+      list.removeWhere((element) => element.geofence.identifier == identifier);
+      state = GeofenceState(list);
     }
 //    }
   }

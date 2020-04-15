@@ -3,15 +3,18 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
+import 'package:diary/application/info_pin/info_annotation_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -54,7 +57,6 @@ class _MapPageState extends State<MapPage>
   Function removeAnnotationListener;
 
   DateTime _currentDate = DateTime.now().withoutMinAndSec();
-  DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
   String log = "";
   Completer<GoogleMapController> _controller = Completer();
   Set<Circle> circles = {};
@@ -256,10 +258,18 @@ class _MapPageState extends State<MapPage>
                     SizedBox(
                       width: 10,
                     ),
-//                      GenericButton(
-//                        text: 'Modifica',
-//                        onPressed: () {},
-//                      ),
+//                    GenericButton(
+//                      text: 'Modifica',
+//                      onPressed: () async {
+//                        final place = Hive.box<Place>('places')
+//                            .get(coloredGeofence.geofence.identifier);
+//                        await Navigator.of(context).push(MaterialPageRoute(
+//                            builder: (BuildContext context) => AddPlacePage(
+//                                  place: place,
+//                                )));
+//                        Navigator.of(context).pop();
+//                      },
+//                    ),
                   ],
                 ),
               ),
@@ -608,18 +618,18 @@ class _MapPageState extends State<MapPage>
           backdropColor: Colors.black.withOpacity(0.2),
           elevation: 8,
           cornerRadius: 16,
-          minHeight: 370,
+          minHeight: 400,
           duration: Duration(milliseconds: 300),
           snapSpec: const SnapSpec(
             snap: true,
-            snappings: [0.4, 0.7, 1.0],
+            snappings: [0.7, 1.0],
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
           builder: (ctx, sheetState) {
             return Container(
-              height: 400,
+              height: 450,
               child: Material(
-                child: InfoPinWidget(
+                child: InfoPinPageView(
                   locations: dailyLocations,
                   initialPage: initialPage,
                   selectPin: (location) {
@@ -702,100 +712,38 @@ class _MapPageState extends State<MapPage>
 
   _onAnnotationTap(Annotation annotation) {
     print('[MapPage] _onAnnotationTap');
-    showModalBottomSheet(
-      context: context,
+    showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/annotation_pin.png',
-                        width: 30,
-                      )),
-                  Expanded(
-                    child: AutoSizeText(
-                      annotation.title,
-                      maxLines: 3,
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  ),
-//                    coloredGeofence.isHome
-//                        ? Padding(
-//                            padding: const EdgeInsets.all(8.0),
-//                            child: Icon(
-//                              Icons.person_pin,
-//                              size: 35,
-//                              color: color,
-//                            ),
-//                          )
-//                        : Container(),
-                ],
+        return SlidingSheetDialog(
+          elevation: 8,
+          cornerRadius: 16,
+          duration: Duration(milliseconds: 300),
+//          minHeight: MediaQuery.of(context).size.height * 0.9,
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [0.9],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          builder: (context, state) => Material(
+            child: StateNotifierProvider(
+              create: (BuildContext context) =>
+                  InfoAnnotationNotifier(annotation),
+              child: InfoAnnotationWidget(
+                annotation: annotation,
               ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.gps_fixed,
-                    ),
-                  ),
-                  Text(
-                      'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.timelapse,
-                    ),
-                  ),
-                  Text(dateFormat.format(annotation.dateTime)),
-                ],
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Row(
-                  children: <Widget>[
-                    Spacer(),
-                    GenericButton(
-                      text: 'Elimina',
-                      onPressed: () async {
-                        GenericUtils.ask(context,
-                            'Sicuro di volere eliminare questa annotazione?',
-                            () {
-                          context
-                              .read<AnnotationNotifier>()
-                              .removeAnnotation(annotation);
-                          Navigator.of(context).pop();
-                        }, () {
-                          Navigator.of(context).pop();
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-//                      GenericButton(
-//                        text: 'Modifica',
-//                        onPressed: () {},
-//                      ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         );
       },
     );
+//    showModalBottomSheet(
+//      context: context,
+//      builder: (context) => AnnotationInfoWidget(
+//        annotation: annotation,
+//      ),
+//    );
   }
 
   @override

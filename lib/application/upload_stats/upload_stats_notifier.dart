@@ -6,7 +6,7 @@ import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:diary/domain/entities/daily_stats.dart';
 
-import 'day_notifier.dart';
+import '../day_notifier.dart';
 
 part 'upload_stats_notifier.freezed.dart';
 

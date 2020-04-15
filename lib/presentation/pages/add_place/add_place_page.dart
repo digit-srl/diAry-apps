@@ -22,8 +22,9 @@ import '../../../main.dart';
 
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
+  final Place place;
 
-  const AddPlacePage({Key key, this.location}) : super(key: key);
+  const AddPlacePage({Key key, this.location, this.place}) : super(key: key);
 
   @override
   _AddPlacePageState createState() => _AddPlacePageState();
@@ -51,6 +52,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
   Size get _size => _key?.currentContext?.size;
   String error;
   double _top;
+
+  bool get editingMode => widget.place != null;
 
   @override
   void initState() {
@@ -80,6 +83,16 @@ class _AddPlacePageState extends State<AddPlacePage> {
         getCurrentLocationAndUpdateMap();
       });
     }
+//
+//    if (editingMode) {
+//      isHomeEnabled = isHomeEnabled ||
+//          Provider.of<UserRepositoryImpl>(context, listen: false)
+//                  .getHomeGeofenceIdentifier() ==
+//              widget.place.identifier;
+//      _isHome = widget.place.isHome;
+//      placeEditingController.text = widget.place.name;
+//      currentColor = Color(widget.place.color);
+//    }
   }
 
   @override
@@ -96,7 +109,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
-          'Aggiungi luogo',
+          editingMode ? 'Modifica Luogo' : 'Aggiungi luogo',
           style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,

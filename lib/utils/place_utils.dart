@@ -2,6 +2,7 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -40,31 +41,5 @@ class PlaceUtils {
         ),
       ],
     ).show();
-//    showPlatformDialog(
-//      context: context,
-//      builder: (_) => BasicDialogAlert(
-//        title: Text("Sicuro di voler cancellare questo luogo?"),
-//        actions: <Widget>[
-//          BasicDialogAction(
-//            title: Text("Si"),
-//            onPressed: () {
-//              Provider.of<GeofenceNotifier>(context, listen: false)
-//                  .removeGeofence(identifier);
-//              if (identifier == homeIdentifier) {
-//                Provider.of<UserRepositoryImpl>(context, listen: false)
-//                    .removeHomeGeofence();
-//              }
-//              Navigator.pop(context);
-//            },
-//          ),
-//          BasicDialogAction(
-//            title: Text("No"),
-//            onPressed: () {
-//              Navigator.pop(context);
-//            },
-//          ),
-//        ],
-//      ),
-//    );
   }
 }

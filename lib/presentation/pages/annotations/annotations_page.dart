@@ -47,7 +47,7 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                     final annotation = annotations[index];
                     return ListTile(
                       title: Text(
-                        annotation.title,
+                        annotation?.title ?? 'Errore',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                       leading: Icon(Icons.bookmark_border),
