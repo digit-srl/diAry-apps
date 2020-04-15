@@ -42,6 +42,7 @@ class BottomSheets {
   }
 
   // Bottomsheet for map page. It has a transparent backdrop color
+  // todo not used now! suspended until stable map version
   static showMapBottomSheet(BuildContext context, Widget content, [double height]) async {
     await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {

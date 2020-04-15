@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:provider/provider.dart';
 
+// todo do not modify or delete! Must be migrated to the new modifiable version, gradually
 class InfoAnnotation extends StatelessWidget {
   final Annotation annotation;
   final DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');

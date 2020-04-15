@@ -57,6 +57,7 @@ class InfoAnnotation extends StatelessWidget {
   const InfoAnnotation({Key key, this.annotation}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    // todo work in progress for new interface!
     return Container(
       height: 300,
       padding: const EdgeInsets.all(8.0),
@@ -90,7 +91,9 @@ class InfoAnnotation extends StatelessWidget {
                 ),
               ),
               Text(
-                  'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}'),
+                'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.body2,
+              ),
             ],
           ),
           Row(
@@ -101,7 +104,10 @@ class InfoAnnotation extends StatelessWidget {
                   Icons.timelapse,
                 ),
               ),
-              Text(dateFormat.format(annotation.dateTime)),
+              Text(
+                dateFormat.format(annotation.dateTime),
+                style: Theme.of(context).textTheme.body2,
+              ),
             ],
           ),
           Spacer(),
@@ -147,8 +153,8 @@ class InfoAnnotationDeletingQuestion extends StatelessWidget {
         children: <Widget>[
           Spacer(),
           Text(
-            'Sicuro di volere eliminare...?',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            'Sicuro di volere eliminare questa annotazione?',
+            style: Theme.of(context).textTheme.title,
             textAlign: TextAlign.center,
           ),
           Spacer(),
@@ -195,7 +201,7 @@ class InfoAnnotationDeletingComplete extends StatelessWidget {
           ),
           Text(
             'Eliminazione completata',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            style: Theme.of(context).textTheme.title,
             textAlign: TextAlign.center,
           ),
         ],
@@ -224,7 +230,7 @@ class InfoAnnotationError extends StatelessWidget {
           ),
           Text(
             error,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            style: Theme.of(context).textTheme.title,
             textAlign: TextAlign.center,
           ),
         ],
@@ -262,6 +268,7 @@ class _InfoAnnotationEditingState extends State<InfoAnnotationEditing> {
             textAlign: TextAlign.center,
           ),
           TextField(
+            style: Theme.of(context).textTheme.body2,
             controller: textController,
             minLines: 1,
             maxLines: 2,

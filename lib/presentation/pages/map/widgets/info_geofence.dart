@@ -5,10 +5,10 @@ import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/place_utils.dart';
 
-class InfoGeofence extends StatelessWidget {
-  ColoredGeofence coloredGeofence;
+class InfoGeofenceWidget extends StatelessWidget {
+  final ColoredGeofence coloredGeofence;
 
-  InfoGeofence({this.coloredGeofence});
+  InfoGeofenceWidget({this.coloredGeofence});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,19 @@ class InfoGeofence extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () async {
+                /* todo edit geofence action here
+                final place = Hive.box<Place>('places')
+                    .get(coloredGeofence.geofence.identifier);
+
+                await Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            AddPlacePage(place: place)
+                    )
+                );
+                */
+              },
               tooltip: "Modifica (coming soon!)",
             ),
             IconButton(
