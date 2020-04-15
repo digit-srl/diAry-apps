@@ -24,15 +24,12 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      // sets style of overlay elements (such as navigation bar
-      // or status bar) adapting it to day or night mode
-      value: AppTheme.systemOverlayStyle(context),
-
-      child: WillPopScope(
-        onWillPop: () {
-          return handleBackButtonWithPages(context, _currentPage);
-        },
+    return WillPopScope(
+      onWillPop: () {
+        return handleBackButtonWithPages(context, _currentPage);
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: AppTheme.systemOverlayStyle(context),
         child: Scaffold(
           body: SafeArea(
             bottom: false,
@@ -68,7 +65,8 @@ class _RootPageState extends State<RootPage> {
 
   // It executes a Navigation.pop() when back button is clicked from map or
   // annotation page, meanwhile it exits app when in home page
-  Future<bool> handleBackButtonWithPages(BuildContext context, int currentPage) {
+  Future<bool> handleBackButtonWithPages(
+      BuildContext context, int currentPage) {
     final notInHomeScreen = currentPage != 0;
 
     if (notInHomeScreen) {

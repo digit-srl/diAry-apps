@@ -39,11 +39,7 @@ class DiAryApp extends StatefulWidget {
   final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
 
-  const DiAryApp({
-    Key key,
-    this.locationsPerDate,
-    this.days
-  }) : super(key: key);
+  const DiAryApp({Key key, this.locationsPerDate, this.days}) : super(key: key);
 
   @override
   _DiAryAppState createState() => _DiAryAppState();
@@ -125,48 +121,41 @@ class _DiAryAppState extends State<DiAryApp> {
           create: (_) => CurrentRootPageNotifier(),
         ),
       ],
-
       child: MaterialApp(
         // locale: DevicePreview.of(context).locale, // <--- Add the locale
         // builder: DevicePreview.appBuilder,        // <--- Add the builder
         title: 'diAry',
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,               // <--- Handles dark theme
+        darkTheme: AppTheme.darkTheme, // <--- Handles dark theme
 
         // todo problems configuring dialerkey WillPop scope!
-        // home: WillPopScope(
-        //  onWillPop: () { 
-        //    return handleBackButtonWithFab(_dialerKey);
-        //  },
-        //  child: Scaffold(
-        //    body: RootPage(),
-        //    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        //    floatingActionButton: MainFabButton(dialerKey: _dialerKey),
-        //  )
-        // ),
-
-        home: Scaffold(
-          body: RootPage(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+        home: WillPopScope(
+          onWillPop: () {
+            return handleBackButtonWithFab(_dialerKey);
+          },
+          child: Scaffold(
+            body: RootPage(),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+          ),
         ),
       ),
     );
   }
 
   // should handle back button click wje
-  // todo not working! Why?
-  Future<bool> handleBackButtonWithFab(GlobalKey<UnicornDialerState> dialerKey) {
+  Future<bool> handleBackButtonWithFab(
+      GlobalKey<UnicornDialerState> dialerKey) {
     final isFabExpanded = dialerKey.currentState.close();
     print("Handle back button FAB. Expanded? " + isFabExpanded.toString());
-    
-    if(isFabExpanded) {
-      return Future.value(true);
-    } else {
+
+    if (isFabExpanded) {
       return Future.value(false);
+    } else {
+      return Future.value(true);
     }
   }
-  
+
   @override
   void dispose() {
     serviceNotifier.dispose();
