@@ -19,6 +19,9 @@ BitmapDescriptor annotationPositionMarkerIcon;
 BitmapDescriptor pinPositionMarkerIcon;
 BitmapDescriptor selectedPinMarkerIcon;
 
+/*
+ * Entry point for the application.
+ */
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set `enableInDevMode` to true to see reports while in debug mode
@@ -102,7 +105,7 @@ void main() async {
   );
 
   runApp(
-    MyDayApp(locationsPerDate: locationsPerDate, days: days),
+    DiAryApp(locationsPerDate: locationsPerDate, days: days),
     // DevicePreview(
     //   enabled: !kReleaseMode,
     //   builder: (context) =>

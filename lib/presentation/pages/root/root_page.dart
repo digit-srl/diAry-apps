@@ -9,6 +9,11 @@ import 'package:diary/presentation/widgets/main_app_bar.dart';
 
 import '../map/map_page.dart';
 
+/*
+ * It keeps main pages and the custom appBar in a stack. It also handles
+ * click on Android back button, aligning it to Android standards, and it
+ * initializes style overlay elements.
+ */
 class RootPage extends StatefulWidget {
   @override
   _RootPageState createState() => _RootPageState();
@@ -33,8 +38,9 @@ class _RootPageState extends State<RootPage> {
             child: Stack(
               fit: StackFit.expand,
               children: <Widget>[
-                // the indexed stack contains the main screens, keeping them
-                // alive and synchronized
+
+                // the indexed stack contains the main screens,
+                // keeping them alive and synchronized
                 IndexedStack(
                   index: _currentPage,
                   children: <Widget>[
@@ -59,11 +65,9 @@ class _RootPageState extends State<RootPage> {
     );
   }
 
-  /*
-   * Effettua un 'Navigation.pop() alla pressione del tasto back, gestendo la
-   * chiusura del dialer se necessario, o la navigazione se non si è nella
-   * schermata principale del rootStack
-   */
+  // It executes a Navigation.pop() when back button is clicked from map or
+  // annotation page, meanwhile it exits app when in home page
+  // todo should also handle custom fab button closing, some problems here
   Future<bool> handleBackButtonPress(BuildContext context, int currentPage) {
     final notInHomeScreen = currentPage != 0;
 

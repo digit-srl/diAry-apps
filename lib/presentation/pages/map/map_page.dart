@@ -6,8 +6,10 @@ import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
-import 'package:diary/presentation/pages/map/widgets/annotation_bottomsheet.dart';
-import 'package:diary/presentation/pages/map/widgets/geofence_bottomsheet.dart';
+import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
+import 'package:diary/presentation/pages/map/widgets/info_geofence.dart';
+import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
@@ -222,7 +224,10 @@ class _MapPageState extends State<MapPage>
 
   void _onGeofenceTap(ColoredGeofence coloredGeofence) async {
     print('[MapPage] _onGeofenceTap');
-    showGeofenceBottomSheet(coloredGeofence, context);
+    BottomSheets.showMapBottomSheet(
+        context,
+        InfoGeofence(coloredGeofence: coloredGeofence)
+    );
   }
 
 
@@ -430,8 +435,6 @@ class _MapPageState extends State<MapPage>
     print('[MapPage] build');
     _createMarkerImageFromAsset(context);
 
-    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -442,7 +445,10 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
-              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
+              controller.setMapStyle(AppTheme.isNightModeOn(context)
+                  ? _darkMapStyle
+                  : _normalMapStyle
+              );
               _controller.complete(controller);
               _loadInitialDailyMarkers();
             },
@@ -515,7 +521,10 @@ class _MapPageState extends State<MapPage>
 
   _onAnnotationTap(Annotation annotation) async {
     print('[MapPage] _onAnnotationTap');
-    showAnnotationBottomSheet(annotation, context);
+    BottomSheets.showMapBottomSheet(
+        context,
+        InfoAnnotation(annotation: annotation)
+    );
   }
 
   _onLocationTap(Location location) async {
@@ -543,104 +552,43 @@ class _MapPageState extends State<MapPage>
     final initialPage = dailyLocations
         .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
 
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      builder: (context) {
-        return SlidingSheetDialog(
-          backdropColor: Colors.black.withOpacity(0.0),
-          elevation: 8,
-          cornerRadius: 16,
-          color: Theme.of(context).primaryColor,
-          //minHeight: 400,
-          duration: Duration(milliseconds: 300),
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [0.4, 0.7, 1.0],
-            positioning: SnapPositioning.relativeToAvailableSpace,
-          ),
-          builder: (ctx, sheetState) {
-            return Container(
-              height: 380,
-              child: Material(
-                color: Theme.of(context).primaryColor,
-                child: InfoPinWidget(
-                  locations: dailyLocations,
-                  initialPage: initialPage,
-                  selectPin: (location) {
-                    Marker marker;
-                    setState(() {
-                      markers.removeWhere((k, v) => k.value == selectedPinId);
-                      selectedPinId = '${location.uuid}_tmp';
-                      final MarkerId markerId = MarkerId(selectedPinId);
-                      marker = Marker(
-                        markerId: markerId,
-                        icon: selectedPinMarkerIcon,
-                        //anchor: Offset(0.5, 0.6),
-                        position: LatLng(
-                          location.coords.latitude,
-                          location.coords.longitude,
-                        ),
-                        zIndex: 0.4,
-                      );
-                      markers[markerId] = marker;
-                      // zoom in to the selected camera position
-                    });
-                    _controller.future.then((controller) {
-                      controller.animateCamera(CameraUpdate.newCameraPosition(
-                        CameraPosition(
-                          bearing: 0,
-                          target: marker.position,
-                          zoom: 19,
-                        ),
-                      ));
-                    });
-                  },
+    BottomSheets.showMapBottomSheet(
+        context,
+        InfoPinWidget(
+          locations: dailyLocations,
+          initialPage: initialPage,
+          selectPin: (location) {
+            Marker marker;
+            setState(() {
+              markers.removeWhere((k, v) => k.value == selectedPinId);
+              selectedPinId = '${location.uuid}_tmp';
+              final MarkerId markerId = MarkerId(selectedPinId);
+              marker = Marker(
+                markerId: markerId,
+                icon: selectedPinMarkerIcon,
+                //anchor: Offset(0.5, 0.6),
+                position: LatLng(
+                  location.coords.latitude,
+                  location.coords.longitude,
                 ),
-              ),
-            );
+                zIndex: 0.4,
+              );
+              markers[markerId] = marker;
+              // zoom in to the selected camera position
+            });
+            _controller.future.then((controller) {
+              controller.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  bearing: 0,
+                  target: marker.position,
+                  zoom: 19,
+                ),
+              ));
+            });
           },
-        );
-      },
-    );
-//    await showModalBottomSheet(
-//      context: context,
-//      builder: (context) {
-//        return InfoPinWidget(
-//          locations: dailyLocations,
-//          initialPage: initialPage,
-//          selectPin: (location) {
-//            Marker marker;
-//            setState(() {
-//              markers.removeWhere((k, v) => k.value == selectedPinId);
-//              selectedPinId = '${location.uuid}_tmp';
-//              final MarkerId markerId = MarkerId(selectedPinId);
-//              marker = Marker(
-//                markerId: markerId,
-//                icon: selectedPinMarkerIcon,
-//                anchor: Offset(0.5, 0.5),
-//                position: LatLng(
-//                  location.coords.latitude,
-//                  location.coords.longitude,
-//                ),
-//                zIndex: 0.4,
-//              );
-//              markers[markerId] = marker;
-//              // zoom in to the selected camera position
-//            });
-//            _controller.future.then((controller) {
-//              controller.animateCamera(CameraUpdate.newCameraPosition(
-//                CameraPosition(
-//                  bearing: 0,
-//                  target: marker.position,
-//                  zoom: 19,
-//                ),
-//              ));
-//            });
-//          },
-//        );
-//      },
-//    );
+        ),
+        384);
+
     markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }

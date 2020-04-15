@@ -5,7 +5,7 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/motion_activity_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:provider/provider.dart';
-import 'generic_card.dart';
+import 'home_generic_card.dart';
 
 class CarCard extends StatelessWidget {
   @override
@@ -14,7 +14,7 @@ class CarCard extends StatelessWidget {
       stateNotifier: context.watch<MotionActivityNotifier>(),
       builder: (BuildContext context, value, Widget child) {
         //if (value.activity == MotionActivity.InVehicle) {
-          return GenericCard(
+          return HomeGenericCard(
               enabled: true,
               iconData: Icons.directions_car,
 //              title: 'Ti stai muovendo con un veicolo',

@@ -1,24 +1,19 @@
-import 'package:diary/presentation/pages/home/widgets/beta_card.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
-import 'package:diary/presentation/pages/home/widgets/my_places_card.dart';
+import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
+import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
+import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
+import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
 import 'package:diary/utils/custom_icons.dart';
-import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import '../logs_page.dart';
-import '../slices_page.dart';
 import 'package:provider/provider.dart';
-import 'widgets/activation_card.dart';
 import 'widgets/daily_stats.dart';
-import 'widgets/gps_card.dart';
-import 'package:provider/provider.dart';
 import 'package:diary/utils/extensions.dart';
 
 class NoRippleOnScrollBehavior extends ScrollBehavior {
@@ -79,7 +74,7 @@ class _HomePageState extends State<HomePage> {
 
 //              CarCard(),
               GpsCard(),
-              ActivationCard(),
+              TrackingCard(),
               BetaCard(),
               // WomCard(),
               MyPlacesCard(),

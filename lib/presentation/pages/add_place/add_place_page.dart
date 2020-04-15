@@ -8,6 +8,8 @@ import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/alerts.dart';
+import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/styles.dart';
@@ -98,7 +100,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
 //    _createMarkerImageFromAsset(context);
     return Scaffold(
@@ -260,7 +261,9 @@ class _AddPlacePageState extends State<AddPlacePage> {
            // });
            //},
             onMapCreated: (controller) {
-              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
+              controller.setMapStyle(AppTheme.isNightModeOn(context) 
+                  ? _darkMapStyle 
+                  : _normalMapStyle);
               _controller.complete(controller);
             },
             onTap: (location) {
@@ -527,9 +530,9 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
         action: (action != null && actionText != null)
             ? SnackBarAction(
-          label: actionText,
-          onPressed: action,
-        )
+               label: actionText,
+               onPressed: action,
+              )
             : null
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
@@ -537,51 +540,26 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   void _showHelper(BuildContext context) async {
     print('[AddPlacePage] Show helper');
-    await showSlidingBottomSheet(context, useRootNavigator: true,
-        builder: (context) {
-      return SlidingSheetDialog(
-        elevation: 8,
-        cornerRadius: 16,
-        //minHeight: 400,
-        color: Theme.of(context).primaryColor,
-        padding: EdgeInsets.all(24),
-        duration: Duration(milliseconds: 300),
-        snapSpec: const SnapSpec(
-          snap: true,
-          snappings: [SnapSpec.expanded],
-          positioning: SnapPositioning.relativeToAvailableSpace,
+    BottomSheets.showInfoBottomSheet(context, StandardBottomSheetColumn(
+      children: <Widget>[
+        Text(
+          "Cos'è questa schermata?",
+          style: Theme.of(context).textTheme.headline,
         ),
-        builder: (ctx, sheetState) {
-          return Container(
-            child: Material(
-                color: Theme.of(context).primaryColor,
-                child:  Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    "Cos'è questa schermata?",
-                    style: Theme.of(context).textTheme.headline,
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Da qui è possibile aggiungere o modificare un luogo, così "
-                        "da rendere più preciso l'operato dell'app. Posiziona il "
-                        "luogo premendo in un qualunque punto nella mappa. Puoi "
-                        "inoltre sceglierne il nome, il colore con quale "
-                        "visualizzarlo nella mappa, il raggio, e specificare se è "
-                        "la tua abitazione principale. Passando più tempo nella tua "
-                        "abitazione principale, otterrai un maggior numero di WOM.",
-                    style: Theme.of(context).textTheme.body1,
-                  ),
-                ],
-              )
-            ),
-          );
-        },
-      );
-    });
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Da qui è possibile aggiungere o modificare un luogo, così "
+              "da rendere più preciso l'operato dell'app. Posiziona il "
+              "luogo premendo in un qualunque punto nella mappa. Puoi "
+              "inoltre sceglierne il nome, il colore con quale "
+              "visualizzarlo nella mappa, il raggio, e specificare se è "
+              "la tua abitazione principale. Passando più tempo nella tua "
+              "abitazione principale, otterrai un maggior numero di WOM.",
+          style: Theme.of(context).textTheme.body1,
+        ),
+      ],
+    ));
   }
 }

@@ -1,7 +1,6 @@
 import 'package:diary/presentation/pages/logs_page.dart';
 import 'package:diary/presentation/pages/slices_page.dart';
 import 'package:diary/utils/custom_icons.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/motion_activity_notifier.dart';
@@ -9,16 +8,12 @@ import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../slices_page.dart';
-import 'generic_card.dart';
+import '../../../slices_page.dart';
+import 'home_generic_card.dart';
 
-// import necessari pre funzionalità di debug aggiuntive e gps fittizio
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/service_notifier.dart';
-import 'package:diary/domain/entities/motion_activity.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-as bg;
-
+/*
+ * It shows some features and information show only to beta testers.
+ */
 class BetaCard extends StatefulWidget {
   @override
   _BetaCardState createState() => _BetaCardState();
@@ -39,12 +34,12 @@ class _BetaCardState extends State<BetaCard> {
     return StateNotifierBuilder<MotionActivityState>(
       stateNotifier: context.watch<MotionActivityNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        return GenericCard(
+        return HomeGenericCard(
           enabled: true,
           iconData: CustomIcons.flask_outline,
           title: 'diAry ' + version + " Beta",
-          description:
-          'Scheda mostrata solo ai beta tester. Contiene funzioni per il test.',
+          description: 'Scheda mostrata solo ai beta tester. Contiene '
+                       'funzioni per il test.',
           bottomButtons: <Widget>[
             IconButton(
               icon: Icon(Icons.bug_report),

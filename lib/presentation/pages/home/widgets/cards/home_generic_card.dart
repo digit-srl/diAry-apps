@@ -2,9 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../utils/styles.dart';
+import '../../../../../utils/styles.dart';
 
-class GenericCard extends StatelessWidget {
+class HomeGenericCard extends StatelessWidget {
   final String title;
   final String description;
   final List<Widget> bottomButtons;
@@ -13,7 +13,7 @@ class GenericCard extends StatelessWidget {
   final Color iconColor;
   final bool enabled;
 
-  const GenericCard(
+  const HomeGenericCard(
       {Key key,
       this.title,
       this.description,

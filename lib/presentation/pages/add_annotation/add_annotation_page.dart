@@ -7,6 +7,8 @@ import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/presentation/widgets/detection_error_position_layer.dart';
 import 'package:diary/presentation/widgets/gps_small_fab_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
+import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +77,6 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
     // _createMarkerImageFromAsset(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -157,7 +157,10 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               zoom: _zoom,
             ),
             onMapCreated: (controller) {
-              controller.setMapStyle(isDark ? _darkMapStyle : _normalMapStyle);
+              controller.setMapStyle(AppTheme.isNightModeOn(context)
+                  ? _darkMapStyle
+                  : _normalMapStyle
+              );
               _controller.complete(controller);
             },
             markers: _markers,
@@ -321,48 +324,25 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
 
   void _showHelper() async {
     print('[AddAnnotationPage] Show helper');
-    await showSlidingBottomSheet(context, useRootNavigator: true,
-        builder: (context) {
-      return SlidingSheetDialog(
-        elevation: 8,
-        cornerRadius: 16,
-        //minHeight: 400,
-        padding: EdgeInsets.all(24),
-        color: Theme.of(context).primaryColor,
-        duration: Duration(milliseconds: 300),
-        snapSpec: const SnapSpec(
-          snap: true,
-          snappings: [SnapSpec.expanded],
-          positioning: SnapPositioning.relativeToAvailableSpace,
+
+    BottomSheets.showInfoBottomSheet(context, StandardBottomSheetColumn(
+      children: <Widget>[
+        Text(
+          "Cos'è questa schermata?",
+          style: Theme.of(context).textTheme.headline,
         ),
-        builder: (ctx, sheetState) {
-          return Container(
-            child: Material(
-                color: Theme.of(context).primaryColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "Cos'è questa schermata?",
-                      style: Theme.of(context).textTheme.headline,
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Da qui è possibile aggiungere segnalare situazioni "
-                      "particolari degne di nota. L'annotazione verrà applicata "
-                      "alla tua posizione corrente, per cui è necessario autorizzare "
-                      "l'accesso alla localizzazione da parte dell'app per poterne "
-                      "aggiungere una.",
-                      style: Theme.of(context).textTheme.body1,
-                    ),
-                  ],
-                )),
-          );
-        },
-      );
-    });
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Da qui è possibile aggiungere segnalare situazioni "
+              "particolari degne di nota. L'annotazione verrà applicata "
+              "alla tua posizione corrente, per cui è necessario autorizzare "
+              "l'accesso alla localizzazione da parte dell'app per poterne "
+              "aggiungere una.",
+          style: Theme.of(context).textTheme.body1,
+        ),
+      ],
+    ));
   }
 }

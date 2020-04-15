@@ -38,9 +38,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
         widget.selectPin(widget.locations[index]);
       },
       itemBuilder: (BuildContext context, int itemIndex) {
-        return Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
+        return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -222,7 +220,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                     ],
                   ),
               ],
-            ));
+            );
       },
     );
   }
