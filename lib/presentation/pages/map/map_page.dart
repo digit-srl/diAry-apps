@@ -22,6 +22,7 @@ import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
@@ -441,6 +442,14 @@ class _MapPageState extends State<MapPage>
               imageConfiguration, 'assets/selected_pin.png')
           .then(_updateSelectedBitmap);
     }
+
+    if (genericPinMarkerIcon == null) {
+      final ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context);
+      // TODO sostituire con immagine corretta
+      BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/wom_pin.png')
+          .then(_updateGenericPinWithNoteBitmap);
+    }
   }
 
   void _updateCurrentBitmap(BitmapDescriptor bitmap) {
@@ -464,6 +473,12 @@ class _MapPageState extends State<MapPage>
   void _updateAnnotationBitmap(BitmapDescriptor bitmap) {
     setState(() {
       annotationPositionMarkerIcon = bitmap;
+    });
+  }
+
+  void _updateGenericPinWithNoteBitmap(BitmapDescriptor bitmap) {
+    setState(() {
+      genericPinMarkerIcon = bitmap;
     });
   }
 
@@ -541,9 +556,12 @@ class _MapPageState extends State<MapPage>
           continue;
         }
         final MarkerId markerId = MarkerId(location.uuid);
+        final icon = Hive.box<String>('pinNotes').containsKey(location.uuid)
+            ? genericPinMarkerIcon
+            : pinPositionMarkerIcon;
         final Marker marker = Marker(
           markerId: markerId,
-          icon: pinPositionMarkerIcon,
+          icon: icon,
           onTap: () => _onLocationTap(location),
           position: LatLng(
             location.coords.latitude,
@@ -632,6 +650,22 @@ class _MapPageState extends State<MapPage>
                 child: InfoPinPageView(
                   locations: dailyLocations,
                   initialPage: initialPage,
+                  onNoteAdded: (String uuid, String text) {
+                    setState(() {
+                      final MarkerId markerId = MarkerId(uuid);
+                      markers[markerId] = markers[markerId]
+                          .copyWith(iconParam: genericPinMarkerIcon);
+                      // zoom in to the selected camera position
+                    });
+                  },
+                  onNoteRemoved: (String uuid) {
+                    setState(() {
+                      final MarkerId markerId = MarkerId(uuid);
+                      markers[markerId] = markers[markerId]
+                          .copyWith(iconParam: pinPositionMarkerIcon);
+                      // zoom in to the selected camera position
+                    });
+                  },
                   selectPin: (location) {
                     Marker marker;
                     setState(() {
@@ -668,44 +702,6 @@ class _MapPageState extends State<MapPage>
         );
       },
     );
-//    await showModalBottomSheet(
-//      context: context,
-//      builder: (context) {
-//        return InfoPinWidget(
-//          locations: dailyLocations,
-//          initialPage: initialPage,
-//          selectPin: (location) {
-//            Marker marker;
-//            setState(() {
-//              markers.removeWhere((k, v) => k.value == selectedPinId);
-//              selectedPinId = '${location.uuid}_tmp';
-//              final MarkerId markerId = MarkerId(selectedPinId);
-//              marker = Marker(
-//                markerId: markerId,
-//                icon: selectedPinMarkerIcon,
-//                anchor: Offset(0.5, 0.5),
-//                position: LatLng(
-//                  location.coords.latitude,
-//                  location.coords.longitude,
-//                ),
-//                zIndex: 0.4,
-//              );
-//              markers[markerId] = marker;
-//              // zoom in to the selected camera position
-//            });
-//            _controller.future.then((controller) {
-//              controller.animateCamera(CameraUpdate.newCameraPosition(
-//                CameraPosition(
-//                  bearing: 0,
-//                  target: marker.position,
-//                  zoom: 19,
-//                ),
-//              ));
-//            });
-//          },
-//        );
-//      },
-//    );
     markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }
