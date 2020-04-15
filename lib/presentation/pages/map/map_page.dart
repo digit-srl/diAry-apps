@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/info_pin/info_annotation_notifier.dart';
@@ -9,13 +8,9 @@ import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
 import 'package:diary/presentation/pages/map/widgets/info_geofence.dart';
-import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
-import 'package:diary/utils/generic_utils.dart';
-import 'package:diary/utils/place_utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -31,7 +26,6 @@ import 'package:provider/provider.dart';
 import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
-import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'widgets/info_pin.dart';
@@ -204,14 +198,11 @@ class _MapPageState extends State<MapPage>
     addMarker(location);
   }
 
-
   void _onGeofenceTap(ColoredGeofence coloredGeofence) {
     print('[MapPage] _onGeofenceTap');
 
     BottomSheets.showMapBottomSheet(
-        context,
-        InfoGeofenceWidget(coloredGeofence: coloredGeofence)
-    );
+        context, InfoGeofenceWidget(coloredGeofence: coloredGeofence));
   }
 
   void _onGeofence(List<ColoredGeofence> geofences) {
@@ -365,17 +356,18 @@ class _MapPageState extends State<MapPage>
 
     if (selectedPinMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
-      createLocalImageConfiguration(context);
+          createLocalImageConfiguration(context);
 
       BitmapDescriptor.fromAssetImage(
-          imageConfiguration, 'assets/selected_pin.png')
+              imageConfiguration, 'assets/selected_pin.png')
           .then(_updateSelectedBitmap);
     }
 
     if (genericPinMarkerIcon == null) {
       final ImageConfiguration imageConfiguration =
           createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/annotated_pin.png')
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/annotated_pin.png')
           .then(_updateGenericPinWithNoteBitmap);
     }
   }
@@ -460,8 +452,7 @@ class _MapPageState extends State<MapPage>
             onMapCreated: (GoogleMapController controller) {
               controller.setMapStyle(AppTheme.isNightModeOn(context)
                   ? _darkMapStyle
-                  : _normalMapStyle
-              );
+                  : _normalMapStyle);
               _controller.complete(controller);
               _loadInitialDailyMarkers();
             },
@@ -661,7 +652,6 @@ class _MapPageState extends State<MapPage>
           ),
           builder: (context, state) => Material(
             color: Theme.of(context).primaryColor,
-
             child: StateNotifierProvider(
               create: (BuildContext context) =>
                   InfoAnnotationNotifier(annotation),
