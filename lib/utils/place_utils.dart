@@ -25,8 +25,6 @@ class PlaceUtils {
                     .removeHomeGeofence();
             }
           },
-        ),
-      ],
     ).show();
   }
 }

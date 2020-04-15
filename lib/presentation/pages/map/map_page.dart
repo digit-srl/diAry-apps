@@ -248,7 +248,7 @@ class _MapPageState extends State<MapPage>
                     GenericButton(
                       text: 'Elimina',
                       onPressed: () async {
-                        final deleted = await PlaceUtils.removePlace(
+                        final deleted = await PlaceUtils.showRemovePlaceAlert(
                             context, coloredGeofence.geofence.identifier);
                         if (deleted) {
                           Navigator.of(context).pop();
