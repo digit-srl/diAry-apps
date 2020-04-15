@@ -74,8 +74,6 @@ class DailyStatsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
-    final bool isDark =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     // misure euristiche, dipendenti dal valore di height
     final _chartSize = Size(height / 3, height / 3);
@@ -322,6 +320,7 @@ class DailyStatsWidget extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(width: 16),
                     Expanded(
                       child: FlatButton(
                         highlightColor: Theme.of(context)

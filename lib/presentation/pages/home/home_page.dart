@@ -3,6 +3,7 @@ import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/upload_stats_notifier.dart';
@@ -30,7 +31,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   ScrollController _controller;
   final double elevationOn = 4;
   final double elevationOff = 0;
@@ -40,12 +40,14 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
-    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(0, 0);
+    Provider.of<RootElevationNotifier>(context, listen: false)
+        .changeElevationIfDifferent(0, 0);
   }
 
   void _scrollListener() {
     double newElevation = _controller.offset > 1 ? elevationOn : elevationOff;
-    Provider.of<RootElevationNotifier>(context, listen: false).changeElevationIfDifferent(0, newElevation);
+    Provider.of<RootElevationNotifier>(context, listen: false)
+        .changeElevationIfDifferent(0, newElevation);
   }
 
   @override
@@ -55,35 +57,32 @@ class _HomePageState extends State<HomePage> {
     _controller?.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ScrollConfiguration(
-          behavior: NoRippleOnScrollBehavior(),
-          child: ListView(
-            controller: _controller,
-            children: <Widget>[
-              SizedBox(
-                // top padding calcolato in relazione alla toolbar (non c'è
-                // bisogno di considerare la statusbar, grazie allo scaffold);
-                // -16 compensa il padding naturale del grafico
-                height: kToolbarHeight - 16,
-              ),
-              DailyStatsWidget(),
-
-//              CarCard(),
-              GpsCard(),
-              TrackingCard(),
-              BetaCard(),
-              // WomCard(),
-              MyPlacesCard(),
-              SizedBox(
-                height: 16,
-              ),
-            ],
-          ),
+        behavior: NoRippleOnScrollBehavior(),
+        child: ListView(
+          controller: _controller,
+          children: <Widget>[
+            SizedBox(
+              // top padding calcolato in relazione alla toolbar (non c'è
+              // bisogno di considerare la statusbar, grazie allo scaffold);
+              // -16 compensa il padding naturale del grafico
+              height: kToolbarHeight - 16,
+            ),
+            DailyStatsWidget(),
+            // CarCard(),
+            GpsCard(),
+            TrackingCard(),
+            BetaCard(),
+            MyPlacesCard(),
+            SizedBox(
+              height: 16,
+            ),
+          ],
         ),
+      ),
       bottomNavigationBar: Material(
         elevation: 16,
         color: Theme.of(context).primaryColor,
@@ -131,9 +130,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     width: 8,
                   ),
-
                   UploadStatsIconButton(),
-
                   IconButton(
                     icon: Icon(
                       CustomIcons.hospital_box_outline,
@@ -141,7 +138,6 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {},
                     tooltip: "Notifica sanitaria... Coming soon!",
                   ),
-
                   IconButton(
                     icon: Icon(Icons.settings),
                     tooltip: "Impostazioni",
@@ -154,7 +150,6 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-
                 ],
               ),
               SizedBox(
@@ -187,83 +182,24 @@ class UploadStatsIconButton extends StatelessWidget {
               ),
             )
           : Icon(
-          isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
-      ),
-
-      onPressed: () => uploadStats(context, response),
+              isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
+            ),
+      onPressed: () => showInfoStatsBottomsheet(context, response),
     );
   }
 
-  uploadStats(BuildContext context, DailyStatsResponse response) async {
+  showInfoStatsBottomsheet(BuildContext context, DailyStatsResponse response) async {
     final dailyStats = await context.read<DayNotifier>().buildDailyStats();
 
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      builder: (context) {
-        return SlidingSheetDialog(
-          elevation: 8,
-          cornerRadius: 16,
-          color: Theme.of(context).primaryColor,
-          duration: Duration(milliseconds: 300),
-          minHeight: MediaQuery.of(context).size.height * 0.9,
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [0.9],
-            positioning: SnapPositioning.relativeToAvailableSpace,
+    BottomSheets.showFullPageBottomSheet(
+        context,
+        StateNotifierProvider(
+          create: (BuildContext context) => 
+              UploadStatsNotifier(dailyStats, response),
+          child: InfoStatsWidget(
+            dailyStats: dailyStats,
           ),
-          builder: (context, state) {
-            return StateNotifierProvider(
-              create: (BuildContext context) =>
-                  UploadStatsNotifier(dailyStats, response),
-              child: Material(
-                color: Theme.of(context).primaryColor,
-                child: InfoStatsWidget(
-                  dailyStats: dailyStats,
-                ),
-              ),
-            );
-          },
-        );
-      },
+        )
     );
-
-//                      either.fold((failure) {
-//                        Alert(
-//                          context: context,
-//                          title: 'Errore',
-//                          desc:
-//                              '${failure is UnknownFailure ? failure.message : failure}',
-//                          buttons: [
-//                            DialogButton(
-//                              child: Text('Ok'),
-//                              onPressed: () {
-//                                Navigator.of(context).pop();
-//                              },
-//                            ),
-//                          ],
-//                        ).show();
-//                      }, (DailyStatsResponse response) {
-//                        Alert(
-//                          context: context,
-//                          title: 'Complimenti',
-//                          desc:
-//                              '${response.womLink} |||| ${response.womPassword}',
-//                          buttons: [
-//                            DialogButton(
-//                              child: Text('Grazie'),
-//                              onPressed: () {
-//                                Navigator.of(context).pop();
-//                              },
-//                            ),
-//                            DialogButton(
-//                              child: Text('Apri WOM Pocket'),
-//                              onPressed: () {
-//                                Navigator.of(context).pop();
-//                              },
-//                            ),
-//                          ],
-//                        ).show();
-//                      });
   }
 }

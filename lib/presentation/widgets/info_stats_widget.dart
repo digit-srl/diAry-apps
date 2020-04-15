@@ -1,5 +1,6 @@
 import 'package:diary/application/upload_stats_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
@@ -15,12 +16,8 @@ class InfoStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return StandardBottomSheetColumn(
+      children: <Widget>[
           Text(
             'Caricamento statistiche',
             style: Theme.of(context).textTheme.headline,
@@ -39,31 +36,55 @@ class InfoStatsWidget extends StatelessWidget {
           SizedBox(
             height: 16,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
+         Column(
               children: <Widget>[
-                StatText('Data ', dailyStats.formattedDate),
-                StatText('Minuti di servizio attivo ',
-                    dailyStats.totalMinutesTracked?.toString()),
-                StatText('Centroide', dailyStats.centroidHash),
-                StatText('Minuti a casa',
-                    dailyStats.locationTracking.minutesAtHome?.toString()),
+                StatText(
+                    'Data',
+                    dailyStats.formattedDate
+                ),
+                StatText(
+                    'Minuti di servizio attivo',
+                    dailyStats.totalMinutesTracked?.toString()
+                ),
+                StatText(
+                    'Centroide: ',
+                    dailyStats.centroidHash
+                ),
+                StatText(
+                    'Minuti a casa',
+                    dailyStats.locationTracking.minutesAtHome?.toString()
+                ),
                 StatText(
                     'Minuti passati in altri miei luoghi',
                     dailyStats.locationTracking.minutesAtOtherKnownLocations
-                        ?.toString()),
-                StatText('Minuti fuori dai miei luoghi',
-                    dailyStats.locationTracking.minutesElsewhere?.toString()),
+                        ?.toString()
+                ),
                 StatText(
-                    'Luoghi visitati: ', dailyStats.locationCount?.toString()),
+                    'Minuti fuori dai miei luoghi',
+                    dailyStats.locationTracking.minutesElsewhere?.toString()
+                ),
                 StatText(
-                    'Numero di annotazioni', dailyStats.eventCount?.toString()),
-                StatText('Campionamenti', dailyStats.sampleCount?.toString()),
-                StatText('Campioni scartati',
-                    dailyStats.discardedSampleCount?.toString()),
-                StatText('Diagonale bb in metri',
-                    dailyStats.boundingBoxDiagonal?.toStringAsFixed(2) ?? '-'),
+                    'Luoghi visitati',
+                    dailyStats.locationCount?.toString()
+                ),
+                StatText(
+                    'Numero di annotazioni',
+                    dailyStats.eventCount?.toString()
+                ),
+                StatText(
+                    'Campionamenti',
+                    dailyStats.sampleCount?.toString(),
+                ),
+                StatText(
+                    'Campioni scartati',
+                    dailyStats.discardedSampleCount?.toString()
+                ),
+                StatText(
+                    'Diagonale bb in metri',
+                    dailyStats.boundingBoxDiagonal?.toStringAsFixed(2),
+                    true
+                ),
+                SizedBox(height: 16),
                 StateNotifierBuilder<UploadStatsState>(
                   stateNotifier: context.read<UploadStatsNotifier>(),
                   builder: (contest, state, child) {
@@ -134,10 +155,8 @@ class InfoStatsWidget extends StatelessWidget {
                   },
                 )
               ],
-            ),
           ),
         ],
-      ),
     );
   }
 
@@ -149,8 +168,9 @@ class InfoStatsWidget extends StatelessWidget {
 class StatText extends StatelessWidget {
   final String label;
   final String value;
+  final bool lastLine;
   final TextStyle textStyle = const TextStyle(fontSize: 18);
-  const StatText(this.label, this.value);
+  const StatText(this.label, this.value, [this.lastLine = false]);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -161,18 +181,19 @@ class StatText extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    label,
+                    label ?? "-",
                     style: Theme.of(context).textTheme.body1,
                   ),
                 ),
-                Text(value,
+                Text(
+                    value  ?? "-",
                     style: Theme.of(context)
                         .textTheme
                         .body2
                         .copyWith(fontWeight: FontWeight.bold))
               ],
             ),
-            Divider()
+            if(!lastLine) Divider()
           ],
         ));
   }

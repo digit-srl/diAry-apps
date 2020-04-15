@@ -8,6 +8,7 @@ import 'package:sliding_sheet/sliding_sheet.dart';
  * standardized bottom sheet templates.
  */
 class BottomSheets {
+
   // generic alert that shows some sort of information in a column. It takes
   // the children of the column as a content. It has not a fixed height, that
   // is adapted to the content
@@ -102,8 +103,7 @@ class BottomSheets {
           );
         },
       );
-    },
-    );
+    });
   }
 }
 
