@@ -136,8 +136,7 @@ class _MainAppBarState extends State<MainAppBar> {
                 }
               ),
               */
-            ]
-        ),
+\            ]),
       ),
     );
   }
@@ -152,22 +151,13 @@ class _MainAppBarState extends State<MainAppBar> {
           onPressed: () {
             context.read<CurrentRootPageNotifier>().changePage(1);
           });
-    } else if (currentPage == 1) {
-      // map page
-      return IconButton(
-          tooltip: "Centra mappa nella tua posizione",
-          icon: Icon(Icons.gps_fixed),
-          onPressed: () {
-            context
-                .read<GpsNotifier>()
-                .getCurrentLoc((location) {}, (error) {});
-          });
     } else {
       // annotation page
       return IconButton(
           tooltip: "Torna alla home",
           icon: Icon(
-              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
+            Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
+          ),
           onPressed: () {
             context.read<CurrentRootPageNotifier>().changePage(0);
           });
@@ -187,12 +177,12 @@ class _MainAppBarState extends State<MainAppBar> {
     } else if (currentPage == 1) {
       // map page
       return IconButton(
-          tooltip: "Torna alla home",
-          icon: Icon(Platform.isAndroid
-              ? Icons.arrow_forward
-              : Icons.arrow_forward_ios),
+          tooltip: "Centra mappa nella tua posizione",
+          icon: Icon(Icons.gps_fixed),
           onPressed: () {
-            context.read<CurrentRootPageNotifier>().changePage(0);
+            context
+                .read<GpsNotifier>()
+                .getCurrentLoc((location) {}, (error) {});
           });
     } else {
       // annotations page
