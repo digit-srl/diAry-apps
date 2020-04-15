@@ -16,36 +16,31 @@ class MainFabButton extends StatelessWidget {
   final Function onMainButtonTap;
   final GlobalKey dialerKey;
 
-  MainFabButton({
-    Key key,
-    this.onMainButtonTap,
-    this.dialerKey,
-    this.bottomPadding
-  });
+  MainFabButton(
+      {Key key, this.onMainButtonTap, this.dialerKey, this.bottomPadding});
 
   bool isOpen = false;
 
   @override
   Widget build(BuildContext context) {
-     // double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
-     // var mediaQueryData = MediaQuery.of(context);
-     // if (_isIPhoneX(mediaQueryData)) {
-     //   // fallback for all non iPhone X
-     //   buttonBottomPadding += 30.0;
-     // }
+    // double buttonBottomPadding = 60.0 + MediaQuery.of(context).padding.bottom;
+    // var mediaQueryData = MediaQuery.of(context);
+    // if (_isIPhoneX(mediaQueryData)) {
+    //   // fallback for all non iPhone X
+    //   buttonBottomPadding += 30.0;
+    // }
     print('[MainFabButton] build');
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
-          //key: dialerKey,
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+          key: dialerKey,
           onMainButtonPressed: onMainButtonTap,
           hasBackground: true,
           parentButtonBackground: Theme.of(context).accentColor,
           orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add),
-          childButtons: _buildMenuItems(context)
-      ),
+          childButtons: _buildMenuItems(context)),
     );
   }
 
@@ -55,11 +50,11 @@ class MainFabButton extends StatelessWidget {
         labelShadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
         hasLabel: true,
         labelText: "Aggiungi luogo",
-        labelColor:  Theme.of(context).textTheme.body2.color,
-        labelBackgroundColor:  Theme.of(context).primaryColor,
+        labelColor: Theme.of(context).textTheme.body2.color,
+        labelBackgroundColor: Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi luogo",
-        // heroTag: null,
+          // heroTag: null,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,
@@ -75,7 +70,7 @@ class MainFabButton extends StatelessWidget {
         labelBackgroundColor: Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi annotazione",
-         // heroTag: null,
+          // heroTag: null,
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Theme.of(context).iconTheme.color,
           mini: true,
