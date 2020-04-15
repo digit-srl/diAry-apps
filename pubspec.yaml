@@ -71,6 +71,7 @@ flutter:
     - assets/diary_logo.png
     - assets/selected_pin.png
     - assets/wom_pocket_logo.png
+    - assets/annotated_pin.png
     - assets/normal_map_style.json
     - assets/dark_map_style.json
 
