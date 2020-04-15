@@ -30,7 +30,9 @@ class _RootPageState extends State<RootPage> {
       value: AppTheme.systemOverlayStyle(context),
 
       child: WillPopScope(
-        onWillPop: () => handleBackButtonPress(context, _currentPage),
+        onWillPop: () {
+          return handleBackButtonWithPages(context, _currentPage);
+        },
         child: Scaffold(
           body: SafeArea(
             bottom: false,
@@ -38,7 +40,6 @@ class _RootPageState extends State<RootPage> {
             child: Stack(
               fit: StackFit.expand,
               children: <Widget>[
-
                 // the indexed stack contains the main screens,
                 // keeping them alive and synchronized
                 IndexedStack(
@@ -67,15 +68,8 @@ class _RootPageState extends State<RootPage> {
 
   // It executes a Navigation.pop() when back button is clicked from map or
   // annotation page, meanwhile it exits app when in home page
-  // todo should also handle custom fab button closing, some problems here
-  Future<bool> handleBackButtonPress(BuildContext context, int currentPage) {
+  Future<bool> handleBackButtonWithPages(BuildContext context, int currentPage) {
     final notInHomeScreen = currentPage != 0;
-
-    // todo problems configuring dialerkey WillPop scope!
-    // final isFabOpen = !dialerKey.currentState.close();
-    // if (isFabOpen) {
-    //   return new Future<bool>.value(true);
-    // } else if ...
 
     if (notInHomeScreen) {
       context.read<CurrentRootPageNotifier>().changePage(0);

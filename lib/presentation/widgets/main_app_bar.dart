@@ -34,7 +34,8 @@ class _MainAppBarState extends State<MainAppBar> {
     print('[RootAppBar] build');
 
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
-    double _elevation = context.watch<ElevationState>().elevations[_currentPage];
+    double _elevation =
+        context.watch<ElevationState>().elevations[_currentPage];
     final dates = Provider.of<LocationNotifier>(context, listen: false).dates;
 
     return SafeArea(
@@ -44,7 +45,8 @@ class _MainAppBarState extends State<MainAppBar> {
       child: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: AppBar(
-            backgroundColor: Theme.of(context).appBarTheme.color.withOpacity(0.85),
+            backgroundColor:
+                Theme.of(context).appBarTheme.color.withOpacity(0.85),
             elevation: _elevation,
             leading: _getLeftIcon(_currentPage),
             title: Row(
@@ -61,9 +63,8 @@ class _MainAppBarState extends State<MainAppBar> {
                   ),
                   label: Text(
                       context.select((DateState value) =>
-                      value.isToday ? 'Oggi' : value.dateFormatted),
-                      style: Theme.of(context).textTheme.title
-                  ),
+                          value.isToday ? 'Oggi' : value.dateFormatted),
+                      style: Theme.of(context).textTheme.title),
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(20.0),
                   ),
@@ -71,13 +72,13 @@ class _MainAppBarState extends State<MainAppBar> {
                       Theme.of(context).textTheme.body1.color.withOpacity(0.3),
                   splashColor:
                       Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-
                   onPressed: () async {
                     final selected = await showDatePicker(
                       context: context,
                       initialDate:
-                      Provider.of<DateState>(context, listen: false)
-                          .selectedDate.withoutMinAndSec(),
+                          Provider.of<DateState>(context, listen: false)
+                              .selectedDate
+                              .withoutMinAndSec(),
                       firstDate: dates.first,
                       lastDate: dates.last.add(Duration(minutes: 1)),
                       selectableDayPredicate: (DateTime date) =>
@@ -86,26 +87,25 @@ class _MainAppBarState extends State<MainAppBar> {
                       // datepicker manual customization (it is a flutter bug):
                       // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
                       builder: (context, child) => Theme(
-                          data: ThemeData(
-                            fontFamily: "Nunito",
-                            primarySwatch: Colors.blueGrey,
-                            primaryColor: Colors.white,
-                            //  HEADER COLOR
-                            accentColor: accentColor,
-                            // DATE COLOR
-                            buttonTheme: ButtonThemeData(
-                              textTheme: ButtonTextTheme.accent,
-                            ),
+                        data: ThemeData(
+                          fontFamily: "Nunito",
+                          primarySwatch: Colors.blueGrey,
+                          primaryColor: Colors.white,
+                          //  HEADER COLOR
+                          accentColor: accentColor,
+                          // DATE COLOR
+                          buttonTheme: ButtonThemeData(
+                            textTheme: ButtonTextTheme.accent,
                           ),
-                          child: child,
                         ),
-                      );
+                        child: child,
+                      ),
+                    );
 
-                      if (selected == null) return;
-                      Provider.of<DayNotifier>(context, listen: false)
-                          .changeDay(selected);
-                    },
-
+                    if (selected == null) return;
+                    Provider.of<DayNotifier>(context, listen: false)
+                        .changeDay(selected);
+                  },
                 ),
                 Expanded(
                   child: Container(),
@@ -151,32 +151,27 @@ class _MainAppBarState extends State<MainAppBar> {
           icon: Icon(CustomIcons.map_outline),
           onPressed: () {
             context.read<CurrentRootPageNotifier>().changePage(1);
-          }
-      );
-
+          });
     } else if (currentPage == 1) {
-        // map page
-        return IconButton(
+      // map page
+      return IconButton(
           tooltip: "Centra mappa nella tua posizione",
           icon: Icon(Icons.gps_fixed),
           onPressed: () {
-            context.read<GpsNotifier>()
+            context
+                .read<GpsNotifier>()
                 .getCurrentLoc((location) {}, (error) {});
-          }
-        );
-
-      } else {
-        // annotation page
-        return IconButton(
+          });
+    } else {
+      // annotation page
+      return IconButton(
           tooltip: "Torna alla home",
           icon: Icon(
-              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios
-          ),
+              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
           onPressed: () {
             context.read<CurrentRootPageNotifier>().changePage(0);
-          }
-        );
-      }
+          });
+    }
   }
 
   // builds the icon on the right
@@ -184,32 +179,27 @@ class _MainAppBarState extends State<MainAppBar> {
     if (currentPage == 0) {
       // home page
       return IconButton(
-        tooltip: "Annotazioni",
-        icon: Icon(CustomIcons.bookmark_multiple_outline),
-        onPressed: () {
-          context.read<CurrentRootPageNotifier>().changePage(2);
-        }
-      );
-
+          tooltip: "Annotazioni",
+          icon: Icon(CustomIcons.bookmark_multiple_outline),
+          onPressed: () {
+            context.read<CurrentRootPageNotifier>().changePage(2);
+          });
     } else if (currentPage == 1) {
       // map page
       return IconButton(
-        tooltip: "Torna alla home",
-        icon: Icon(
-          Platform.isAndroid ? Icons.arrow_forward : Icons.arrow_forward_ios
-        ),
-        onPressed: () {
-          context.read<CurrentRootPageNotifier>().changePage(0);
-        }
-      );
-
+          tooltip: "Torna alla home",
+          icon: Icon(Platform.isAndroid
+              ? Icons.arrow_forward
+              : Icons.arrow_forward_ios),
+          onPressed: () {
+            context.read<CurrentRootPageNotifier>().changePage(0);
+          });
     } else {
       // annotations page
       return IconButton(
-        tooltip: "Cerca annotazione (coming soon!)",
-        icon: Icon(Icons.search),
-        onPressed: () {}
-      );
+          tooltip: "Cerca annotazione (coming soon!)",
+          icon: Icon(Icons.search),
+          onPressed: () {});
     }
   }
 }

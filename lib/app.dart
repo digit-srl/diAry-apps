@@ -135,12 +135,15 @@ class _DiAryAppState extends State<DiAryApp> {
 
         // todo problems configuring dialerkey WillPop scope!
         // home: WillPopScope(
-        //  onWillPop: () {
-        //    final wasOpened = dialerKey.currentState.close();
-        //    print(wasOpened);
-        //    return Future.value(!wasOpened);
+        //  onWillPop: () { 
+        //    return handleBackButtonWithFab(_dialerKey);
         //  },
-        //  child: Scaffold(...)),
+        //  child: Scaffold(
+        //    body: RootPage(),
+        //    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        //    floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+        //  )
+        // ),
 
         home: Scaffold(
           body: RootPage(),
@@ -151,6 +154,19 @@ class _DiAryAppState extends State<DiAryApp> {
     );
   }
 
+  // should handle back button click wje
+  // todo not working! Why?
+  Future<bool> handleBackButtonWithFab(GlobalKey<UnicornDialerState> dialerKey) {
+    final isFabExpanded = dialerKey.currentState.close();
+    print("Handle back button FAB. Expanded? " + isFabExpanded.toString());
+    
+    if(isFabExpanded) {
+      return Future.value(true);
+    } else {
+      return Future.value(false);
+    }
+  }
+  
   @override
   void dispose() {
     serviceNotifier.dispose();
