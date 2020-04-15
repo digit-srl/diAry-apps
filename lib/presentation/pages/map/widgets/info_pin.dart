@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 class InfoPinPageView extends StatefulWidget {
   final List<Location> locations;
   final Function selectPin;
+  final Function onNoteAdded;
+  final Function onNoteRemoved;
   final int initialPage;
 
   InfoPinPageView({
@@ -16,6 +18,8 @@ class InfoPinPageView extends StatefulWidget {
     this.locations,
     this.selectPin,
     this.initialPage,
+    this.onNoteAdded,
+    this.onNoteRemoved,
   }) : super(key: key);
 
   @override
@@ -50,6 +54,8 @@ class _InfoPinPageViewState extends State<InfoPinPageView> {
           index: itemIndex,
           location: widget.locations[itemIndex],
           note: box.get(widget.locations[itemIndex].uuid),
+          onNoteAdded: widget.onNoteAdded,
+          onNoteRemoved: widget.onNoteRemoved,
           onPrevious: () {
             //TODO change to animatedPage
             if (itemIndex > 0) {
@@ -71,16 +77,21 @@ class _InfoPinPageViewState extends State<InfoPinPageView> {
 class InfoPinWidget extends StatefulWidget {
   final Function onNext;
   final Function onPrevious;
+  final Function onNoteAdded;
+  final Function onNoteRemoved;
   final Location location;
   final int index;
   final String note;
+
   const InfoPinWidget(
       {Key key,
       this.onNext,
       this.onPrevious,
       this.location,
       this.index,
-      this.note})
+      this.note,
+      this.onNoteAdded,
+      this.onNoteRemoved})
       : super(key: key);
   @override
   _InfoPinWidgetState createState() => _InfoPinWidgetState();
@@ -264,6 +275,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                           Hive.box<String>('pinNotes')
                               .delete(widget.location.uuid);
                           textController.clear();
+                          widget.onNoteRemoved(widget.location.uuid);
                         } else {
                           editingMode = !editingMode;
                         }
@@ -290,10 +302,11 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                     ? 'Salva nota'
                     : isThereNote ? 'Modifica Nota' : 'Aggiungi Nota',
                 color: editingMode ? Colors.green : null,
-                onPressed: () {
+                onPressed: () async {
                   if (editingMode && text.isNotEmpty) {
-                    Hive.box<String>('pinNotes')
+                    await Hive.box<String>('pinNotes')
                         .put(widget.location.uuid, text);
+                    widget.onNoteAdded(widget.location.uuid, text);
                   }
                   setState(() {
                     editingMode = !editingMode;

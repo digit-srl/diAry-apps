@@ -19,6 +19,7 @@ BitmapDescriptor currentPositionMarkerIcon;
 BitmapDescriptor annotationPositionMarkerIcon;
 BitmapDescriptor pinPositionMarkerIcon;
 BitmapDescriptor selectedPinMarkerIcon;
+BitmapDescriptor genericPinMarkerIcon;
 
 FirebaseAnalytics analytics = FirebaseAnalytics();
 
