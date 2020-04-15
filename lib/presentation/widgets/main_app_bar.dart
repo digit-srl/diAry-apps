@@ -45,77 +45,76 @@ class _MainAppBarState extends State<MainAppBar> {
       child: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: AppBar(
-            backgroundColor:
-                Theme.of(context).appBarTheme.color.withOpacity(0.85),
-            elevation: _elevation,
-            leading: _getLeftIcon(_currentPage),
-            title: Row(
-              children: <Widget>[
-                // Expanded container on left and right of the calendar button
-                // maker the button centered without expanding
-                Expanded(
-                  child: Container(),
+          backgroundColor:
+              Theme.of(context).appBarTheme.color.withOpacity(0.85),
+          elevation: _elevation,
+          leading: _getLeftIcon(_currentPage),
+          title: Row(
+            children: <Widget>[
+              // Expanded container on left and right of the calendar button
+              // maker the button centered without expanding
+              Expanded(
+                child: Container(),
+              ),
+              FlatButton.icon(
+                icon: Icon(
+                  CustomIcons.calendar_outline,
+                  color: Theme.of(context).iconTheme.color,
                 ),
-                FlatButton.icon(
-                  icon: Icon(
-                    CustomIcons.calendar_outline,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  label: Text(
-                      context.select((DateState value) =>
-                          value.isToday ? 'Oggi' : value.dateFormatted),
-                      style: Theme.of(context).textTheme.title),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(20.0),
-                  ),
-                  highlightColor:
-                      Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                  splashColor:
-                      Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-                  onPressed: () async {
-                    final selected = await showDatePicker(
-                      context: context,
-                      initialDate:
-                          Provider.of<DateState>(context, listen: false)
-                              .selectedDate
-                              .withoutMinAndSec(),
-                      firstDate: dates.first,
-                      lastDate: dates.last.add(Duration(minutes: 1)),
-                      selectableDayPredicate: (DateTime date) =>
-                          dates.contains(date.withoutMinAndSec()),
+                label: Text(
+                    context.select((DateState value) =>
+                        value.isToday ? 'Oggi' : value.dateFormatted),
+                    style: Theme.of(context).textTheme.title),
+                shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(20.0),
+                ),
+                highlightColor:
+                    Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+                splashColor:
+                    Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+                onPressed: () async {
+                  final selected = await showDatePicker(
+                    context: context,
+                    initialDate: Provider.of<DateState>(context, listen: false)
+                        .selectedDate
+                        .withoutMinAndSec(),
+                    firstDate: dates.first,
+                    lastDate: dates.last.add(Duration(minutes: 1)),
+                    selectableDayPredicate: (DateTime date) =>
+                        dates.contains(date.withoutMinAndSec()),
 
-                      // datepicker manual customization (it is a flutter bug):
-                      // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
-                      builder: (context, child) => Theme(
-                        data: ThemeData(
-                          fontFamily: "Nunito",
-                          primarySwatch: Colors.blueGrey,
-                          primaryColor: Colors.white,
-                          //  HEADER COLOR
-                          accentColor: accentColor,
-                          // DATE COLOR
-                          buttonTheme: ButtonThemeData(
-                            textTheme: ButtonTextTheme.accent,
-                          ),
+                    // datepicker manual customization (it is a flutter bug):
+                    // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
+                    builder: (context, child) => Theme(
+                      data: ThemeData(
+                        fontFamily: "Nunito",
+                        primarySwatch: Colors.blueGrey,
+                        primaryColor: Colors.white,
+                        //  HEADER COLOR
+                        accentColor: accentColor,
+                        // DATE COLOR
+                        buttonTheme: ButtonThemeData(
+                          textTheme: ButtonTextTheme.accent,
                         ),
-                        child: child,
                       ),
-                    );
+                      child: child,
+                    ),
+                  );
 
-                    if (selected == null) return;
-                    Provider.of<DayNotifier>(context, listen: false)
-                        .changeDay(selected);
-                  },
-                ),
-                Expanded(
-                  child: Container(),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              _getRightIcon(_currentPage)
+                  if (selected == null) return;
+                  Provider.of<DayNotifier>(context, listen: false)
+                      .changeDay(selected);
+                },
+              ),
+              Expanded(
+                child: Container(),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            _getRightIcon(_currentPage)
 
-              /*
+            /*
               // todo uncomment for debug actions like fake gps
               IconButton(
                 icon: Icon(Icons.change_history),
@@ -136,7 +135,8 @@ class _MainAppBarState extends State<MainAppBar> {
                 }
               ),
               */
-\            ]),
+          ],
+        ),
       ),
     );
   }
