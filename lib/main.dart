@@ -112,7 +112,7 @@ void main() async {
     // DevicePreview(
     //   enabled: !kReleaseMode,
     //   builder: (context) =>
-    //     MyDayApp(locationsPerDate: locationsPerDate, days: days),
+    //     DiAryApp(locationsPerDate: locationsPerDate, days: days),
     // ),
   );
 }
