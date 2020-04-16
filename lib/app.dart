@@ -127,8 +127,6 @@ class _DiAryAppState extends State<DiAryApp> {
         title: 'diAry',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme, // <--- Handles dark theme
-
-        // todo problems configuring dialerkey WillPop scope!
         home: WillPopScope(
           onWillPop: () {
             return handleBackButtonWithFab(_dialerKey);

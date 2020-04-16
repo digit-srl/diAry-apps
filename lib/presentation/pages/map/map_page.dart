@@ -1,13 +1,16 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/info_pin/info_annotation_notifier.dart';
+import 'package:diary/application/info_pin/info_annotation_state.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
 import 'package:diary/presentation/pages/map/widgets/info_geofence.dart';
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
@@ -630,32 +633,52 @@ class _MapPageState extends State<MapPage>
     setState(() {});
   }
 
-  _onAnnotationTap(Annotation annotation) {
+  _onAnnotationTap(Annotation annotation) async {
+    final notifier = InfoAnnotationNotifier(annotation);
+
     // todo work in progress for new interface!
     print('[MapPage] _onAnnotationTap');
-    showSlidingBottomSheet(
+    await showSlidingBottomSheet(
       context,
       useRootNavigator: true,
+      parentBuilder: (context, sheet) {
+        return Theme(
+          data: Theme.of(context),
+          child: sheet,
+        );
+      },
       builder: (context) {
         return SlidingSheetDialog(
           elevation: 8,
           backdropColor: Colors.transparent,
           cornerRadius: 16,
           color: Theme.of(context).primaryColor,
-
           duration: Duration(milliseconds: 300),
-//          minHeight: MediaQuery.of(context).size.height * 0.9,
           snapSpec: const SnapSpec(
             snap: true,
-            snappings: [0.9],
+            snappings: [
+              SnapSpec.headerFooterSnap,
+              0.6,
+              1.0,
+            ],
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
+//          listener: (sheetState) {
+//            print(sheetState.toString());
+//          },
+          headerBuilder: (context, state) => StateNotifierProvider.value(
+            value: notifier,
+            child: InfoAnnotationHeader(),
+          ),
+          footerBuilder: (ctx, state) => StateNotifierProvider.value(
+            value: notifier,
+            child: InfoAnnotationFooter(),
+          ),
           builder: (context, state) => Material(
-            color: Theme.of(context).primaryColor,
-            child: StateNotifierProvider(
-              create: (BuildContext context) =>
-                  InfoAnnotationNotifier(annotation),
-              child: InfoAnnotationWidget(
+            type: MaterialType.transparency,
+            child: StateNotifierProvider.value(
+              value: notifier,
+              child: InfoAnnotation(
                 annotation: annotation,
               ),
             ),
@@ -663,6 +686,8 @@ class _MapPageState extends State<MapPage>
         );
       },
     );
+
+    notifier.dispose();
 
 //    showModalBottomSheet(
 //      context: context,

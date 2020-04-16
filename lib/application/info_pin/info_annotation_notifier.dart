@@ -30,9 +30,13 @@ class InfoAnnotationNotifier extends StateNotifier<InfoAnnotationState>
     state = Editing(annotation.title);
   }
 
-  void saveNewAnnotationText(String text) {
-    annotation.title = text;
-    annotation.save();
+  String tmpText;
+
+  void saveNewAnnotationText() {
+    if (tmpText != null && tmpText != annotation.title && tmpText.isNotEmpty) {
+      annotation.title = tmpText;
+      annotation.save();
+    }
     state = Initial(annotation);
   }
 }

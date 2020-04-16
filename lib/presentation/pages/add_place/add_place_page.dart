@@ -27,7 +27,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../main.dart';
 
-
 class AddPlacePage extends StatefulWidget {
   final LatLng location;
   final Place place;
@@ -113,7 +112,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
 
   @override
   Widget build(BuildContext context) {
-
 //    _createMarkerImageFromAsset(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -159,13 +157,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     ),
                     Expanded(
                       child: TextField(
-                          cursorColor: Theme.of(context).iconTheme.color,
-                          controller: _placeEditingController,
-                          expands: false,
-                          maxLines: 1,
-                          maxLength: 20,
-                          style: Theme.of(context).textTheme.body2,
-                          decoration: InputDecoration(
+                        cursorColor: Theme.of(context).iconTheme.color,
+                        controller: _placeEditingController,
+                        expands: false,
+                        maxLines: 1,
+                        maxLength: 20,
+                        style: Theme.of(context).textTheme.body2,
+                        decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
@@ -176,23 +174,26 @@ class _AddPlacePageState extends State<AddPlacePage> {
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.secondary,
                             hintText: "Inserisci qui il nome del luogo",
-                            hintStyle: Theme.of(context).textTheme.body1,
+                            hintStyle:
+                                Theme.of(context).textTheme.body1.copyWith(
+                                      color: Color(0xFFC0CCDA),
+                                    ),
                             //counterText: "",
-                            counterStyle: Theme.of(context).textTheme.caption
-                          ),
-                          onChanged: (text) {
-                            setState(() {
-                              _canSave = (text.trim().length >= 3 && _lastLocation != null);
-                            });
-                          },
-                          onSubmitted: (text) {
-                            if (_canSave) _addGeofence();
-                          },
-                        ),
+                            counterStyle: Theme.of(context).textTheme.caption),
+                        onChanged: (text) {
+                          setState(() {
+                            _canSave = (text.trim().length >= 3 &&
+                                _lastLocation != null);
+                          });
+                        },
+                        onSubmitted: (text) {
+                          if (_canSave) _addGeofence();
+                        },
                       ),
+                    ),
                   ],
                 ),
-                SizedBox( height: 4 ),
+                SizedBox(height: 4),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -207,14 +208,15 @@ class _AddPlacePageState extends State<AddPlacePage> {
                             textAlign: TextAlign.left,
                             style: Theme.of(context).textTheme.subhead,
                           ),
-
                         ],
                       ),
                     ),
                     Switch(
                       activeColor: Theme.of(context).iconTheme.color,
-                      inactiveThumbColor: Theme.of(context).colorScheme.secondary,
-                      inactiveTrackColor: Theme.of(context).colorScheme.secondary,
+                      inactiveThumbColor:
+                          Theme.of(context).colorScheme.secondary,
+                      inactiveTrackColor:
+                          Theme.of(context).colorScheme.secondary,
                       value: _isHome,
                       onChanged: _isHomeEnabled
                           ? (bool value) {
@@ -229,7 +231,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
                 SizedBox(
                   height: 4,
                 ),
-
                 Text(
                   "Raggio",
                   textAlign: TextAlign.left,
@@ -242,7 +243,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
                   label: '${_radius.toInt()} metri',
                   value: _radius,
                   onChanged: (value) {
-                    setState(() {
+                    setState(
+                      () {
                         this._radius = value;
                         _addCircle(_lastLocation);
                       },
@@ -265,14 +267,15 @@ class _AddPlacePageState extends State<AddPlacePage> {
         children: <Widget>[
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
+              target:
+                  _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
               zoom: _zoom,
             ),
-           // onCameraMove: (cameraPosition) {
-           //   setState(() {
-           //   addCircle(cameraPosition.target);
-           // });
-           //},
+            // onCameraMove: (cameraPosition) {
+            //   setState(() {
+            //   addCircle(cameraPosition.target);
+            // });
+            //},
             onMapCreated: (controller) {
               controller.setMapStyle(AppTheme.isNightModeOn(context)
                   ? _darkMapStyle
@@ -309,9 +312,9 @@ class _AddPlacePageState extends State<AddPlacePage> {
       });
 
       _showLocationErrorSnackbar();
-    } else if (Provider.of<GpsState>(context, listen: false).manualPositionDetection) {
+    } else if (Provider.of<GpsState>(context, listen: false)
+        .manualPositionDetection) {
       _showWaitPositionSnackbar();
-
     } else {
       _getCurrentLocationAndUpdateMap();
     }
@@ -383,14 +386,16 @@ class _AddPlacePageState extends State<AddPlacePage> {
           }
           Navigator.of(context).pop();
         } else {
-          Alerts.showAlertWithSingleAction(context, "Si è verificato un errore!");
+          Alerts.showAlertWithSingleAction(
+              context, "Si è verificato un errore!");
         }
       },
     ).catchError(
       (error) {
         print('[addGeofence] ERROR: $error');
-        Alerts.showAlertWithSingleAction(context, "Si è verificato un errore!", error.toString());
-        },
+        Alerts.showAlertWithSingleAction(
+            context, "Si è verificato un errore!", error.toString());
+      },
     );
   }
 
@@ -418,35 +423,36 @@ class _AddPlacePageState extends State<AddPlacePage> {
   void _selectColor() async {
     Color tmpColor = _currentColor;
     Alerts.showAlertWithContent(
-        context,
-        "Scegli il colore",
-        BlockPicker(
-          onColorChanged: (Color value) {
-            tmpColor = value;
-          },
-          pickerColor: tmpColor,
-          layoutBuilder:
-              (BuildContext context, List<Color> colors, PickerItem child) {
-            Orientation orientation = MediaQuery.of(context).orientation;
-            return Container(
-              width: orientation == Orientation.portrait ? 300.0 : 300.0,
-              height: orientation == Orientation.portrait ? 240.0 : 200.0,
-              child: GridView.count(
-                crossAxisCount: orientation == Orientation.portrait ? 5 : 6,
-                crossAxisSpacing: 5.0,
-                mainAxisSpacing: 5.0,
-                children: colors.map((Color color) => child(color)).toList(),
-              ),
-            );
-          },
-        ),
-        "Conferma",
-          () {
+      context,
+      "Scegli il colore",
+      BlockPicker(
+        onColorChanged: (Color value) {
+          tmpColor = value;
+        },
+        pickerColor: tmpColor,
+        layoutBuilder:
+            (BuildContext context, List<Color> colors, PickerItem child) {
+          Orientation orientation = MediaQuery.of(context).orientation;
+          return Container(
+            width: orientation == Orientation.portrait ? 300.0 : 300.0,
+            height: orientation == Orientation.portrait ? 240.0 : 200.0,
+            child: GridView.count(
+              crossAxisCount: orientation == Orientation.portrait ? 5 : 6,
+              crossAxisSpacing: 5.0,
+              mainAxisSpacing: 5.0,
+              children: colors.map((Color color) => child(color)).toList(),
+            ),
+          );
+        },
+      ),
+      "Conferma",
+      () {
         setState(() {
           this._currentColor = tmpColor;
           _addCircle(_lastLocation);
         });
-      },);
+      },
+    );
   }
 
   void _getCurrentLocationAndUpdateMap() {
@@ -455,7 +461,6 @@ class _AddPlacePageState extends State<AddPlacePage> {
       setState(() {
         _locationError = "No gps";
       });
-
     } else {
       setState(() {
         _locationError = null;
@@ -470,9 +475,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
         // _addPin(lastLocation);
         _addCircle(_lastLocation);
         setState(() {
-          _canSave = _placeEditingController.text
-              .trim()
-              .length >= 3;
+          _canSave = _placeEditingController.text.trim().length >= 3;
         });
       }, (ex) {
         _locationError = ex.toString();
@@ -511,68 +514,66 @@ class _AddPlacePageState extends State<AddPlacePage> {
     }
   }
 
-
   void _showLocationErrorSnackbar() {
     print('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
         'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
         _gpsClick,
-        'Riprova'
-    );
+        'Riprova');
   }
 
   void _showWaitPositionSnackbar() {
     print('[AddAnnotationPage] Show short text Snackbar');
-    _showSnackbar("Rilevamento della posizione in corso. Attendine la terminazione.");
+    _showSnackbar(
+        "Rilevamento della posizione in corso. Attendine la terminazione.");
   }
-
 
   void _showShortTextSnackbar() {
     print('[AddPlacePage] Show short text Snackbar');
-    _showSnackbar("Il nome del luogo deve avere una lunghezza minima di 3 caratteri.");
+    _showSnackbar(
+        "Il nome del luogo deve avere una lunghezza minima di 3 caratteri.");
   }
 
   void _showSnackbar(String text, [Function action, String actionText]) {
     _scaffoldKey.currentState.hideCurrentSnackBar();
     final snackBar = SnackBar(
-
         content: Text(
           text,
           //style: Theme.of(context).textTheme.body2,
         ),
-
         action: (action != null && actionText != null)
             ? SnackBarAction(
-               label: actionText,
-               onPressed: action,
+                label: actionText,
+                onPressed: action,
               )
-            : null
-    );
+            : null);
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   void _showHelper(BuildContext context) async {
     print('[AddPlacePage] Show helper');
-    BottomSheets.showInfoBottomSheet(context, StandardBottomSheetColumn(
-      children: <Widget>[
-        Text(
-          "Cos'è questa schermata?",
-          style: Theme.of(context).textTheme.headline,
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Text(
-          "Da qui è possibile aggiungere o modificare un luogo, così "
+    BottomSheets.showInfoBottomSheet(
+        context,
+        StandardBottomSheetColumn(
+          children: <Widget>[
+            Text(
+              "Cos'è questa schermata?",
+              style: Theme.of(context).textTheme.headline,
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              "Da qui è possibile aggiungere o modificare un luogo, così "
               "da rendere più preciso l'operato dell'app. Posiziona il "
               "luogo premendo in un qualunque punto nella mappa. Puoi "
               "inoltre sceglierne il nome, il colore con quale "
               "visualizzarlo nella mappa, il raggio, e specificare se è "
               "la tua abitazione principale. Passando più tempo nella tua "
               "abitazione principale, otterrai un maggior numero di WOM.",
-          style: Theme.of(context).textTheme.body1,
-        ),
-      ],
-    ));
+              style: Theme.of(context).textTheme.body1,
+            ),
+          ],
+        ));
   }
 }

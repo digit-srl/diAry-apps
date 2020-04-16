@@ -52,21 +52,21 @@ class DailyStatsLegend extends StatelessWidget {
                 height: 8,
               ),
               Text(
-                "L'anello più esterno del grafico mostra gli spostamenti della giornata. Il colore blu rappresenta un generico spostamento.",
+                'L\'anello più esterno del grafico mostra gli spostamenti della giornata. Il colore blu rappresenta un generico spostamento.',
                 style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
-                "L'anello più interno mostra le segnalazioni piazzate durante la giornata.",
+                'L\'anello più interno mostra le segnalazioni piazzate durante la giornata.',
                 style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
-                "L'anello centrale del grafico mostra gli i luoghi nei quali si è sostato. Nella giornata di riferimento, si è passato per i seguenti luoghi:",
+                'L\'anello intermedio mostra i luoghi nei quali si è sostato nel corso della giornata, elencati nella seguente legenda:',
                 style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(
@@ -90,14 +90,15 @@ class DailyStatsLegend extends StatelessWidget {
                             title: place.name,
                             isHome: place.isHome,
                             pinColor: Color(place.color),
-                            geoRadius: "Raggio: " +
+                            geoRadius: 'Raggio: ' +
                                 place.radius.toInt().toString() +
-                                " metri",
+                                ' metri',
                             lastLine: place == places.last,
                             location:
                                 'Lat: ${place.latitude.toStringAsFixed(2)} Long: ${place.longitude.toStringAsFixed(2)}',
                             onRemove: () {
-                              PlaceUtils.showRemovePlaceAlert(context, place.identifier);
+                              PlaceUtils.showRemovePlaceAlert(
+                                  context, place.identifier);
                             },
                           )
                     ],
@@ -114,7 +115,7 @@ class DailyStatsLegend extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(16),
                       child: Text(
-                        "Non ci sono luoghi da visualizzare per questa giornata.",
+                        'Non ci sono luoghi da visualizzare per questa giornata.',
                         style: Theme.of(context).textTheme.body1,
                         textAlign: TextAlign.center,
                       ),

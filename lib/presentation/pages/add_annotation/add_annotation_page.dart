@@ -120,7 +120,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
                       ),
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.secondary,
-                      hintStyle: Theme.of(context).textTheme.body1,
+                      hintStyle: Theme.of(context).textTheme.body1.copyWith(
+                            color: Color(0xFFC0CCDA),
+                          ),
                       hintText:
                           "Che episodio desideri segnalare? Descrivilo in questo box.",
                     ),
@@ -159,8 +161,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             onMapCreated: (controller) {
               controller.setMapStyle(AppTheme.isNightModeOn(context)
                   ? _darkMapStyle
-                  : _normalMapStyle
-              );
+                  : _normalMapStyle);
               _controller.complete(controller);
             },
             markers: _markers,
@@ -325,24 +326,26 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   void _showHelper() async {
     print('[AddAnnotationPage] Show helper');
 
-    BottomSheets.showInfoBottomSheet(context, StandardBottomSheetColumn(
-      children: <Widget>[
-        Text(
-          "Cos'è questa schermata?",
-          style: Theme.of(context).textTheme.headline,
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Text(
-          "Da qui è possibile aggiungere segnalare situazioni "
+    BottomSheets.showInfoBottomSheet(
+        context,
+        StandardBottomSheetColumn(
+          children: <Widget>[
+            Text(
+              "Cos'è questa schermata?",
+              style: Theme.of(context).textTheme.headline,
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              "Da qui è possibile aggiungere segnalare situazioni "
               "particolari degne di nota. L'annotazione verrà applicata "
               "alla tua posizione corrente, per cui è necessario autorizzare "
               "l'accesso alla localizzazione da parte dell'app per poterne "
               "aggiungere una.",
-          style: Theme.of(context).textTheme.body1,
-        ),
-      ],
-    ));
+              style: Theme.of(context).textTheme.body1,
+            ),
+          ],
+        ));
   }
 }

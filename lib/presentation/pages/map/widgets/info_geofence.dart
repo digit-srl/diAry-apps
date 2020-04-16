@@ -34,39 +34,38 @@ class InfoGeofenceWidget extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Container(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: AutoSizeText(
-                    "Luogo",
-                    maxLines: 1,
-                    style: Theme.of(context).textTheme.headline,
-                  )),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: AutoSizeText(
+                  coloredGeofence.name,
+                  maxLines: 1,
+                  style: Theme.of(context).textTheme.headline,
+                ),
+              ),
             ),
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () async {
-                /* todo edit geofence action here
-                final place = Hive.box<Place>('places')
-                    .get(coloredGeofence.geofence.identifier);
-
-                await Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            AddPlacePage(place: place)
-                    )
-                );
-                */
-              },
-              tooltip: "Modifica (coming soon!)",
-            ),
+//            IconButton(
+//              icon: Icon(Icons.edit),
+//              onPressed: () async {
+//                /* todo edit geofence action here
+//                final place = Hive.box<Place>('places')
+//                    .get(coloredGeofence.geofence.identifier);
+//
+//                await Navigator.of(context).push(
+//                    MaterialPageRoute(
+//                        builder: (BuildContext context) =>
+//                            AddPlacePage(place: place)
+//                    )
+//                );
+//                */
+//              },
+//              tooltip: "Modifica (coming soon!)",
+//            ),
             IconButton(
                 icon: Icon(CustomIcons.trash_can_outline),
-                tooltip: "Elimina",
+                tooltip: 'Elimina',
                 onPressed: () async {
                   await PlaceUtils.showRemovePlaceAlert(
-                      context,
-                      coloredGeofence.geofence.identifier
-                  );
+                      context, coloredGeofence.geofence.identifier);
                   // chiude il bottomsheet
                   Navigator.pop(context);
                 }),
@@ -80,11 +79,11 @@ class InfoGeofenceWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
               child: Icon(
-                Icons.message,
+                Icons.gps_fixed,
               ),
             ),
             Text(
-              "Nome del luogo: " + coloredGeofence.name,
+              'Lat: ${coloredGeofence.geofence.latitude?.toStringAsFixed(2)}, Long:  ${coloredGeofence.geofence.longitude?.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.body1,
             ),
           ],

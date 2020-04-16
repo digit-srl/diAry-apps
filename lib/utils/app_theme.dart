@@ -4,31 +4,25 @@ import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 /*
- * Static class that implements the specifics of light and dark theme, and 
+ * Static class that implements the specifics of light and dark theme, and
  * groups some theme-specific features such as SystemUiOverlayStyle.
  */
 class AppTheme {
-
   static bool isNightModeOn(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
   }
 
-
   static SystemUiOverlayStyle systemOverlayStyle(BuildContext context) {
     return SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarBrightness: isNightModeOn(context)
-          ? Brightness.dark
-          : Brightness.light,
-      statusBarIconBrightness: isNightModeOn(context)
-          ? Brightness.light
-          : Brightness.dark,
+      statusBarBrightness:
+          isNightModeOn(context) ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness:
+          isNightModeOn(context) ? Brightness.light : Brightness.dark,
       systemNavigationBarColor: Theme.of(context).primaryColor,
-      systemNavigationBarIconBrightness: isNightModeOn(context)
-          ? Brightness.light
-          : Brightness.dark,
+      systemNavigationBarIconBrightness:
+          isNightModeOn(context) ? Brightness.light : Brightness.dark,
     );
   }
 
@@ -38,36 +32,26 @@ class AppTheme {
     accentColor: accentColor,
     accentColorBrightness: Brightness.dark,
     fontFamily: 'Nunito',
-
     appBarTheme: AppBarTheme(
         color: Colors.white,
         iconTheme: IconThemeData(color: accentColor),
         actionsIconTheme: IconThemeData(color: accentColor),
-        brightness: Brightness.light
-    ),
-
+        brightness: Brightness.light),
     colorScheme: ColorScheme.light(
-        secondary: baseCard,
-        secondaryVariant: deactivatedCard
-    ),
-
+        secondary: baseCard, secondaryVariant: deactivatedCard),
     cardTheme: CardTheme(
       color: baseCard,
     ),
-
     iconTheme: IconThemeData(
       color: accentColor,
     ),
-
     accentIconTheme: IconThemeData(
       color: Colors.white,
     ),
-
     snackBarTheme: SnackBarThemeData(
       contentTextStyle: secondaryStyleLight,
       actionTextColor: Colors.white,
     ),
-
     sliderTheme: SliderThemeData(
       trackShape: CustomTrackShape(),
       activeTrackColor: accentColor,
@@ -78,16 +62,14 @@ class AppTheme {
       overlappingShapeStrokeColor: accentColor,
       valueIndicatorColor: accentColor,
     ),
-
     textTheme: TextTheme(
-      title: appBarTitleStyle,
-      headline: headlineStyle,
-      subhead: primaryStyle,
-      body1: secondaryStyle,
-      body2: secondaryStyleDarker,
-      caption: captionStyle,
-      button: buttonTextStyle
-    ),
+        title: appBarTitleStyle,
+        headline: headlineStyle,
+        subhead: primaryStyle,
+        body1: secondaryStyle,
+        body2: secondaryStyleDarker,
+        caption: captionStyle,
+        button: buttonTextStyle),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -96,39 +78,29 @@ class AppTheme {
     accentColor: accentColor,
     accentColorBrightness: Brightness.dark,
     fontFamily: 'Nunito',
-
     appBarTheme: AppBarTheme(
-      color: Colors.black,
-      iconTheme: IconThemeData(color: Colors.white,),
-      actionsIconTheme: IconThemeData(color: Colors.white),
-      brightness: Brightness.dark
-    ),
-
+        color: Colors.black,
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        actionsIconTheme: IconThemeData(color: Colors.white),
+        brightness: Brightness.dark),
     colorScheme: ColorScheme.light(
-        secondary: baseCardDark,
-        secondaryVariant: deactivatedCardDark
-    ),
-
+        secondary: baseCardDark, secondaryVariant: deactivatedCardDark),
     cardTheme: CardTheme(
       color: baseCardDark,
     ),
-
     iconTheme: IconThemeData(
       color: Colors.white,
     ),
-
     accentIconTheme: IconThemeData(
       color: Colors.white,
     ),
-
     dividerColor: Colors.grey,
-
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: Colors.black,
-      contentTextStyle: secondaryStyleLight,
-      actionTextColor: Colors.white
-    ),
-
+        backgroundColor: Colors.black,
+        contentTextStyle: secondaryStyleLight,
+        actionTextColor: Colors.white),
     sliderTheme: SliderThemeData(
       trackShape: CustomTrackShape(),
       activeTrackColor: Colors.white,
@@ -139,15 +111,13 @@ class AppTheme {
       overlappingShapeStrokeColor: accentColor,
       valueIndicatorColor: accentColor,
     ),
-
     textTheme: TextTheme(
-      title: appBarTitleStyleLight,
-      headline: headlineStyleLight,
-      subhead: primaryStyleLight,
-      body1: secondaryStyleLight,
-      body2: secondaryStyleLight,
-      caption: captionStyleLight,
-      button: buttonTextStyle
-    ),
+        title: appBarTitleStyleLight,
+        headline: headlineStyleLight,
+        subhead: primaryStyleLight,
+        body1: secondaryStyleLight,
+        body2: secondaryStyleLight,
+        caption: captionStyleLight,
+        button: buttonTextStyle),
   );
 }

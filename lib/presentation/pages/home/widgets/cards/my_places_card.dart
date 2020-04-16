@@ -44,7 +44,7 @@ class MyPlacesCard extends StatelessWidget {
                       maxLines: 1,
                       style: Theme.of(context).textTheme.headline),
                   Text(
-                      "Vengono qua visualizzati tutti i luoghi che hai aggiunto alla mappa.",
+                      'Lista di tutti i luoghi attualmente annotati sulla mappa.',
                       textAlign: TextAlign.start,
                       style: Theme.of(context).textTheme.body1),
                   Container(
@@ -83,16 +83,16 @@ class PlaceRowLegend extends StatelessWidget {
   final bool lastLine;
   final bool isHome;
 
-  const PlaceRowLegend({
-    Key key,
-    this.title,
-    this.pinColor,
-    this.location,
-    this.geoRadius,
-    this.onRemove,
-    this.lastLine,
-    this.isHome = false
-  }) : super(key: key);
+  const PlaceRowLegend(
+      {Key key,
+      this.title,
+      this.pinColor,
+      this.location,
+      this.geoRadius,
+      this.onRemove,
+      this.lastLine,
+      this.isHome = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +100,8 @@ class PlaceRowLegend extends StatelessWidget {
       children: <Widget>[
         InkWell(
           highlightColor:
-          Theme.of(context).textTheme.body1.color.withOpacity(0.3),
-          splashColor:
-          Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+              Theme.of(context).textTheme.body1.color.withOpacity(0.3),
+          splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
           onTap: () {
             print("hey");
             // todo edit place
