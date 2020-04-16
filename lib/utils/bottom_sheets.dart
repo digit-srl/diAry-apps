@@ -41,8 +41,8 @@ class BottomSheets {
     });
   }
 
-  // Bottomsheet for map page. It has a transparent backdrop color
-  // todo not used now! suspended until stable map version
+  // Bottomsheet for map page. It has a transparent backdrop color and a
+  // height fixed to 30% of the device height (to not overlap the marker)
   static showMapBottomSheet(BuildContext context, Widget content, [double height]) async {
     await showSlidingBottomSheet(context, useRootNavigator: true,
         builder: (context) {
@@ -51,11 +51,11 @@ class BottomSheets {
             backdropColor: Colors.transparent,
             cornerRadius: 16,
             color: Theme.of(context).primaryColor,
-            //minHeight: 400,
             duration: Duration(milliseconds: 300),
+            minHeight: 200,
             snapSpec: const SnapSpec(
               snap: true,
-              snappings: [0.4, 0.7, 1.0],
+              snappings: [1],
               positioning: SnapPositioning.relativeToAvailableSpace,
             ),
             builder: (ctx, sheetState) {
