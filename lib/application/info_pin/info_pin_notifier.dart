@@ -3,7 +3,7 @@ import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
-
+import 'package:equatable/equatable.dart';
 import '../annotation_notifier.dart';
 
 class InfoAnnotationNotifier extends StateNotifier<InfoPinState>
@@ -43,7 +43,7 @@ class InfoAnnotationNotifier extends StateNotifier<InfoPinState>
   }
 }
 
-class IndexState {
+class IndexState extends Equatable {
   final int index;
   final Location location;
   final String note;
@@ -53,6 +53,9 @@ class IndexState {
     return IndexState(
         index ?? this.index, location ?? this.location, note ?? this.note);
   }
+
+  @override
+  List<Object> get props => [index, location, note];
 }
 
 class CurrentIndexNotifier extends StateNotifier<IndexState> {
@@ -68,18 +71,29 @@ class CurrentIndexNotifier extends StateNotifier<IndexState> {
   String tmpText;
 
   Future<String> saveNote() async {
-    if (tmpText != null && tmpText.isNotEmpty) {
-      await box.put(state.location.uuid, tmpText);
-      state = state.copyWith(note: tmpText);
-      tmpText = '';
+    try {
+      if (tmpText != null && tmpText.isNotEmpty) {
+        await box.put(state.location.uuid, tmpText);
+        final newState = state.copyWith(note: tmpText);
+        state = newState;
+        tmpText = '';
+      }
+      return state.note;
+    } catch (e) {
+      print('[CurrentIndexNotifier] saveNote  $e');
+      return null;
     }
-    return state.note;
   }
 
   Future<String> removeNote() async {
-    await box.delete(state.location.uuid);
-    state = IndexState(state.index, state.location, null);
-    return state.location.uuid;
+    try {
+      await box.delete(state.location.uuid);
+      state = IndexState(state.index, state.location, null);
+      return state.location.uuid;
+    } catch (e) {
+      print('[CurrentIndexNotifier] removeNote $e');
+      return null;
+    }
   }
 
   goToNextPage() {
@@ -102,7 +116,7 @@ class CurrentIndexNotifier extends StateNotifier<IndexState> {
 
   @override
   set state(IndexState value) {
-    if (value.index == state.index) {
+    if (value == state) {
       return;
     }
     super.state = value;
