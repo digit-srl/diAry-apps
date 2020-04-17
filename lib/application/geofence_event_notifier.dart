@@ -4,6 +4,7 @@ import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 
+import '../main.dart';
 import 'location_notifier.dart';
 
 class GeofenceEventState {
@@ -39,6 +40,9 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
     } catch (ex) {
       Hive.box<String>('logs').add(
           '[ERROR onGeofence] $ex, ${geofenceEvent ?? 'errore lettura GeofenceEvent'}');
+      analytics.logEvent(
+          name: '[GeofenceEventNotifier] _onGeofence',
+          parameters: {'error': ex.toString()});
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/main.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -55,6 +56,27 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
     return locations ?? [];
   }
 
+  List<Location> getDayLocationsWithoutZeroLoc(DateTime date) {
+    try {
+      final dailyLocations = List<Location>.from(locationsPerDate[date]);
+      if (dailyLocations.isNotEmpty) {
+        dailyLocations.removeWhere((location) =>
+            location.coords.latitude == 0.0 &&
+            location.coords.longitude == 0.0 &&
+            (location.event == Event.Off ||
+                location.event == Event.On ||
+                location.event == Event.Geofence));
+      }
+      return dailyLocations;
+    } catch (ex) {
+      print(ex);
+      analytics.logEvent(
+          name: '[LocationNotifier] getDayLocationsWithoutZeroLoc',
+          parameters: {'error': ex.toString()});
+      return [];
+    }
+  }
+
 //  int getTotalPoint(DateTime selectedDate) {
 //    if (!locationsPerDate.containsKey(selectedDate)) {
 //      return selectedDate.isToday() ? liveLocations.length : 0;
@@ -104,8 +126,6 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   void addLocation(Location location) {
     print('[LocationNotifier] total live locations: $location');
 
-    state = LocationState(location);
-
     final date = location.dateTime.withoutMinAndSec();
 
     //aggiorno la map
@@ -113,32 +133,9 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       locationsPerDate[date] = [];
     }
     locationsPerDate[date].add(location);
+    state = LocationState(location);
     read<DayNotifier>().updateDay(location, date);
   }
-
-//  void addLocation(bg.Location location) {
-//    final newLocationDate =
-//        DateTime.tryParse(location.timestamp).toLocal().withoutMinAndSec();
-//    if (!liveLocationsMap.containsKey(newLocationDate)) {
-//      liveLocationsMap[newLocationDate] = <bg.Location>[];
-//    }
-//    liveLocationsMap[newLocationDate].add(location);
-//    print('[LocationNotifier] total live locations: $liveLocationsMap');
-//
-//    state = LocationState(location);
-//
-//    read<DayNotifier>().updateDay(liveLocationsMap);
-//    liveLocationsMap.clear();
-//  }
-
-//  void addNewLocation(bg.Location location) {
-//    liveLocations.add(location);
-//    state = LocationState(location);
-//
-//    liveLocations.sort((a, b) => DateTime.tryParse(a.timestamp)
-//        .compareTo(DateTime.tryParse(b.timestamp)));
-//    read<DayNotifier>().updateDay(liveLocations);
-//  }
 
   void _onLocation(bg.Location location) {
     try {
@@ -150,10 +147,16 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       addLocation(loc);
     } catch (ex) {
       Hive.box<String>('logs').add('[ERROR onLocation] $ex');
+      analytics.logEvent(
+          name: '[LocationNotifier] _onLocation',
+          parameters: {'error': ex.toString()});
     }
   }
 
   void _onLocationError(bg.LocationError error) {
     print('[LocationNotifier] _onLocationError()');
+    analytics.logEvent(
+        name: '[LocationNotifier] _onLocationError',
+        parameters: {'error': error.toString()});
   }
 }

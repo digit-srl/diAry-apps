@@ -112,21 +112,21 @@ class _AnnotationsPageState extends State<AnnotationsPage> {
                       color: Theme.of(context).textTheme.body1.color,
                     ),
                     onTap: () {},
-                    trailing: IconButton(
-                        color: Theme.of(context).iconTheme.color,
-                        icon: Icon(CustomIcons.trash_can_outline),
-                        onPressed: () {
-                          Alerts.showAlertWithPosNegActions(
-                              context,
-                              "Elimina annotazione",
-                              "Sei sicuro di voler eliminare questa annotazione?",
-                              "Sì, elimina", () {
-                            Provider.of<AnnotationNotifier>(
-                                context,
-                                listen: false
-                            ).removeAnnotation(annotation);
-                          });
-                        }),
+//                    trailing: IconButton(
+//                        color: Theme.of(context).iconTheme.color,
+//                        icon: Icon(CustomIcons.trash_can_outline),
+//                        onPressed: () {
+//                          Alerts.showAlertWithPosNegActions(
+//                              context,
+//                              "Elimina annotazione",
+//                              "Sei sicuro di voler eliminare questa annotazione?",
+//                              "Sì, elimina", () {
+//                            Provider.of<AnnotationNotifier>(
+//                                context,
+//                                listen: false
+//                            ).removeAnnotation(annotation);
+//                          });
+//                        }),
                     subtitle: Text(
                       'Ore: ${dateFormat.format(annotation.dateTime)}',
                       style: Theme.of(context).textTheme.body1,

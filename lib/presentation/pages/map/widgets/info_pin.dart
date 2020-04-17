@@ -1,10 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:diary/application/info_pin/info_pin_notifier.dart';
+import 'package:diary/application/info_pin/info_pin_state.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class InfoPinPageView extends StatefulWidget {
   final List<Location> locations;
@@ -12,7 +15,7 @@ class InfoPinPageView extends StatefulWidget {
   final Function onNoteAdded;
   final Function onNoteRemoved;
   final int initialPage;
-
+  final PageController pageController;
   InfoPinPageView({
     Key key,
     this.locations,
@@ -20,6 +23,7 @@ class InfoPinPageView extends StatefulWidget {
     this.initialPage,
     this.onNoteAdded,
     this.onNoteRemoved,
+    this.pageController,
   }) : super(key: key);
 
   @override
@@ -27,16 +31,15 @@ class InfoPinPageView extends StatefulWidget {
 }
 
 class _InfoPinPageViewState extends State<InfoPinPageView> {
-  PageController _pageController;
-
   _InfoPinPageViewState();
 
   Box box;
+  PageController get _pageController => widget.pageController;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.initialPage);
+//    _pageController = PageController(initialPage: widget.initialPage);
 
     box = Hive.box<String>('pinNotes');
   }
@@ -48,13 +51,14 @@ class _InfoPinPageViewState extends State<InfoPinPageView> {
       controller: _pageController,
       itemCount: widget.locations.length,
       onPageChanged: (index) {
+        context.read<CurrentIndexNotifier>().setPage(index);
         widget.selectPin(widget.locations[index]);
       },
       itemBuilder: (BuildContext context, int itemIndex) {
         return InfoPinWidget(
           index: itemIndex,
           location: widget.locations[itemIndex],
-          note: box.get(widget.locations[itemIndex].uuid),
+          note: context.read<IndexState>().note,
           onNoteAdded: widget.onNoteAdded,
           onNoteRemoved: widget.onNoteRemoved,
           onPrevious: () {
@@ -115,67 +119,35 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: Theme.of(context).cardTheme.color,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-//            mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          editingMode
-              ? Container()
-              : Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: widget.onPrevious,
-                    ),
-                    Spacer(),
-                    Text((widget.index + 1).toString()),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: widget.onNext,
-                    ),
-                  ],
-                ),
-          editingMode
-              ? Row(
-                  children: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.edit)),
-                    Expanded(
-                      child: Theme(
-                        data: ThemeData(
-                          primaryColor: Theme.of(context).textTheme.body1.color,
-                        ),
-                        child: TextField(
-                          style: Theme.of(context).textTheme.body2,
-                          autofocus: true,
-                          controller: textController,
-                          minLines: 1,
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : isThereNote
-                  ? Row(
-                      children: <Widget>[
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(Icons.note)),
-                        Expanded(
-                            child: AutoSizeText(
-                          text,
-                          maxLines: 1,
-                              style: Theme.of(context).textTheme.body1,
-                        )),
-                      ],
-                    )
-                  : Container(),
+          Builder(builder: (
+            context,
+          ) {
+            final String note =
+                context.select<IndexState, String>((state) => state.note);
+            if (note != null) {
+              return Row(
+                children: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.note)),
+                  Expanded(
+                      child: AutoSizeText(
+                    note,
+                    maxLines: 1,
+                    style: Theme.of(context).textTheme.body1,
+                  )),
+                ],
+              );
+            }
+            return Container();
+          }),
           Row(
             children: <Widget>[
               Padding(
@@ -198,7 +170,8 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   Icons.timelapse,
                 ),
               ),
-              Text(dateFormat.format(widget.location.dateTime),
+              Text(
+                dateFormat.format(widget.location.dateTime),
                 style: Theme.of(context).textTheme.body1,
               ),
             ],
@@ -212,7 +185,7 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                 ),
               ),
               Text(
-                  'Lat: ${widget.location.coords.latitude.toStringAsFixed(2)} Long: ${widget.location.coords.longitude.toStringAsFixed(2)}',
+                'Lat: ${widget.location.coords.latitude.toStringAsFixed(2)} Long: ${widget.location.coords.longitude.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.body1,
               ),
             ],
@@ -225,7 +198,8 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   Icons.gps_fixed,
                 ),
               ),
-              Text('Accuratezza: ${widget.location.coords.accuracy} m',
+              Text(
+                'Accuratezza: ${widget.location.coords.accuracy} m',
                 style: Theme.of(context).textTheme.body1,
               ),
             ],
@@ -254,9 +228,8 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                   ),
                 ),
                 Text(
-                    'Attività: ${widget.location.activity.type.toUpperCase()} al ${widget.location.activity.confidence.toInt()} %',
+                  'Attività: ${widget.location.activity.type.toUpperCase()} al ${widget.location.activity.confidence.toInt()} %',
                   style: Theme.of(context).textTheme.body1,
-
                 ),
               ],
             ),
@@ -271,68 +244,259 @@ class _InfoPinWidgetState extends State<InfoPinWidget> {
                         : Icons.battery_std,
                   ),
                 ),
-                Text('${(widget.location.battery.level * 100).toInt()} %',
+                Text(
+                  '${(widget.location.battery.level * 100).toInt()} %',
                   style: Theme.of(context).textTheme.body1,
                 ),
               ],
             ),
-          Row(
-            children: <Widget>[
-              Spacer(),
-              isThereNote
-                  ? GenericButton(
-                      text: editingMode ? 'Annulla' : 'Elimina Nota',
-                      color: editingMode ? null : Colors.red,
-                      onPressed: () {
-                        if (!editingMode) {
-                          Hive.box<String>('pinNotes')
-                              .delete(widget.location.uuid);
-                          textController.clear();
-                          widget.onNoteRemoved(widget.location.uuid);
-                        } else {
-                          editingMode = !editingMode;
-                        }
-                        setState(() {});
-                      },
-                    )
-                  : editingMode
-                      ? GenericButton(
-                          text: 'Annulla',
-                          color: null,
-                          onPressed: () {
-                            setState(() {
-                              textController.clear();
-                              editingMode = !editingMode;
-                            });
-                          },
-                        )
-                      : Container(),
-              SizedBox(
-                width: 5,
-              ),
-              GenericButton(
-                text: editingMode
-                    ? 'Salva nota'
-                    : isThereNote ? 'Modifica Nota' : 'Aggiungi Nota',
-                color: editingMode ? Colors.green : null,
-                onPressed: () async {
-                  if (editingMode && text.isNotEmpty) {
-                    await Hive.box<String>('pinNotes')
-                        .put(widget.location.uuid, text);
-                    widget.onNoteAdded(widget.location.uuid, text);
-                  }
-                  setState(() {
-                    editingMode = !editingMode;
-                  });
-                },
-              ),
-            ],
+        ],
+      ),
+    );
+  }
+}
+
+class InfoPinHeader extends StatelessWidget {
+  final PageController pageController;
+
+  const InfoPinHeader({Key key, @required this.pageController})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        height: 80,
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        child: StateNotifierBuilder<InfoPinState>(
+          stateNotifier: context.read<InfoPinNotifier>(),
+          builder: (BuildContext context, value, Widget child) {
+            return value.maybeMap(
+                initial: (_) => InfoPinInitialHeader(
+                      pageController: pageController,
+                    ),
+                editing: (editing) => InfoPinEditingHeader(
+                      text: editing.text,
+                    ),
+                orElse: () => Container());
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class InfoPinInitialHeader extends StatelessWidget {
+  final PageController pageController;
+
+  const InfoPinInitialHeader({Key key, this.pageController}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            final currentPage = context.read<IndexState>().index;
+            if (currentPage > 0) {
+              context.read<CurrentIndexNotifier>().goToPreviousPage();
+              pageController.jumpToPage(currentPage - 1);
+            }
+          },
+        ),
+        Spacer(),
+        Text(
+            '${context.watch<IndexState>().index + 1} \\ ${context.read<CurrentIndexNotifier>().max}'),
+        Spacer(),
+        IconButton(
+          icon: Icon(Icons.arrow_forward),
+          onPressed: () {
+            final currentPage = context.read<IndexState>().index;
+            final max = context.read<CurrentIndexNotifier>().max;
+            if (currentPage < max - 1) {
+              context.read<CurrentIndexNotifier>().goToNextPage();
+              pageController.jumpToPage(currentPage + 1);
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class InfoPinEditingHeader extends StatefulWidget {
+  final String text;
+
+  const InfoPinEditingHeader({Key key, this.text}) : super(key: key);
+  @override
+  _InfoPinEditingHeaderState createState() => _InfoPinEditingHeaderState();
+}
+
+class _InfoPinEditingHeaderState extends State<InfoPinEditingHeader> {
+  TextEditingController textController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    textController = TextEditingController(text: widget.text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Image.asset(
+            'assets/annotated_pin.png',
+            width: 30,
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            cursorColor: Theme.of(context).iconTheme.color,
+            style: Theme.of(context).textTheme.body2,
+            controller: textController,
+            expands: false,
+            minLines: 1,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    width: 0,
+                    style: BorderStyle.none,
+                  ),
+                ),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.secondary,
+                hintStyle: Theme.of(context).textTheme.body1.copyWith(
+                      color: Color(0xFFC0CCDA),
+                    ),
+                hintText: 'Scrivi qui la tua nota'),
+            onChanged: (t) {
+              context.read<CurrentIndexNotifier>().tmpText = t;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class InfoPinFooter extends StatelessWidget {
+  final Function onNoteAdded;
+  final Function onNoteRemoved;
+
+  const InfoPinFooter({Key key, this.onNoteAdded, this.onNoteRemoved})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      padding: const EdgeInsets.all(8),
+      alignment: Alignment.centerRight,
+      child: StateNotifierBuilder<InfoPinState>(
+        stateNotifier: context.read<InfoPinNotifier>(),
+        builder: (context, state, child) {
+          return state.maybeMap(
+              initial: (_) => InfoPinInitialFooter(
+                    onNoteRemoved: onNoteRemoved,
+                  ),
+              editing: (_) => InfoPinEditingFooter(
+                    onNoteAdded: onNoteAdded,
+                  ),
+              orElse: () => Container());
+        },
+      ),
+    );
+  }
+}
+
+class InfoPinInitialFooter extends StatelessWidget {
+  final Function onNoteRemoved;
+
+  const InfoPinInitialFooter({Key key, @required this.onNoteRemoved})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final String note =
+        context.select<IndexState, String>((state) => state.note);
+    if (note != null) {
+      return Row(
+        children: <Widget>[
+          Spacer(),
+          GenericButton(
+            text: 'Rimuovi Nota',
+            color: Colors.red,
+            onPressed: () async {
+              final uuid =
+                  await context.read<CurrentIndexNotifier>().removeNote();
+              onNoteRemoved(uuid);
+            },
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          GenericButton(
+            text: 'Modifica Nota',
+            color: null,
+            onPressed: () async {
+              context.read<InfoPinNotifier>().showEditing(note);
+            },
+          ),
+        ],
+      );
+    }
+    return GenericButton(
+      text: 'Aggiungi Nota',
+      color: null,
+      onPressed: () async {
+        context.read<InfoPinNotifier>().showEditing(null);
+      },
+    );
+  }
+}
+
+class InfoPinEditingFooter extends StatelessWidget {
+  final Function onNoteAdded;
+
+  const InfoPinEditingFooter({Key key, this.onNoteAdded}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Spacer(),
+          GenericButton(
+            text: 'Annulla',
+            onPressed: () {
+              context.read<InfoPinNotifier>().showInfo();
+            },
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          GenericButton(
+            text: 'Salva nota',
+            color: Colors.green,
+            onPressed: () async {
+              final note =
+                  await context.read<CurrentIndexNotifier>().saveNote();
+              context.read<InfoPinNotifier>().showInfo();
+              onNoteAdded(context.read<IndexState>().location.uuid, note);
+            },
           ),
         ],
       ),
     );
   }
 }
+
 //
 //class InfoPinDetailsWidget extends StatelessWidget {
 //  final int index;

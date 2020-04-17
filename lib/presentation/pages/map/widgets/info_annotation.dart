@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:diary/application/info_pin/info_annotation_notifier.dart';
-import 'package:diary/application/info_pin/info_annotation_state.dart';
+import 'package:diary/application/info_pin/info_pin_notifier.dart';
+import 'package:diary/application/info_pin/info_pin_state.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
@@ -194,14 +194,17 @@ class InfoAnnotationHeader extends StatelessWidget {
                 width: 30,
               ),
             ),
-            StateNotifierBuilder<InfoAnnotationState>(
+            StateNotifierBuilder<InfoPinState>(
               stateNotifier: context.read<InfoAnnotationNotifier>(),
               builder: (BuildContext context, state, Widget child) {
                 return state.maybeMap(
                     initial: (i) {
                       return Expanded(
                         child: AutoSizeText(
-                          i.annotation.title,
+                          context
+                              .read<InfoAnnotationNotifier>()
+                              .annotation
+                              .title,
                           maxLines: 3,
                           style: TextStyle(fontSize: 30),
                         ),
@@ -258,7 +261,7 @@ class _InfoAnnotationEditingHeaderState
             hintStyle: Theme.of(context).textTheme.body1.copyWith(
                   color: Color(0xFFC0CCDA),
                 ),
-            hintText: 'Qui la tua segnalazione'),
+            hintText: 'Scrivi qui la tua segnalazione'),
         onChanged: (t) {
           context.read<InfoAnnotationNotifier>().tmpText = t;
         },
@@ -277,7 +280,7 @@ class InfoAnnotationFooter extends StatelessWidget {
       type: MaterialType.transparency,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StateNotifierBuilder<InfoAnnotationState>(
+        child: StateNotifierBuilder<InfoPinState>(
             stateNotifier: context.read<InfoAnnotationNotifier>(),
             builder: (context, state, child) {
               return state.maybeMap(

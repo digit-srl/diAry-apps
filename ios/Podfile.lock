@@ -1,5 +1,5 @@
 PODS:
-  - background_fetch (0.5.4):
+  - background_fetch (0.5.5):
     - Flutter
   - CocoaLumberjack (3.6.1):
     - CocoaLumberjack/Core (= 3.6.1)
@@ -58,7 +58,7 @@ PODS:
     - GoogleUtilities/Environment (~> 6.5)
     - GoogleUtilities/UserDefaults (~> 6.5)
   - Flutter (1.0.0)
-  - flutter_background_geolocation (1.7.2):
+  - flutter_background_geolocation (1.7.3):
     - CocoaLumberjack (~> 3.6.0)
     - Flutter
   - flutter_plugin_android_lifecycle (0.0.1):
@@ -213,7 +213,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
-  background_fetch: c0d7c541f8495527ed7f167eb9ee2eeab0790703
+  background_fetch: 733393ca9893eadff0f7297a3818afe57fd68cb1
   CocoaLumberjack: b17ae15142558d08bbacf69775fa10c4abbebcc9
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   esys_flutter_share: bb47e3a9047ce7d8718b48bcb81fc23d4a6f1e4c
@@ -229,7 +229,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 575cd32f2aec0feeb0e44f5d0110a09e5e60b47b
   FirebaseInstanceID: 6668efc1655a4052c083f287a7141f1ead12f9c2
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_background_geolocation: 7bc896282184ff2892241f9ef017d1ac18c945e5
+  flutter_background_geolocation: e753e2fbc3bca957510c3e79107b2abad3b3d081
   flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
   google_maps_flutter: d0dd62f5a7d39bae61057eb9f52dd778d99c7c6c
