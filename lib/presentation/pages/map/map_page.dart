@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
-import 'package:diary/application/info_pin/info_annotation_notifier.dart';
-import 'package:diary/application/info_pin/info_annotation_state.dart';
+import 'package:diary/application/info_pin/info_pin_notifier.dart';
+import 'package:diary/application/info_pin/info_pin_state.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
@@ -148,7 +148,7 @@ class _MapPageState extends State<MapPage>
         Provider.of<GeofenceEventNotifier>(context).addListener(
       (state) {
         print('[MapPage] GeofenceEventNotifier');
-        if (state.geofenceEvent != null) {
+        if (state.geofenceEvent != null && _currentDate.isToday()) {
           _onGeofenceEvent(state.geofenceEvent);
         }
       },
@@ -457,6 +457,7 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
+              print('[MapPage] onMapCreated');
               controller.setMapStyle(AppTheme.isNightModeOn(context)
                   ? _darkMapStyle
                   : _normalMapStyle);
@@ -475,16 +476,9 @@ class _MapPageState extends State<MapPage>
   _loadInitialDailyMarkers() {
     markers.clear();
     final dailyLocations = Provider.of<LocationNotifier>(context, listen: false)
-        .locationsPerDate[_currentDate];
+        .getDayLocationsWithoutZeroLoc(_currentDate);
     if (dailyLocations?.isNotEmpty ?? false) {
       for (Location location in dailyLocations) {
-        if (location.coords.latitude == 0.0 &&
-            location.coords.longitude == 0.0 &&
-            (location.event == Event.Off ||
-                location.event == Event.On ||
-                location.event == Event.Geofence)) {
-          continue;
-        }
         final MarkerId markerId = MarkerId(location.uuid);
         final icon = Hive.box<String>('pinNotes').containsKey(location.uuid)
             ? genericPinMarkerIcon
@@ -553,79 +547,142 @@ class _MapPageState extends State<MapPage>
     });
 
     final dailyLocations = Provider.of<LocationNotifier>(context, listen: false)
-        .locationsPerDate[_currentDate];
+        .getDayLocationsWithoutZeroLoc(_currentDate);
     final initialPage = dailyLocations
         .indexOf(dailyLocations.firstWhere((l) => l.uuid == location.uuid));
+    final PageController pageController =
+        PageController(initialPage: initialPage);
+    final notifier = CurrentIndexNotifier(
+        initialPage, dailyLocations, Hive.box<String>('pinNotes'));
+    final infoPinNotifier = InfoPinNotifier();
 
-    // todo work in progress for new interface!
     await showSlidingBottomSheet(
       context,
       useRootNavigator: true,
+      parentBuilder: (context, sheet) {
+        return Theme(
+          data: Theme.of(context),
+          child: sheet,
+        );
+      },
       builder: (context) {
         return SlidingSheetDialog(
           backdropColor: Colors.transparent,
           elevation: 8,
           color: Theme.of(context).primaryColor,
           cornerRadius: 16,
-          minHeight: 400,
           duration: Duration(milliseconds: 300),
           snapSpec: const SnapSpec(
             snap: true,
-            snappings: [0.7, 1.0],
+            snappings: [
+              SnapSpec.headerFooterSnap,
+              0.6,
+              1.0,
+            ],
             positioning: SnapPositioning.relativeToAvailableSpace,
           ),
-          builder: (ctx, sheetState) {
-            return Container(
-              height: 450,
-              child: Material(
-                color: Theme.of(context).primaryColor,
-                child: InfoPinPageView(
-                  locations: dailyLocations,
-                  initialPage: initialPage,
-                  onNoteAdded: (String uuid, String text) {
-                    setState(() {
-                      final MarkerId markerId = MarkerId(uuid);
-                      markers[markerId] = markers[markerId]
-                          .copyWith(iconParam: genericPinMarkerIcon);
-                      // zoom in to the selected camera position
-                    });
-                  },
-                  onNoteRemoved: (String uuid) {
-                    setState(() {
-                      final MarkerId markerId = MarkerId(uuid);
-                      markers[markerId] = markers[markerId]
-                          .copyWith(iconParam: pinPositionMarkerIcon);
-                      // zoom in to the selected camera position
-                    });
-                  },
-                  selectPin: (location) {
-                    Marker marker;
-                    setState(() {
-                      markers.removeWhere((k, v) => k.value == selectedPinId);
-                      selectedPinId = '${location.uuid}_tmp';
-                      final MarkerId markerId = MarkerId(selectedPinId);
-                      marker = Marker(
-                        markerId: markerId,
-                        icon: selectedPinMarkerIcon,
-                        position: LatLng(
-                          location.coords.latitude,
-                          location.coords.longitude,
-                        ),
-                        zIndex: 0.4,
-                      );
-                      markers[markerId] = marker;
-                      // zoom in to the selected camera position
-                    });
-                    _controller.future.then((controller) {
-                      controller.animateCamera(CameraUpdate.newCameraPosition(
-                        CameraPosition(
-                          bearing: 0,
-                          target: marker.position,
-                          zoom: 19,
-                        ),
-                      ));
-                    });
-                  },
+          headerBuilder: (ctx, sheet) {
+            return MultiProvider(
+              providers: [
+                StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
+                  value: infoPinNotifier,
+                ),
+                StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
+                  value: notifier,
+                ),
+              ],
+              child: InfoPinHeader(
+                pageController: pageController,
+              ),
+            );
+          },
+          footerBuilder: (ctx, sheet) {
+            return MultiProvider(
+              providers: [
+                StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
+                  value: infoPinNotifier,
+                ),
+                StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
+                  value: notifier,
+                ),
+              ],
+              child: InfoPinFooter(
+                onNoteAdded: (String uuid, String text) {
+                  setState(() {
+                    final MarkerId markerId = MarkerId(uuid);
+                    markers[markerId] = markers[markerId]
+                        .copyWith(iconParam: genericPinMarkerIcon);
+                    // zoom in to the selected camera position
+                  });
+                },
+                onNoteRemoved: (String uuid) {
+                  setState(() {
+                    final MarkerId markerId = MarkerId(uuid);
+                    markers[markerId] = markers[markerId]
+                        .copyWith(iconParam: pinPositionMarkerIcon);
+                    // zoom in to the selected camera position
+                  });
+                },
+              ),
+            );
+          },
+          builder: (context, sheetState) {
+            return StateNotifierProvider<CurrentIndexNotifier,
+                IndexState>.value(
+              value: notifier,
+              child: Container(
+                height: 450,
+                child: Material(
+                  color: Theme.of(context).primaryColor,
+                  child: InfoPinPageView(
+                    pageController: pageController,
+                    locations: dailyLocations,
+                    initialPage: initialPage,
+                    onNoteAdded: (String uuid, String text) {
+                      setState(() {
+                        final MarkerId markerId = MarkerId(uuid);
+                        markers[markerId] = markers[markerId]
+                            .copyWith(iconParam: genericPinMarkerIcon);
+                        // zoom in to the selected camera position
+                      });
+                    },
+                    onNoteRemoved: (String uuid) {
+                      setState(() {
+                        final MarkerId markerId = MarkerId(uuid);
+                        markers[markerId] = markers[markerId]
+                            .copyWith(iconParam: pinPositionMarkerIcon);
+                        // zoom in to the selected camera position
+                      });
+                    },
+                    selectPin: (location) {
+                      Marker marker;
+                      setState(() {
+                        markers.removeWhere((k, v) => k.value == selectedPinId);
+                        selectedPinId = '${location.uuid}_tmp';
+                        final MarkerId markerId = MarkerId(selectedPinId);
+                        marker = Marker(
+                          markerId: markerId,
+                          icon: selectedPinMarkerIcon,
+                          position: LatLng(
+                            location.coords.latitude,
+                            location.coords.longitude,
+                          ),
+                          zIndex: 0.4,
+                        );
+                        markers[markerId] = marker;
+                        // zoom in to the selected camera position
+                      });
+                      _controller.future.then((controller) {
+                        controller.animateCamera(CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            bearing: 0,
+                            target: marker.position,
+                            zoom: 19,
+                          ),
+                        ));
+                      });
+                    },
+                  ),
                 ),
               ),
             );
@@ -633,6 +690,8 @@ class _MapPageState extends State<MapPage>
         );
       },
     );
+    notifier.dispose();
+    pageController.dispose();
     markers.removeWhere((k, v) => k.value == selectedPinId);
     setState(() {});
   }
@@ -641,7 +700,7 @@ class _MapPageState extends State<MapPage>
     final notifier = InfoAnnotationNotifier(annotation);
     print('[MapPage] _onAnnotationTap');
 
-    BottomSheets.showMapBottomSheet(
+    await BottomSheets.showMapBottomSheet(
         context,
         StateNotifierProvider.value(
           value: notifier,
@@ -656,14 +715,7 @@ class _MapPageState extends State<MapPage>
           child: InfoAnnotationFooter(),
         ));
 
-    //notifier.dispose();
-
-//    showModalBottomSheet(
-//      context: context,
-//      builder: (context) => AnnotationInfoWidget(
-//        annotation: annotation,
-//      ),
-//    );
+    notifier.dispose();
   }
 
   @override
@@ -677,5 +729,11 @@ class _MapPageState extends State<MapPage>
     removeGeofenceChangeListener();
     removeAnnotationListener();
     super.dispose();
+  }
+}
+
+class WithClass {
+  void hello() {
+    print('hello');
   }
 }

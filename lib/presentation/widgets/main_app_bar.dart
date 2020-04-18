@@ -169,25 +169,32 @@ class _MainAppBarState extends State<MainAppBar> {
     if (currentPage == 0) {
       // home page
       return IconButton(
-          tooltip: "Annotazioni",
+          tooltip: 'Annotazioni',
           icon: Icon(CustomIcons.bookmark_multiple_outline),
           onPressed: () {
             context.read<CurrentRootPageNotifier>().changePage(2);
           });
     } else if (currentPage == 1) {
       // map page
-      return IconButton(
-          tooltip: "Centra mappa nella tua posizione",
-          icon: Icon(Icons.gps_fixed),
-          onPressed: () {
-            context
-                .read<GpsNotifier>()
-                .getCurrentLoc((location) {}, (error) {});
-          });
+      final isToday = context.read<DateNotifier>().selectedDate.isToday();
+
+      return Opacity(
+        opacity: isToday ? 1.0 : 0.0,
+        child: IconButton(
+            tooltip: 'Centra mappa nella tua posizione',
+            icon: Icon(Icons.gps_fixed),
+            onPressed: isToday
+                ? () {
+                    context
+                        .read<GpsNotifier>()
+                        .getCurrentLoc((location) {}, (error) {});
+                  }
+                : null),
+      );
     } else {
       // annotations page
       return IconButton(
-          tooltip: "Cerca annotazione (coming soon!)",
+          tooltip: 'Cerca annotazione (coming soon!)',
           icon: Icon(Icons.search),
           onPressed: () {});
     }
