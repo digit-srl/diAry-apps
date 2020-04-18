@@ -1,215 +1,88 @@
-import 'dart:io';
-
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/info_pin/info_annotation_notifier.dart';
 import 'package:diary/application/info_pin/info_annotation_state.dart';
 import 'package:diary/domain/entities/annotation.dart';
-import 'package:diary/presentation/pages/map/widgets/map_bottomsheets_utils.dart';
-import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-
 class InfoAnnotation extends StatelessWidget {
+  static DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
+  final Annotation annotation;
 
-  const InfoAnnotation({Key key}) : super(key: key);
-
+  const InfoAnnotation({Key key, this.annotation}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return StateNotifierBuilder<InfoAnnotationState>(
-      stateNotifier: context.read<InfoAnnotationNotifier>(),
-      builder: (BuildContext context, state, Widget child) {
-        return state.maybeMap(
-            initial: (i) => InfoAnnotationInitial(),
-            editing: (e) => InfoAnnotationEditing(),
-            orElse: () => Container());
-      },
-    );
-  }
-}
-
-class InfoAnnotationInitial extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    Annotation annotation = context.read<InfoAnnotationNotifier>().annotation;
-    DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
-
+    // todo work in progress for new interface!
     return Container(
-      height: 200,
+      color: Theme.of(context).cardTheme.color,
+      padding: const EdgeInsets.all(8.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                    CustomIcons.bookmark_outline,
-                    color: Theme.of(context).primaryColor,
-                    size: 24,
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.gps_fixed,
                 ),
               ),
-              SizedBox(
-                width: 16,
-              ),
-              Expanded(
-                child: Text(
-                  "Segnalazione", // annotation.title
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: Theme.of(context).textTheme.headline,
-                ),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () async {
-                  context.read<InfoAnnotationNotifier>().showEditing();
-                },
-                tooltip: "Modifica",
-              ),
-              /*
-            IconButton(
-              icon: Icon(CustomIcons.trash_can_outline),
-              tooltip: "Elimina",
-              onPressed: () async {
-                // todo
-              },
-            ),
-            */
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          MapBottomsheetInfoBox(
-            children: <Widget>[
-              MapBottomsheetInfoLine(
-                icon: Icon(Icons.message),
-                text: annotation.title,
-              ),
-              MapBottomsheetInfoLine(
-                icon: Icon(Icons.gps_fixed),
-                text: 'Lat: ${annotation.latitude.toStringAsFixed(2)} '
-                    'Long: ${annotation.longitude.toStringAsFixed(2)}',
-              ),
-              MapBottomsheetInfoLine(
-                icon: Icon(Icons.access_time),
-                text: dateFormat.format(annotation.dateTime),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class InfoAnnotationEditing extends StatefulWidget {
-
-  InfoAnnotationEditing({Key key}) : super(key: key);
-  @override
-  _InfoAnnotationEditingState createState() => _InfoAnnotationEditingState();
-}
-
-class _InfoAnnotationEditingState extends State<InfoAnnotationEditing> {
-  TextEditingController textController;
-  @override
-  void initState() {
-    super.initState();
-    textController = TextEditingController(
-        text: context.read<InfoAnnotationNotifier>().annotation.title);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon((Platform.isAndroid)
-                    ? Icons.arrow_back
-                    : Icons.arrow_back_ios),
-                onPressed: () {
-                  context.read<InfoAnnotationNotifier>().showInfo();
-                },
-                tooltip: "Back",
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "Modifica annotazione",
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.check),
-                onPressed: () {
-                  context
-                      .read<InfoAnnotationNotifier>()
-                      .saveNewAnnotationText();
-                },
-                tooltip: "Salva annotazione",
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          Expanded(
-            child: Container(
-              decoration: new BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: new BorderRadius.all(Radius.circular(16))),
-              child: TextField(
-                cursorColor: Theme.of(context).iconTheme.color,
+              Text(
+                'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.body2,
-                controller: textController,
-                expands: false,
-                maxLines: 4,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(
-                        width: 0,
-                        style: BorderStyle.none,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.secondary,
-                    hintStyle: Theme.of(context).textTheme.body1,
-                    hintText: 'Qui la tua segnalazione'),
-                onChanged: (t) {
-                  context.read<InfoAnnotationNotifier>().tmpText = t;
-                },
               ),
-            ),
+            ],
           ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.timelapse,
+                ),
+              ),
+              Text(
+                dateFormat.format(annotation.dateTime),
+                style: Theme.of(context).textTheme.body2,
+              ),
+            ],
+          ),
+//          Spacer(),
+//          Align(
+//            alignment: Alignment.bottomRight,
+//            child: Row(
+//              children: <Widget>[
+//                Spacer(),
+////                GenericButton(
+////                  text: 'Elimina',
+////                  color: Colors.red,
+////                  onPressed: () async {
+////                    context
+////                        .read<InfoAnnotationNotifier>()
+////                        .showDeletingQuestion();
+////                  },
+////                ),
+//                SizedBox(
+//                  width: 10,
+//                ),
+//                GenericButton(
+//                  text: 'Modifica',
+//                  onPressed: () async {
+//                    context.read<InfoAnnotationNotifier>().showEditing();
+//                  },
+//                ),
+//              ],
+//            ),
+//          ),
         ],
       ),
     );
   }
 }
-
 
 class InfoAnnotationError extends StatelessWidget {
   final String error;
@@ -240,6 +113,355 @@ class InfoAnnotationError extends StatelessWidget {
   }
 }
 
+class InfoAnnotationEditing extends StatefulWidget {
+  final String text;
+
+  InfoAnnotationEditing({Key key, @required this.text}) : super(key: key);
+  @override
+  _InfoAnnotationEditingState createState() => _InfoAnnotationEditingState();
+}
+
+class _InfoAnnotationEditingState extends State<InfoAnnotationEditing> {
+  TextEditingController textController;
+  @override
+  void initState() {
+    super.initState();
+    this.textController = TextEditingController(text: widget.text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: <Widget>[
+          Text(
+            '${widget.text.isEmpty ? 'Aggiungi' : 'Modifica'}',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            textAlign: TextAlign.center,
+          ),
+          TextField(
+            style: Theme.of(context).textTheme.body2,
+            controller: textController,
+            minLines: 1,
+            maxLines: 2,
+          ),
+//          Spacer(),
+//          Row(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            children: <Widget>[
+//              GenericButton(
+//                text: 'Annulla',
+//                onPressed: () async {
+//                  context.read<InfoAnnotationNotifier>().showInfo();
+//                },
+//              ),
+//              SizedBox(
+//                width: 10,
+//              ),
+//              GenericButton(
+//                text: 'Salva',
+//                color: Colors.green,
+//                onPressed: () async {
+//                  context
+//                      .read<InfoAnnotationNotifier>()
+//                      .saveNewAnnotationText(textController.text.trim());
+//                },
+//              ),
+//            ],
+//          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfoAnnotationHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        height: 80,
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Image.asset(
+                'assets/annotation_pin.png',
+                width: 30,
+              ),
+            ),
+            StateNotifierBuilder<InfoAnnotationState>(
+              stateNotifier: context.read<InfoAnnotationNotifier>(),
+              builder: (BuildContext context, state, Widget child) {
+                return state.maybeMap(
+                    initial: (i) {
+                      return Expanded(
+                        child: AutoSizeText(
+                          i.annotation.title,
+                          maxLines: 3,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      );
+                    },
+                    editing: (e) => InfoAnnotationEditingHeader(),
+                    orElse: () => Container());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class InfoAnnotationEditingHeader extends StatefulWidget {
+  @override
+  _InfoAnnotationEditingHeaderState createState() =>
+      _InfoAnnotationEditingHeaderState();
+}
+
+class _InfoAnnotationEditingHeaderState
+    extends State<InfoAnnotationEditingHeader> {
+  TextEditingController textController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    textController = TextEditingController(
+        text: context.read<InfoAnnotationNotifier>().annotation.title);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: TextField(
+        cursorColor: Theme.of(context).iconTheme.color,
+        style: Theme.of(context).textTheme.body2,
+        controller: textController,
+        expands: false,
+        minLines: 1,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                width: 0,
+                style: BorderStyle.none,
+              ),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.secondary,
+            hintStyle: Theme.of(context).textTheme.body1.copyWith(
+                  color: Color(0xFFC0CCDA),
+                ),
+            hintText: 'Qui la tua segnalazione'),
+        onChanged: (t) {
+          context.read<InfoAnnotationNotifier>().tmpText = t;
+        },
+      ),
+    );
+  }
+}
+
+class InfoAnnotationFooter extends StatelessWidget {
+  final Function collapse;
+
+  const InfoAnnotationFooter({Key key, this.collapse}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StateNotifierBuilder<InfoAnnotationState>(
+            stateNotifier: context.read<InfoAnnotationNotifier>(),
+            builder: (context, state, child) {
+              return state.maybeMap(
+                  editing: (_) => EditingFooter(),
+                  initial: (e) => InitialFooter(),
+                  orElse: () => Container());
+            }),
+      ),
+    );
+  }
+}
+
+class EditingFooter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Spacer(),
+        GenericButton(
+          text: 'Annulla',
+          onPressed: () async {
+            context.read<InfoAnnotationNotifier>().showInfo();
+          },
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        GenericButton(
+          text: 'Salva',
+          color: Colors.green,
+          onPressed: () async {
+            context.read<InfoAnnotationNotifier>().saveNewAnnotationText();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class InitialFooter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Spacer(),
+        GenericButton(
+          text: 'Modifica',
+          onPressed: () async {
+            context.read<InfoAnnotationNotifier>().showEditing();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class InitialHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+/*class InfoAnnotation extends StatelessWidget {
+  final Annotation annotation;
+
+  const InfoAnnotation({Key key, this.annotation}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/annotation_pin.png',
+                    width: 30,
+                  )),
+              editingMode
+                  ? Expanded(
+                      child: TextField(
+                        controller: titleController,
+                        maxLines: 2,
+                        minLines: 1,
+                      ),
+                    )
+                  : Expanded(
+                      child: AutoSizeText(
+                        annotation.title,
+                        maxLines: 3,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    ),
+//                    coloredGeofence.isHome
+//                        ? Padding(
+//                            padding: const EdgeInsets.all(8.0),
+//                            child: Icon(
+//                              Icons.person_pin,
+//                              size: 35,
+//                              color: color,
+//                            ),
+//                          )
+//                        : Container(),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.gps_fixed,
+                ),
+              ),
+              Text(
+                  'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}'),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.timelapse,
+                ),
+              ),
+              Text(dateFormat.format(annotation.dateTime)),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Row(
+              children: <Widget>[
+                Spacer(),
+                GenericButton(
+                  text: editingMode ? 'Annulla' : 'Elimina',
+                  color: editingMode ? null : Colors.red,
+                  onPressed: () async {
+                    if (editingMode) {
+                      setState(() {
+                        editingMode = !editingMode;
+                      });
+                    } else {
+                      GenericUtils.ask(context,
+                          'Sicuro di volere eliminare questa annotazione?', () {
+                        context
+                            .read<AnnotationNotifier>()
+                            .removeAnnotation(annotation);
+                        Navigator.of(context).pop();
+                      }, () {
+                        Navigator.of(context).pop();
+                      });
+                    }
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                GenericButton(
+                  text: editingMode ? 'Salva' : 'Modifica',
+                  color: editingMode ? Colors.green : null,
+                  onPressed: () async {
+                    if (editingMode) {
+                      annotation.title = titleController.text.trim();
+                      await annotation.save();
+                    }
+                    setState(() {
+                      editingMode = !editingMode;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}*/
 
 //class InfoAnnotationDeletingQuestion extends StatelessWidget {
 //  @override
