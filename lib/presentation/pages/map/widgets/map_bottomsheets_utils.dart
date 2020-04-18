@@ -3,6 +3,13 @@ import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
+/*
+ * The module collects common widgets between map bottom sheets.
+ */
+
+/*
+ * The main sheet body component, including a list of MapBottomsheetInfoLine.
+ */
 class MapBottomsheetInfoBox extends StatelessWidget {
   List<Widget> children;
 
@@ -15,16 +22,19 @@ class MapBottomsheetInfoBox extends StatelessWidget {
     children.add(Divider(height: 1));
 
     return Container(
-    color: Theme.of(context).cardTheme.color,
-      child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: children,
-    )
-    );
+        color: Theme.of(context).cardTheme.color,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: children,
+        ));
   }
 }
 
+/*
+ * An information line inside the sheet body, with an image and a text.
+ * Built in a way that preserves text responsiveness.
+ */
 class MapBottomsheetInfoLine extends StatelessWidget {
   final String text;
   final Icon icon;
@@ -53,6 +63,10 @@ class MapBottomsheetInfoLine extends StatelessWidget {
   }
 }
 
+/*
+ * A MapBottomsheetInfoLine with a fixed height (text do not expands, bot stays
+ * in a line with AutoSizeText
+ */
 class MapBottomsheetFixedInfoLine extends StatelessWidget {
   final String text;
   final Icon icon;
@@ -83,6 +97,9 @@ class MapBottomsheetFixedInfoLine extends StatelessWidget {
   }
 }
 
+/*
+ * The main Icon of the header, with a colored circle around.
+ */
 class MapBottomsheetHeaderIcon extends StatelessWidget {
   final IconData iconData;
   final Color color;
@@ -109,6 +126,10 @@ class MapBottomsheetHeaderIcon extends StatelessWidget {
   }
 }
 
+/*
+ * Component that represents the standard header structure. If horizontal
+ * padding is not specified, it is considered default 16.
+ */
 class MapBottomsheetHeader extends StatelessWidget {
   Widget child;
   double horizontalPadding;
@@ -118,13 +139,16 @@ class MapBottomsheetHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
+        padding:
+            EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
         height: 80,
-        child: child
-    );
+        child: child);
   }
 }
 
+/*
+ * Component that represents the standard footer structure.
+ */
 class MapBottomsheetFooter extends StatelessWidget {
   List<GenericButton> buttons;
 
@@ -148,7 +172,6 @@ class MapBottomsheetFooter extends StatelessWidget {
             },
           ),
           Spacer(),
-
           ButtonBar(children: buttons)
         ],
       ),
