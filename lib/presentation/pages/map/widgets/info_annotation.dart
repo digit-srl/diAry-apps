@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'map_bottomsheets_utils.dart';
 
@@ -63,6 +64,7 @@ class InfoAnnotationInitialHeader extends StatelessWidget {
             child: AutoSizeText(
               context.read<InfoAnnotationNotifier>().annotation.title,
               maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.headline,
             ),
           ),
@@ -117,7 +119,7 @@ class _InfoAnnotationEditingHeaderState
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.secondary,
                   hintStyle: Theme.of(context).textTheme.overline,
-                  hintText: 'Qui la tua segnalazione'),
+                  hintText: 'Scrivi qui la tua segnalazione'),
               onChanged: (t) {
                 context.read<InfoAnnotationNotifier>().tmpText = t;
               },
@@ -151,6 +153,7 @@ class InfoAnnotationInitialFooter extends StatelessWidget {
       GenericButton(
         text: 'Modifica',
         onPressed: () async {
+          SheetController.of(context).collapse();
           context.read<InfoAnnotationNotifier>().showEditing();
         },
       ),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -13,10 +14,13 @@ class MapBottomsheetInfoBox extends StatelessWidget {
     children.insert(0, Divider(height: 1));
     children.add(Divider(height: 1));
 
-    return Column(
+    return Container(
+    color: Theme.of(context).cardTheme.color,
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: children,
+    )
     );
   }
 }
@@ -40,6 +44,36 @@ class MapBottomsheetInfoLine extends StatelessWidget {
           Expanded(
             child: Text(
               text,
+              style: Theme.of(context).textTheme.body1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MapBottomsheetFixedInfoLine extends StatelessWidget {
+  final String text;
+  final Icon icon;
+
+  MapBottomsheetFixedInfoLine({this.text, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(24, 8, 16, 8),
+      child: Row(
+        children: <Widget>[
+          icon,
+          SizedBox(
+            width: 24,
+          ),
+          Expanded(
+            child: AutoSizeText(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.body1,
             ),
           ),
@@ -77,13 +111,14 @@ class MapBottomsheetHeaderIcon extends StatelessWidget {
 
 class MapBottomsheetHeader extends StatelessWidget {
   Widget child;
+  double horizontalPadding;
 
-  MapBottomsheetHeader({this.child});
+  MapBottomsheetHeader({this.child, this.horizontalPadding = 16});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
         height: 80,
         child: child
     );
@@ -113,9 +148,7 @@ class MapBottomsheetFooter extends StatelessWidget {
             },
           ),
           Spacer(),
-          SizedBox(
-            width: 16,
-          ),
+
           ButtonBar(children: buttons)
         ],
       ),

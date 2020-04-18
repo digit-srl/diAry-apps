@@ -41,17 +41,12 @@ class BottomSheets {
     });
   }
 
-  // Bottomsheet for map page. It has a transparent backdrop color and
+  // Bottomsheet for map page. It has a transparent backdrop color and it snaps
+  // at 60% of height (useful in pin sheet). It handles header, body and footer.
   static showMapBottomSheet(BuildContext context, Widget header, Widget body, Widget footer) async {
     await showSlidingBottomSheet(
       context,
       useRootNavigator: true,
-      /*parentBuilder: (context, sheet) {
-        return Theme(
-          data: Theme.of(context),
-          child: sheet,
-        );
-      },*/
       builder: (context) {
         return SlidingSheetDialog(
           elevation: 8,

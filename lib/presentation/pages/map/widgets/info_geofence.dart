@@ -37,13 +37,14 @@ class InfoGeofenceHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return MapBottomsheetHeader(
       child: Row(children: <Widget>[
-        MapBottomsheetHeaderIcon(CustomIcons.pin_outline,
+        MapBottomsheetHeaderIcon(CustomIcons.map_marker_outline,
             color: geofence.color),
         SizedBox(width: 16),
         Expanded(
           child: AutoSizeText(
             geofence.name,
-            maxLines: 3,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.headline,
           ),
         ),

@@ -208,8 +208,7 @@ class _MapPageState extends State<MapPage>
         context,
         InfoGeofenceHeader(coloredGeofence),
         InfoGeofenceBody(coloredGeofence),
-        InfoGeofenceFooter(coloredGeofence)
-    );
+        InfoGeofenceFooter(coloredGeofence));
   }
 
   void _onGeofence(List<ColoredGeofence> geofences) {
@@ -556,140 +555,102 @@ class _MapPageState extends State<MapPage>
         initialPage, dailyLocations, Hive.box<String>('pinNotes'));
     final infoPinNotifier = InfoPinNotifier();
 
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      parentBuilder: (context, sheet) {
-        return Theme(
-          data: Theme.of(context),
-          child: sheet,
-        );
-      },
-      builder: (context) {
-        return SlidingSheetDialog(
-          backdropColor: Colors.transparent,
-          elevation: 8,
-          color: Theme.of(context).primaryColor,
-          cornerRadius: 16,
-          duration: Duration(milliseconds: 300),
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [
-              SnapSpec.headerFooterSnap,
-              0.6,
-              1.0,
-            ],
-            positioning: SnapPositioning.relativeToAvailableSpace,
-          ),
-          headerBuilder: (ctx, sheet) {
-            return MultiProvider(
-              providers: [
-                StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
-                  value: infoPinNotifier,
-                ),
-                StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
-                  value: notifier,
-                ),
-              ],
-              child: InfoPinHeader(
-                pageController: pageController,
-              ),
-            );
-          },
-          footerBuilder: (ctx, sheet) {
-            return MultiProvider(
-              providers: [
-                StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
-                  value: infoPinNotifier,
-                ),
-                StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
-                  value: notifier,
-                ),
-              ],
-              child: InfoPinFooter(
-                onNoteAdded: (String uuid, String text) {
-                  setState(() {
-                    final MarkerId markerId = MarkerId(uuid);
-                    markers[markerId] = markers[markerId]
-                        .copyWith(iconParam: genericPinMarkerIcon);
-                    // zoom in to the selected camera position
-                  });
-                },
-                onNoteRemoved: (String uuid) {
-                  setState(() {
-                    final MarkerId markerId = MarkerId(uuid);
-                    markers[markerId] = markers[markerId]
-                        .copyWith(iconParam: pinPositionMarkerIcon);
-                    // zoom in to the selected camera position
-                  });
-                },
-              ),
-            );
-          },
-          builder: (context, sheetState) {
-            return StateNotifierProvider<CurrentIndexNotifier,
-                IndexState>.value(
+    await BottomSheets.showMapBottomSheet(
+        context,
+        MultiProvider(
+          providers: [
+            StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
+              value: infoPinNotifier,
+            ),
+            StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
               value: notifier,
-              child: Container(
-                height: 450,
-                child: Material(
-                  color: Theme.of(context).primaryColor,
-                  child: InfoPinPageView(
-                    pageController: pageController,
-                    locations: dailyLocations,
-                    initialPage: initialPage,
-                    onNoteAdded: (String uuid, String text) {
-                      setState(() {
-                        final MarkerId markerId = MarkerId(uuid);
-                        markers[markerId] = markers[markerId]
-                            .copyWith(iconParam: genericPinMarkerIcon);
-                        // zoom in to the selected camera position
-                      });
-                    },
-                    onNoteRemoved: (String uuid) {
-                      setState(() {
-                        final MarkerId markerId = MarkerId(uuid);
-                        markers[markerId] = markers[markerId]
-                            .copyWith(iconParam: pinPositionMarkerIcon);
-                        // zoom in to the selected camera position
-                      });
-                    },
-                    selectPin: (location) {
-                      Marker marker;
-                      setState(() {
-                        markers.removeWhere((k, v) => k.value == selectedPinId);
-                        selectedPinId = '${location.uuid}_tmp';
-                        final MarkerId markerId = MarkerId(selectedPinId);
-                        marker = Marker(
-                          markerId: markerId,
-                          icon: selectedPinMarkerIcon,
-                          position: LatLng(
-                            location.coords.latitude,
-                            location.coords.longitude,
-                          ),
-                          zIndex: 0.4,
-                        );
-                        markers[markerId] = marker;
-                        // zoom in to the selected camera position
-                      });
-                      _controller.future.then((controller) {
-                        controller.animateCamera(CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                            bearing: 0,
-                            target: marker.position,
-                            zoom: 19,
-                          ),
-                        ));
-                      });
-                    },
+            ),
+          ],
+          child: InfoPinHeader(
+            pageController: pageController,
+          ),
+        ),
+        StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
+          value: notifier,
+          child: InfoPinBody(
+            pageController: pageController,
+            locations: dailyLocations,
+            initialPage: initialPage,
+            onNoteAdded: (String uuid, String text) {
+              setState(() {
+                final MarkerId markerId = MarkerId(uuid);
+                markers[markerId] =
+                    markers[markerId].copyWith(iconParam: genericPinMarkerIcon);
+                // zoom in to the selected camera position
+              });
+            },
+            onNoteRemoved: (String uuid) {
+              setState(() {
+                final MarkerId markerId = MarkerId(uuid);
+                markers[markerId] = markers[markerId]
+                    .copyWith(iconParam: pinPositionMarkerIcon);
+                // zoom in to the selected camera position
+              });
+            },
+            selectPin: (location) {
+              Marker marker;
+              setState(() {
+                markers.removeWhere((k, v) => k.value == selectedPinId);
+                selectedPinId = '${location.uuid}_tmp';
+                final MarkerId markerId = MarkerId(selectedPinId);
+                marker = Marker(
+                  markerId: markerId,
+                  icon: selectedPinMarkerIcon,
+                  position: LatLng(
+                    location.coords.latitude,
+                    location.coords.longitude,
                   ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+                  zIndex: 0.4,
+                );
+                markers[markerId] = marker;
+                // zoom in to the selected camera position
+              });
+              _controller.future.then((controller) {
+                controller.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    bearing: 0,
+                    target: marker.position,
+                    zoom: 19,
+                  ),
+                ));
+              });
+            },
+          ),
+        ),
+        MultiProvider(
+          providers: [
+            StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
+              value: infoPinNotifier,
+            ),
+            StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
+              value: notifier,
+            ),
+          ],
+          child: InfoPinFooter(
+            onNoteAdded: (String uuid, String text) {
+              setState(() {
+                final MarkerId markerId = MarkerId(uuid);
+                markers[markerId] =
+                    markers[markerId].copyWith(iconParam: genericPinMarkerIcon);
+                // zoom in to the selected camera position
+              });
+            },
+            onNoteRemoved: (String uuid) {
+              setState(() {
+                final MarkerId markerId = MarkerId(uuid);
+                markers[markerId] = markers[markerId]
+                    .copyWith(iconParam: pinPositionMarkerIcon);
+                // zoom in to the selected camera position
+              });
+            },
+          ),
+        ));
+
     notifier.dispose();
     pageController.dispose();
     markers.removeWhere((k, v) => k.value == selectedPinId);
