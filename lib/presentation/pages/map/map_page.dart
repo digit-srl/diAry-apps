@@ -205,7 +205,11 @@ class _MapPageState extends State<MapPage>
     print('[MapPage] _onGeofenceTap');
 
     BottomSheets.showMapBottomSheet(
-        context, InfoGeofenceWidget(coloredGeofence: coloredGeofence));
+        context,
+        InfoGeofenceHeader(coloredGeofence),
+        InfoGeofenceBody(coloredGeofence),
+        InfoGeofenceFooter(coloredGeofence)
+    );
   }
 
   void _onGeofence(List<ColoredGeofence> geofences) {
@@ -635,59 +639,24 @@ class _MapPageState extends State<MapPage>
 
   _onAnnotationTap(Annotation annotation) async {
     final notifier = InfoAnnotationNotifier(annotation);
-
-    // todo work in progress for new interface!
     print('[MapPage] _onAnnotationTap');
-    await showSlidingBottomSheet(
-      context,
-      useRootNavigator: true,
-      parentBuilder: (context, sheet) {
-        return Theme(
-          data: Theme.of(context),
-          child: sheet,
-        );
-      },
-      builder: (context) {
-        return SlidingSheetDialog(
-          elevation: 8,
-          backdropColor: Colors.transparent,
-          cornerRadius: 16,
-          color: Theme.of(context).primaryColor,
-          duration: Duration(milliseconds: 300),
-          snapSpec: const SnapSpec(
-            snap: true,
-            snappings: [
-              SnapSpec.headerFooterSnap,
-              0.6,
-              1.0,
-            ],
-            positioning: SnapPositioning.relativeToAvailableSpace,
-          ),
-//          listener: (sheetState) {
-//            print(sheetState.toString());
-//          },
-          headerBuilder: (context, state) => StateNotifierProvider.value(
-            value: notifier,
-            child: InfoAnnotationHeader(),
-          ),
-          footerBuilder: (ctx, state) => StateNotifierProvider.value(
-            value: notifier,
-            child: InfoAnnotationFooter(),
-          ),
-          builder: (context, state) => Material(
-            type: MaterialType.transparency,
-            child: StateNotifierProvider.value(
-              value: notifier,
-              child: InfoAnnotation(
-                annotation: annotation,
-              ),
-            ),
-          ),
-        );
-      },
-    );
 
-    notifier.dispose();
+    BottomSheets.showMapBottomSheet(
+        context,
+        StateNotifierProvider.value(
+          value: notifier,
+          child: InfoAnnotationHeader(),
+        ),
+        StateNotifierProvider.value(
+          value: notifier,
+          child: InfoAnnotationBody(),
+        ),
+        StateNotifierProvider.value(
+          value: notifier,
+          child: InfoAnnotationFooter(),
+        ));
+
+    //notifier.dispose();
 
 //    showModalBottomSheet(
 //      context: context,

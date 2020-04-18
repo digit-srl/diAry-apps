@@ -1,4 +1,6 @@
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 class MapBottomsheetInfoBox extends StatelessWidget {
   List<Widget> children;
@@ -7,20 +9,14 @@ class MapBottomsheetInfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Expanded(
-      child: Container(
-        decoration: new BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: new BorderRadius.all(Radius.circular(16))),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: children,
-            ),
-          ),
-        ),
-      ),
+    // adds dividers as first and last element
+    children.insert(0, Divider(height: 1));
+    children.add(Divider(height: 1));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: children,
     );
   }
 }
@@ -34,7 +30,7 @@ class MapBottomsheetInfoLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+      padding: EdgeInsets.fromLTRB(24, 8, 16, 8),
       child: Row(
         children: <Widget>[
           icon,
@@ -47,6 +43,80 @@ class MapBottomsheetInfoLine extends StatelessWidget {
               style: Theme.of(context).textTheme.body1,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class MapBottomsheetHeaderIcon extends StatelessWidget {
+  final IconData iconData;
+  final Color color;
+
+  MapBottomsheetHeaderIcon(this.iconData, {this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Icon(
+          iconData,
+          color: Theme.of(context).primaryColor,
+          size: 24,
+        ),
+      ),
+    );
+  }
+}
+
+class MapBottomsheetHeader extends StatelessWidget {
+  Widget child;
+
+  MapBottomsheetHeader({this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.all(16.0),
+        height: 80,
+        child: child
+    );
+  }
+}
+
+class MapBottomsheetFooter extends StatelessWidget {
+  List<GenericButton> buttons;
+
+  MapBottomsheetFooter({this.buttons});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 12, right: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.keyboard_arrow_up),
+            tooltip: "Maggiori informazioni",
+            onPressed: () {
+              if (SheetController.of(context).state.isExpanded)
+                SheetController.of(context).collapse();
+              else
+                SheetController.of(context).expand();
+            },
+          ),
+          Spacer(),
+          SizedBox(
+            width: 16,
+          ),
+          ButtonBar(children: buttons)
         ],
       ),
     );

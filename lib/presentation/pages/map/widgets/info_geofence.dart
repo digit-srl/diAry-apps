@@ -1,3 +1,4 @@
+import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -7,95 +8,67 @@ import 'package:diary/utils/place_utils.dart';
 
 import 'map_bottomsheets_utils.dart';
 
-class InfoGeofenceWidget extends StatelessWidget {
-  final ColoredGeofence coloredGeofence;
+class InfoGeofenceBody extends StatelessWidget {
+  final ColoredGeofence geofence;
 
-  InfoGeofenceWidget({this.coloredGeofence});
+  const InfoGeofenceBody(this.geofence, {Key key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MapBottomsheetInfoBox(children: <Widget>[
+      MapBottomsheetInfoLine(
+        icon: Icon(Icons.gps_fixed),
+        text: 'Lat: ${geofence.geofence.latitude?.toStringAsFixed(2)}, '
+            'Long: ${geofence.geofence.longitude?.toStringAsFixed(2)}',
+      ),
+      MapBottomsheetInfoLine(
+        icon: Icon(Icons.settings_ethernet),
+        text: 'Raggio: ${geofence.geofence.radius.toInt()} metri',
+      ),
+    ]);
+  }
+}
+
+class InfoGeofenceHeader extends StatelessWidget {
+  final ColoredGeofence geofence;
+
+  const InfoGeofenceHeader(this.geofence, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: coloredGeofence.color,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    //isHome ? CustomIcons.home_outline : CustomIcons.map_marker_outline,
-                    CustomIcons.map_marker_outline,
-                    color: Theme.of(context).primaryColor,
-                    size: 24,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Text(
-                    coloredGeofence.name,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: Theme.of(context).textTheme.headline,
-                  ),
-                ),
-              ),
-//            IconButton(
-//              icon: Icon(Icons.edit),
-//              onPressed: () async {
-//                /* todo edit geofence action here
-//                final place = Hive.box<Place>('places')
-//                    .get(coloredGeofence.geofence.identifier);
-//
-//                await Navigator.of(context).push(
-//                    MaterialPageRoute(
-//                        builder: (BuildContext context) =>
-//                            AddPlacePage(place: place)
-//                    )
-//                );
-//                */
-//              },
-//              tooltip: "Modifica (coming soon!)",
-//            ),
-              IconButton(
-                  icon: Icon(CustomIcons.trash_can_outline),
-                  tooltip: 'Elimina',
-                  onPressed: () async {
-                    await PlaceUtils.showRemovePlaceAlert(
-                        context, coloredGeofence.geofence.identifier);
-                    // chiude il bottomsheet
-                    Navigator.pop(context);
-                  }),
-            ],
+    return MapBottomsheetHeader(
+      child: Row(children: <Widget>[
+        MapBottomsheetHeaderIcon(CustomIcons.pin_outline,
+            color: geofence.color),
+        SizedBox(width: 16),
+        Expanded(
+          child: AutoSizeText(
+            geofence.name,
+            maxLines: 3,
+            style: Theme.of(context).textTheme.headline,
           ),
-          SizedBox(
-            height: 16,
-          ),
-          MapBottomsheetInfoBox(
-            children: <Widget>[
-              MapBottomsheetInfoLine(
-                icon: Icon(Icons.gps_fixed),
-                text:
-                    'Lat: ${coloredGeofence.geofence.latitude?.toStringAsFixed(2)}, '
-                    'Long: ${coloredGeofence.geofence.longitude?.toStringAsFixed(2)}',
-              ),
-              MapBottomsheetInfoLine(
-                icon: Icon(Icons.settings_ethernet),
-                text:
-                    'Raggio: ${coloredGeofence.geofence.radius.toInt()} metri',
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ]),
     );
+  }
+}
+
+class InfoGeofenceFooter extends StatelessWidget {
+  final ColoredGeofence geofence;
+
+  const InfoGeofenceFooter(this.geofence, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MapBottomsheetFooter(buttons: <GenericButton>[
+      GenericButton(
+        text: 'Elimina',
+        onPressed: () async {
+          await PlaceUtils.showRemovePlaceAlert(
+              context, geofence.geofence.identifier);
+          // chiude il bottomsheet
+          Navigator.pop(context);
+        },
+      ),
+    ]);
   }
 }

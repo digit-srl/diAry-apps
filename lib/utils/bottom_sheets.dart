@@ -41,37 +41,48 @@ class BottomSheets {
     });
   }
 
-  // Bottomsheet for map page. It has a transparent backdrop color and a
-  // height fixed to 30% of the device height (to not overlap the marker)
-  static showMapBottomSheet(BuildContext context, Widget content, [double height]) async {
-    await showSlidingBottomSheet(context, useRootNavigator: true,
-        builder: (context) {
-          return SlidingSheetDialog(
-            elevation: 8,
-            backdropColor: Colors.transparent,
-            cornerRadius: 16,
+  // Bottomsheet for map page. It has a transparent backdrop color and
+  static showMapBottomSheet(BuildContext context, Widget header, Widget body, Widget footer) async {
+    await showSlidingBottomSheet(
+      context,
+      useRootNavigator: true,
+      /*parentBuilder: (context, sheet) {
+        return Theme(
+          data: Theme.of(context),
+          child: sheet,
+        );
+      },*/
+      builder: (context) {
+        return SlidingSheetDialog(
+          elevation: 8,
+          backdropColor: Colors.transparent,
+          cornerRadius: 16,
+          color: Theme.of(context).primaryColor,
+          duration: Duration(milliseconds: 300),
+          snapSpec: const SnapSpec(
+            snap: true,
+            snappings: [
+              SnapSpec.headerFooterSnap,
+              0.6,
+              1.0,
+            ],
+            positioning: SnapPositioning.relativeToAvailableSpace,
+          ),
+          headerBuilder: (context, state) =>  Material(
             color: Theme.of(context).primaryColor,
-            duration: Duration(milliseconds: 300),
-            minHeight: 200,
-            snapSpec: const SnapSpec(
-              snap: true,
-              snappings: [1],
-              positioning: SnapPositioning.relativeToAvailableSpace,
-            ),
-            builder: (ctx, sheetState) {
-              return Container(
-                height: height,
-                child: Material(
-                  color: Theme.of(context).primaryColor,
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: content,
-                  ),
-                ),
-              );
-            },
-          );
-        });
+            child: header,
+          ),
+          footerBuilder: (ctx, state) => Material(
+            color: Theme.of(context).primaryColor,
+            child: footer,
+          ),
+          builder: (context, state) => Material(
+            color: Theme.of(context).cardTheme.color,
+            child: body,
+          ),
+        );
+      },
+    );
   }
 
   // shows a bottomsheet with an initial fixed size of 9/10 of the page.

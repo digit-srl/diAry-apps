@@ -67,6 +67,21 @@ const secondaryStyleDarker = TextStyle(
     fontFamily: "Nunito"
 );
 
+// the style used in hint text
+const hintStyle = TextStyle(
+    fontSize: 15,
+    color: hintText,
+    fontWeight: FontWeight.normal,
+    fontFamily: "Nunito"
+);
+
+const hintStyleDark = TextStyle(
+    fontSize: 15,
+    color: hintTextDark,
+    fontWeight: FontWeight.normal,
+    fontFamily: "Nunito"
+);
+
 // used for small caption text such as the character counter of the TextField
 const captionStyle = TextStyle(
     fontSize: 12,
