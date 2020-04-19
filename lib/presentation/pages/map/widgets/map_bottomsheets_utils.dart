@@ -17,6 +17,9 @@ class MapBottomsheetInfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (children == null)
+      children = <Widget>[];
+
     // adds dividers as first and last element
     children.insert(0, Divider(height: 1));
     children.add(Divider(height: 1));
@@ -150,9 +153,10 @@ class MapBottomsheetHeader extends StatelessWidget {
  * Component that represents the standard footer structure.
  */
 class MapBottomsheetFooter extends StatelessWidget {
-  List<GenericButton> buttons;
+  final List<GenericButton> buttons;
+  final bool showExpandButton;
 
-  MapBottomsheetFooter({this.buttons});
+  MapBottomsheetFooter({this.buttons, this.showExpandButton = true});
 
   @override
   Widget build(BuildContext context) {
@@ -161,20 +165,32 @@ class MapBottomsheetFooter extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.keyboard_arrow_up),
-            tooltip: "Maggiori informazioni",
-            onPressed: () {
-              if (SheetController.of(context).state.isExpanded)
-                SheetController.of(context).collapse();
-              else
-                SheetController.of(context).expand();
-            },
-          ),
+          if (showExpandButton)
+            IconButton(
+              icon: Icon(Icons.keyboard_arrow_up),
+              tooltip: "Maggiori informazioni",
+              onPressed: () {
+                if (SheetController.of(context).state.isExpanded)
+                  SheetController.of(context).collapse();
+                else
+                  SheetController.of(context).expand();
+              },
+            ),
           Spacer(),
           ButtonBar(children: buttons)
         ],
       ),
     );
+  }
+}
+
+/*
+ * Used to show an empty body in bottomsheet. The height must be set in the
+ * sheets, so it is set to a mesaure smaller than one pixel.
+ */
+class MapBottomsheetEmptyBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(height: 0.1);
   }
 }

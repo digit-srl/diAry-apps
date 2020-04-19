@@ -50,37 +50,45 @@ class _InfoPinBodyState extends State<InfoPinBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 322,
-      child:  PageView.builder(
-        controller: _pageController,
-        itemCount: widget.locations.length,
-        onPageChanged: (index) {
-          context.read<CurrentIndexNotifier>().setPage(index);
-          widget.selectPin(widget.locations[index]);
-        },
-        itemBuilder: (BuildContext context, int itemIndex) {
-          return InfoPinBodyPage(
-            index: itemIndex,
-            location: widget.locations[itemIndex],
-            note: context.read<IndexState>().note,
-            onNoteAdded: widget.onNoteAdded,
-            onNoteRemoved: widget.onNoteRemoved,
-            onPrevious: () {
-              //TODO change to animatedPage
-              if (itemIndex > 0) {
-                _pageController.jumpToPage(itemIndex - 1);
-              }
-            },
-            onNext: () {
-              //TODO change to animatedPage
-              if (itemIndex < widget.locations.length - 1) {
-                _pageController.jumpToPage(itemIndex + 1);
-              }
-            },
-          );
-        },
-      )
+    return StateNotifierBuilder<InfoPinState>(
+      stateNotifier: context.read<InfoPinNotifier>(),
+      builder: (BuildContext context, value, Widget child) {
+        return value.maybeMap(
+            initial: (_) => Container(
+                height: 322,
+                child:  PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.locations.length,
+                  onPageChanged: (index) {
+                    context.read<CurrentIndexNotifier>().setPage(index);
+                    widget.selectPin(widget.locations[index]);
+                  },
+                  itemBuilder: (BuildContext context, int itemIndex) {
+                    return InfoPinBodyPage(
+                      index: itemIndex,
+                      location: widget.locations[itemIndex],
+                      note: context.read<IndexState>().note,
+                      onNoteAdded: widget.onNoteAdded,
+                      onNoteRemoved: widget.onNoteRemoved,
+                      onPrevious: () {
+                        //TODO change to animatedPage
+                        if (itemIndex > 0) {
+                          _pageController.jumpToPage(itemIndex - 1);
+                        }
+                      },
+                      onNext: () {
+                        //TODO change to animatedPage
+                        if (itemIndex < widget.locations.length - 1) {
+                          _pageController.jumpToPage(itemIndex + 1);
+                        }
+                      },
+                    );
+                  },
+                )
+            ),
+            editing: (editing) => MapBottomsheetEmptyBody(),
+            orElse: () => MapBottomsheetEmptyBody());
+      },
     );
   }
 }
@@ -328,7 +336,9 @@ class InfoPinInitialFooter extends StatelessWidget {
         context.select<IndexState, String>((state) => state.note);
 
     if (note != null) {
-      return MapBottomsheetFooter(buttons: <GenericButton>[
+      return MapBottomsheetFooter(
+          showExpandButton: true,
+          buttons: <GenericButton>[
         GenericButton(
           text: 'Modifica nota',
           withBorder: false,
@@ -368,7 +378,9 @@ class InfoPinEditingFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MapBottomsheetFooter(buttons: <GenericButton>[
+    return MapBottomsheetFooter(
+        showExpandButton: false,
+        buttons: <GenericButton>[
       GenericButton(
         text: 'Annulla',
         withBorder: false,

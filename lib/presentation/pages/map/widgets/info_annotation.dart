@@ -13,18 +13,32 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 import 'map_bottomsheets_utils.dart';
 
 class InfoAnnotationBody extends StatelessWidget {
-  static DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
-
   const InfoAnnotationBody({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Annotation annotation = context.read<InfoAnnotationNotifier>().annotation;
+    return StateNotifierBuilder<InfoPinState>(
+        stateNotifier: context.read<InfoAnnotationNotifier>(),
+        builder: (BuildContext context, state, Widget child) {
+          return state.maybeMap(
+              initial: (_) =>  InfoAnnotationInitialBody(),
+              editing: (e) => MapBottomsheetEmptyBody(),
+              orElse: () => MapBottomsheetEmptyBody()
+          );
+        });
+  }
+}
+
+class InfoAnnotationInitialBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Annotation annotation = context.read<InfoAnnotationNotifier>().annotation;
+    final DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
 
     return MapBottomsheetInfoBox(children: <Widget>[
       MapBottomsheetInfoLine(
         icon: Icon(Icons.gps_fixed),
         text:
-            'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
+        'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
       ),
       MapBottomsheetInfoLine(
         icon: Icon(Icons.access_time),
@@ -149,7 +163,9 @@ class InfoAnnotationFooter extends StatelessWidget {
 class InfoAnnotationInitialFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MapBottomsheetFooter(buttons: <GenericButton>[
+    return MapBottomsheetFooter(
+        showExpandButton: true,
+        buttons: <GenericButton>[
       GenericButton(
         text: 'Modifica',
         onPressed: () async {
@@ -164,7 +180,9 @@ class InfoAnnotationInitialFooter extends StatelessWidget {
 class InfoAnnotationEditingFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MapBottomsheetFooter(buttons: <GenericButton>[
+    return MapBottomsheetFooter(
+        showExpandButton: false,
+        buttons: <GenericButton>[
       GenericButton(
         text: 'Annulla',
         withBorder: false,

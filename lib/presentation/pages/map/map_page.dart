@@ -570,8 +570,15 @@ class _MapPageState extends State<MapPage>
             pageController: pageController,
           ),
         ),
-        StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
-          value: notifier,
+        MultiProvider(
+          providers: [
+            StateNotifierProvider<InfoPinNotifier, InfoPinState>.value(
+              value: infoPinNotifier,
+            ),
+            StateNotifierProvider<CurrentIndexNotifier, IndexState>.value(
+              value: notifier,
+            ),
+          ],
           child: InfoPinBody(
             pageController: pageController,
             locations: dailyLocations,

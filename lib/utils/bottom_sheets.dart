@@ -72,7 +72,7 @@ class BottomSheets {
             child: footer,
           ),
           builder: (context, state) => Material(
-            color: Theme.of(context).cardTheme.color,
+            color: Theme.of(context).primaryColor,
             child: body,
           ),
         );
