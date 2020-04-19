@@ -265,7 +265,7 @@ class _InfoPinEditingHeaderState extends State<InfoPinEditingHeader> {
     return MapBottomsheetHeader(
       child: Row(
         children: <Widget>[
-          MapBottomsheetHeaderIcon(CustomIcons.pin_outline, color: Colors.blue),
+          MapBottomsheetHeaderIcon(CustomIcons.bookmark_outline, color: Colors.blue),
           SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -287,7 +287,7 @@ class _InfoPinEditingHeaderState extends State<InfoPinEditingHeader> {
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.secondary,
                   hintStyle: Theme.of(context).textTheme.overline,
-                  hintText: 'Scrivi qui la tua segnalazione'),
+                  hintText: 'Scrivi qui la nota da allegare'),
               onChanged: (t) {
                 context.read<CurrentIndexNotifier>().tmpText = t;
               },
