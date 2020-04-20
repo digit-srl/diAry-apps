@@ -26,6 +26,7 @@ ServiceDefinitions.json
 Runner/GeneratedPluginRegistrant.*
 Runner/Keys.swift
 Runner/GoogleService-Info.plist
+config/*
 
 # Exceptions to above rules.
 !default.mode1v3
