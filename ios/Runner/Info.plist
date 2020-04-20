@@ -22,8 +22,6 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requests access to your files to store the location data on your device.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app requests your location when it's in use and in background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -34,6 +32,8 @@
 	<string>This app requests your location when it's in use.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>This app requests the device's accelerators to access movement data.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requests access to your files to store the location data on your device.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
