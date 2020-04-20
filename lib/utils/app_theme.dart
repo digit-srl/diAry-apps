@@ -68,6 +68,7 @@ class AppTheme {
         subhead: primaryStyle,
         body1: secondaryStyle,
         body2: secondaryStyleDarker,
+        overline: hintStyle,
         caption: captionStyle,
         button: buttonTextStyle),
   );
@@ -118,6 +119,7 @@ class AppTheme {
         body1: secondaryStyleLight,
         body2: secondaryStyleLight,
         caption: captionStyleLight,
+        overline: hintStyleDark,
         button: buttonTextStyle),
   );
 }
