@@ -68,7 +68,7 @@ class Location {
   Location.fromJson(Map<String, dynamic> json) {
     event = eventFromString(json['event']);
     isMoving = json['is_moving'];
-    isMoving = json['sample'];
+    sample = json['sample'];
     uuid = json['uuid'];
 //    timestamp = json['timestamp'];
     dateTime = json['timestamp'] != null
