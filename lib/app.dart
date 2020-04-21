@@ -23,15 +23,18 @@ import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
+import 'database.dart' as db;
 import 'domain/entities/location.dart';
 import 'domain/repositories/daily_stats_repository.dart';
+import 'infrastructure/data/locations_local_data_sources.dart';
+import 'infrastructure/repositories/location_repository_impl.dart';
 import 'infrastructure/repositories/user_repository_impl.dart';
 import 'package:provider/provider.dart';
 
 import 'domain/entities/day.dart';
 
 /*
- * Main widget of the application. It initializes providers, and the first 
+ * Main widget of the application. It initializes providers, and the first
  * build layer with the custom FAB. It is necessary to keep it separated by the
  * root page, to avoid state changes on the FAB, during page change.
  */
@@ -71,6 +74,11 @@ class _DiAryAppState extends State<DiAryApp> {
       providers: [
         Provider(
           create: (BuildContext context) => AppProvider(serviceNotifier),
+          lazy: false,
+        ),
+        Provider(
+          create: (BuildContext context) => LocationRepositoryImpl(
+              LocationsLocalDataSourcesImpl(db.MoorDb())),
           lazy: false,
         ),
         Provider<UserRepositoryImpl>.value(

@@ -22,12 +22,12 @@ dependencies:
 
   flutter_background_geolocation: ^1.7.3
   auto_size_text: ^2.1.0
-  google_maps_flutter: ^0.5.25+3
+  google_maps_flutter: ^0.5.26+2
   flutter_statusbarcolor: ^0.2.3
   flutter_circular_chart: ^0.1.0
   flutter_state_notifier: ^0.3.0
   rflutter_alert: ^1.0.3
-  path_provider: ^1.6.5
+  path_provider: ^1.6.7
 #  share_extend: ^1.1.1
   esys_flutter_share: ^1.0.2
   device_preview: ^0.4.4
@@ -41,22 +41,26 @@ dependencies:
   uuid: ^2.0.4
   hive: ^1.4.1+1
   hive_flutter: ^0.3.0+2
-  flutter_colorpicker: ^0.3.2
-  package_info: ^0.4.0+16
-  file_picker: ^1.6.2
+  flutter_colorpicker: ^0.3.4
+  package_info: ^0.4.0+17
+  file_picker: ^1.6.3+2
   sliding_sheet: ^0.3.3
   freezed_annotation: ^0.7.1
   meta: ^1.1.8
   dartz:
   intl:
   dart_geohash: ^1.0.2
-  url_launcher: ^5.4.2
+  url_launcher: ^5.4.5
   equatable:
+  moor: # use the latest version
+  moor_flutter: # use the latest version
+  path:
 
 
 dev_dependencies:
   hive_generator: ^0.7.0+2
   build_runner: ^1.8.1
+  moor_generator: # use the latest version
   freezed:
   flutter_test:
     sdk: flutter

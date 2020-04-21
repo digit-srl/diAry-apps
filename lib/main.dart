@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -108,11 +109,11 @@ void main() async {
   );
 
   runApp(
-    DiAryApp(locationsPerDate: locationsPerDate, days: days),
-    // DevicePreview(
-    //   enabled: !kReleaseMode,
-    //   builder: (context) =>
-    //     DiAryApp(locationsPerDate: locationsPerDate, days: days),
-    // ),
+//    DiAryApp(locationsPerDate: locationsPerDate, days: days),
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) =>
+          DiAryApp(locationsPerDate: locationsPerDate, days: days),
+    ),
   );
 }
