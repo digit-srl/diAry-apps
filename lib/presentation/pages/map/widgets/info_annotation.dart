@@ -20,25 +20,24 @@ class InfoAnnotationBody extends StatelessWidget {
         stateNotifier: context.read<InfoAnnotationNotifier>(),
         builder: (BuildContext context, state, Widget child) {
           return state.maybeMap(
-              initial: (_) =>  InfoAnnotationInitialBody(),
+              initial: (_) => InfoAnnotationInitialBody(),
               editing: (e) => MapBottomsheetEmptyBody(),
-              orElse: () => MapBottomsheetEmptyBody()
-          );
+              orElse: () => MapBottomsheetEmptyBody());
         });
   }
 }
 
 class InfoAnnotationInitialBody extends StatelessWidget {
+  static final DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
   @override
   Widget build(BuildContext context) {
-    final Annotation annotation = context.read<InfoAnnotationNotifier>().annotation;
-    final DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
-
+    final Annotation annotation =
+        context.read<InfoAnnotationNotifier>().annotation;
     return MapBottomsheetInfoBox(children: <Widget>[
       MapBottomsheetInfoLine(
         icon: Icon(Icons.gps_fixed),
         text:
-        'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
+            'Lat: ${annotation.latitude?.toStringAsFixed(2)} Long: ${annotation.longitude?.toStringAsFixed(2)}',
       ),
       MapBottomsheetInfoLine(
         icon: Icon(Icons.access_time),
@@ -67,23 +66,19 @@ class InfoAnnotationInitialHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MapBottomsheetHeader(
-      child: Row(
-        children: <Widget>[
-          MapBottomsheetHeaderIcon(
-            CustomIcons.bookmark_outline,
-            color: Colors.amber
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: AutoSizeText(
-              context.read<InfoAnnotationNotifier>().annotation.title,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.headline,
-            ),
-          ),
-      ])
-    );
+        child: Row(children: <Widget>[
+      MapBottomsheetHeaderIcon(CustomIcons.bookmark_outline,
+          color: Colors.amber),
+      SizedBox(width: 16),
+      Expanded(
+        child: AutoSizeText(
+          context.read<InfoAnnotationNotifier>().annotation.title,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headline,
+        ),
+      ),
+    ]));
   }
 }
 
@@ -166,14 +161,14 @@ class InfoAnnotationInitialFooter extends StatelessWidget {
     return MapBottomsheetFooter(
         showExpandButton: true,
         buttons: <GenericButton>[
-      GenericButton(
-        text: 'Modifica',
-        onPressed: () async {
-          SheetController.of(context).collapse();
-          context.read<InfoAnnotationNotifier>().showEditing();
-        },
-      ),
-    ]);
+          GenericButton(
+            text: 'Modifica',
+            onPressed: () async {
+              SheetController.of(context).collapse();
+              context.read<InfoAnnotationNotifier>().showEditing();
+            },
+          ),
+        ]);
   }
 }
 
@@ -183,20 +178,20 @@ class InfoAnnotationEditingFooter extends StatelessWidget {
     return MapBottomsheetFooter(
         showExpandButton: false,
         buttons: <GenericButton>[
-      GenericButton(
-        text: 'Annulla',
-        withBorder: false,
-        onPressed: () async {
-          context.read<InfoAnnotationNotifier>().showInfo();
-        },
-      ),
-      GenericButton(
-        text: 'Salva',
-        onPressed: () async {
-          context.read<InfoAnnotationNotifier>().saveNewAnnotationText();
-        },
-      ),
-    ]);
+          GenericButton(
+            text: 'Annulla',
+            withBorder: false,
+            onPressed: () async {
+              context.read<InfoAnnotationNotifier>().showInfo();
+            },
+          ),
+          GenericButton(
+            text: 'Salva',
+            onPressed: () async {
+              context.read<InfoAnnotationNotifier>().saveNewAnnotationText();
+            },
+          ),
+        ]);
   }
 }
 

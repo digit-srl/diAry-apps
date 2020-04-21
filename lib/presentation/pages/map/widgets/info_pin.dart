@@ -55,37 +55,37 @@ class _InfoPinBodyState extends State<InfoPinBody> {
       builder: (BuildContext context, value, Widget child) {
         return value.maybeMap(
             initial: (_) => Container(
-                height: 322,
-                child:  PageView.builder(
-                  controller: _pageController,
-                  itemCount: widget.locations.length,
-                  onPageChanged: (index) {
-                    context.read<CurrentIndexNotifier>().setPage(index);
-                    widget.selectPin(widget.locations[index]);
-                  },
-                  itemBuilder: (BuildContext context, int itemIndex) {
-                    return InfoPinBodyPage(
-                      index: itemIndex,
-                      location: widget.locations[itemIndex],
-                      note: context.read<IndexState>().note,
-                      onNoteAdded: widget.onNoteAdded,
-                      onNoteRemoved: widget.onNoteRemoved,
-                      onPrevious: () {
-                        //TODO change to animatedPage
-                        if (itemIndex > 0) {
-                          _pageController.jumpToPage(itemIndex - 1);
-                        }
-                      },
-                      onNext: () {
-                        //TODO change to animatedPage
-                        if (itemIndex < widget.locations.length - 1) {
-                          _pageController.jumpToPage(itemIndex + 1);
-                        }
-                      },
-                    );
-                  },
-                )
-            ),
+                  height: 322,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.locations.length,
+                    onPageChanged: (index) {
+                      context.read<CurrentIndexNotifier>().setPage(index);
+                      widget.selectPin(widget.locations[index]);
+                    },
+                    itemBuilder: (BuildContext context, int itemIndex) {
+                      return InfoPinBodyPage(
+                        index: itemIndex,
+                        location: widget.locations[itemIndex],
+                        note: context.read<IndexState>().note,
+                        onNoteAdded: widget.onNoteAdded,
+                        onNoteRemoved: widget.onNoteRemoved,
+                        onPrevious: () {
+                          //TODO change to animatedPage
+                          if (itemIndex > 0) {
+                            _pageController.jumpToPage(itemIndex - 1);
+                          }
+                        },
+                        onNext: () {
+                          //TODO change to animatedPage
+                          if (itemIndex < widget.locations.length - 1) {
+                            _pageController.jumpToPage(itemIndex + 1);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
             editing: (editing) => MapBottomsheetEmptyBody(),
             orElse: () => MapBottomsheetEmptyBody());
       },
@@ -102,7 +102,7 @@ class InfoPinBodyPage extends StatelessWidget {
   final int index;
   final String note;
   static DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
-  
+
   const InfoPinBodyPage(
       {Key key,
       this.onNext,
@@ -119,7 +119,8 @@ class InfoPinBodyPage extends StatelessWidget {
     return MapBottomsheetInfoBox(children: <Widget>[
       MapBottomsheetFixedInfoLine(
         icon: Icon(Icons.note),
-        text: context.select<IndexState, String>((state) => state.note) ?? "Nessuna nota",
+        text: context.select<IndexState, String>((state) => state.note) ??
+            "Nessuna nota",
       ),
       MapBottomsheetFixedInfoLine(
         icon: Icon(Icons.data_usage),
@@ -131,7 +132,8 @@ class InfoPinBodyPage extends StatelessWidget {
       ),
       MapBottomsheetFixedInfoLine(
         icon: Icon(Icons.pin_drop),
-        text: 'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
+        text:
+            'Lat: ${location.coords.latitude.toStringAsFixed(2)} Long: ${location.coords.longitude.toStringAsFixed(2)}',
       ),
       MapBottomsheetFixedInfoLine(
         icon: Icon(Icons.gps_fixed),
@@ -143,12 +145,15 @@ class InfoPinBodyPage extends StatelessWidget {
       ),
       MapBottomsheetFixedInfoLine(
         icon: Icon(Icons.directions_walk),
-        text: 'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
+        text:
+            'Attività: ${location.activity.type.toUpperCase()} al ${location.activity.confidence.toInt()} %',
       ),
       MapBottomsheetFixedInfoLine(
-        icon: Icon(location.battery.isCharging
-            ? Icons.battery_charging_full
-            : Icons.battery_std,),
+        icon: Icon(
+          location.battery.isCharging
+              ? Icons.battery_charging_full
+              : Icons.battery_std,
+        ),
         text: '${(location.battery.level * 100).toInt()} %',
       ),
     ]);
@@ -168,13 +173,13 @@ class InfoPinHeader extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
         return value.maybeMap(
             initial: (_) => InfoPinInitialHeader(
-              pageController: pageController,
-            ),
+                  pageController: pageController,
+                ),
             editing: (editing) => InfoPinEditingHeader(
-              text: editing.text,
-            ),
+                  text: editing.text,
+                ),
             orElse: () => Container());
-        },
+      },
     );
   }
 }
@@ -202,7 +207,6 @@ class InfoPinInitialHeader extends StatelessWidget {
             }
           },
         ),
-
         MapBottomsheetHeaderIcon(
             (note != null)
                 ? CustomIcons.bookmark_outline
@@ -265,7 +269,8 @@ class _InfoPinEditingHeaderState extends State<InfoPinEditingHeader> {
     return MapBottomsheetHeader(
       child: Row(
         children: <Widget>[
-          MapBottomsheetHeaderIcon(CustomIcons.bookmark_outline, color: Colors.blue),
+          MapBottomsheetHeaderIcon(CustomIcons.bookmark_outline,
+              color: Colors.blue),
           SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -339,23 +344,23 @@ class InfoPinInitialFooter extends StatelessWidget {
       return MapBottomsheetFooter(
           showExpandButton: true,
           buttons: <GenericButton>[
-        GenericButton(
-          text: 'Modifica nota',
-          withBorder: false,
-          onPressed: () async {
-            SheetController.of(context).collapse();
-            context.read<InfoPinNotifier>().showEditing(note);
-          },
-        ),
-        GenericButton(
-          text: 'Rimuovi nota',
-          onPressed: () async {
-            final uuid =
-                await context.read<CurrentIndexNotifier>().removeNote();
-            onNoteRemoved(uuid);
-          },
-        ),
-      ]);
+            GenericButton(
+              text: 'Modifica nota',
+              withBorder: false,
+              onPressed: () async {
+                SheetController.of(context).collapse();
+                context.read<InfoPinNotifier>().showEditing(note);
+              },
+            ),
+            GenericButton(
+              text: 'Rimuovi nota',
+              onPressed: () async {
+                final uuid =
+                    await context.read<CurrentIndexNotifier>().removeNote();
+                onNoteRemoved(uuid);
+              },
+            ),
+          ]);
     } else {
       return MapBottomsheetFooter(buttons: <GenericButton>[
         GenericButton(
@@ -381,22 +386,23 @@ class InfoPinEditingFooter extends StatelessWidget {
     return MapBottomsheetFooter(
         showExpandButton: false,
         buttons: <GenericButton>[
-      GenericButton(
-        text: 'Annulla',
-        withBorder: false,
-        onPressed: () async {
-          context.read<InfoPinNotifier>().showInfo();
-        },
-      ),
-      GenericButton(
-        text: 'Salva nota',
-        onPressed: () async {
-          final note = await context.read<CurrentIndexNotifier>().saveNote();
-          context.read<InfoPinNotifier>().showInfo();
-          onNoteAdded(context.read<IndexState>().location.uuid, note);
-        },
-      ),
-    ]);
+          GenericButton(
+            text: 'Annulla',
+            withBorder: false,
+            onPressed: () async {
+              context.read<InfoPinNotifier>().showInfo();
+            },
+          ),
+          GenericButton(
+            text: 'Salva nota',
+            onPressed: () async {
+              final note =
+                  await context.read<CurrentIndexNotifier>().saveNote();
+              context.read<InfoPinNotifier>().showInfo();
+              onNoteAdded(context.read<IndexState>().location.uuid, note);
+            },
+          ),
+        ]);
   }
 }
 
