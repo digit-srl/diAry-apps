@@ -1,6 +1,0 @@
-CREATE TABLE locations (id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT NOT NULL DEFAULT '', timestamp TEXT, "json" TEXT, data BLOB, encrypted BOOLEAN NOT NULL DEFAULT 0, locked BOOLEAN NOT NULL DEFAULT 0)
-
-CREATE TABLE geofences (id INTEGER PRIMARY KEY AUTOINCREMENT, identifier TEXT NOT NULL UNIQUE, latitude DOUBLE NOT NULL, sin_latitude DOUBLE NOT NULL, cos_latitude DOUBLE NOT NULL, longitude DOUBLE NOT NULL, sin_longitude DOUBLE NOT NULL, cos_longitude DOUBLE NOT NULL, radius DOUBLE NOT NULL, notifyOnEntry BOOLEAN NOT NULL DEFAULT 0, notifyOnExit BOOLEAN NOT NULL DEFAULT 0, notifyOnDwell BOOLEAN NOT NULL DEFAULT 0, loiteringDelay INTEGER NOT NULL DEFAULT 0, extras TEXT)
-
-getAllLocations: SELECT * FROM locations;
-getLocationsBetween: SELECT * FROM locations WHERE timestamp BETWEEN ? AND ?

@@ -4,6 +4,7 @@ import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/domain/repositories/user_repository.dart';
+import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
@@ -30,9 +31,10 @@ class DayState {
 
 class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
   Map<DateTime, Day> days;
+  final LocationRepository locationRepository;
   static DateTime openAppDate = DateTime.now().withoutMinAndSec();
 
-  DayNotifier(this.days)
+  DayNotifier(this.days, this.locationRepository)
       : super(DayState(days[DateTime.now().withoutMinAndSec()]));
 
   @override
@@ -50,7 +52,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
 
   void processAllLocations() async {
     final Map<DateTime, List<Location>> locationsPerDate =
-        await LocationUtils.readAndFilterLocationsPerDay();
+        await locationRepository.readAndFilterLocationsPerDay();
     final newDays =
         LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
 

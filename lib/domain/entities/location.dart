@@ -95,6 +95,12 @@ class Location {
     geofence = json['geofence'] != null
         ? new Geofence.fromJson(Map<String, dynamic>.from(json['geofence']))
         : null;
+
+    final speed = coords?.speed ?? 0.0;
+    if (speed < 0.5) {
+      final currentActivity = activity.type;
+      activity.type = 'still';
+    }
   }
 
   Map<String, dynamic> toJson() {

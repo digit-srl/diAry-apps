@@ -43,7 +43,6 @@ class LocationUtils {
     ).then(onDone, onError: onError);
   }
 
-  //TODO spostare per rispettare l'architettura pulita
   static Map<DateTime, Day> aggregateLocationsInDayPerDate(
       Map<DateTime, List<Location>> locationsPerDay) {
     Map<DateTime, Day> days = {};
@@ -90,49 +89,40 @@ class LocationUtils {
     return days;
   }
 
-  static Future<Map<DateTime, List<Location>>>
-      readAndFilterLocationsPerDay() async {
-    Map<DateTime, List<Location>> locationsPerDay = {};
+//  static Future<Map<DateTime, List<Location>>>
+//      readAndFilterLocationsPerDay() async {
+//    Map<DateTime, List<Location>> locationsPerDay = {};
+//
+//    List locationsMap = await bg.BackgroundGeolocation.locations;
+//    print('[LocationUtils] total records: ${locationsMap.length}');
+//    final DateTime today = DateTime.now().withoutMinAndSec();
+//    if (locationsMap.isEmpty) {
+//      return {today: []};
+//    }
+//    for (var map in locationsMap) {
+//      try {
+//        final Location loc = Location.fromJson(Map<String, dynamic>.from(map));
+//        final speed = loc?.coords?.speed ?? 0.0;
+//        if (speed < 0.5) {
+//          loc.activity.type = 'still';
+//        }
+//        final date = loc.dateTime.withoutMinAndSec();
+//        if (!locationsPerDay.containsKey(date)) {
+//          locationsPerDay[date] = [];
+//        }
+//        locationsPerDay[date].add(loc);
+//      } catch (ex) {
+//        print('[ERROR] _readLocations \n$map\n$ex');
+//        print('[END_ERROR _readLocations');
+//      }
+//    }
+//    return locationsPerDay;
+//  }
 
-    List locationsMap = await bg.BackgroundGeolocation.locations;
-    print('[LocationUtils] total records: ${locationsMap.length}');
-    final DateTime today = DateTime.now().withoutMinAndSec();
-    if (locationsMap.isEmpty) {
-      return {today: []};
-    }
-    for (var map in locationsMap) {
-      try {
-        final Location loc = Location.fromJson(Map<String, dynamic>.from(map));
-        final speed = loc?.coords?.speed ?? 0.0;
-        if (speed < 0.5) {
-          final currentActivity = loc.activity.type;
-          loc.activity.type = 'still';
-          print('Set to STILL record with speed < 1.0 m/s');
-          print(
-              'Before was $currentActivity with speed: ${loc.coords.speed} m/s');
-        }
-        final date = loc.dateTime.withoutMinAndSec();
-        if (!locationsPerDay.containsKey(date)) {
-          locationsPerDay[date] = [];
-        }
-        locationsPerDay[date].add(loc);
-      } catch (ex) {
-        print('[ERROR] _readLocations \n$map\n$ex');
-        print('[END_ERROR _readLocations');
-      }
-    }
-    locationsPerDay.keys.forEach((element) {
-      print(
-          '[LocationUtils] day: $element locations: ${locationsPerDay[element].length}');
-    });
-
-    return locationsPerDay;
-  }
-
-  Map<DateTime, bool> fakeActive = {
-    DateTime(2020, 3, 27, 17, 22): false,
-    DateTime(2020, 3, 27, 17, 25): true,
-  };
+//  Map<DateTime, bool> fakeActive = {
+//    DateTime(2020, 3, 27, 17, 22): false,
+//    DateTime(2020, 3, 27, 17, 25): true,
+//  };
 
   static AggregationData aggregateLocationsInSlices3(
     List<Location> locations, {
@@ -210,7 +200,6 @@ class LocationUtils {
             ? Action.Unknown
             : geofence?.action == 'EXIT' ? Action.Exit : Action.Enter;
         final where = geofence?.identifier;
-        print('uuid: ${loc.uuid}, identifier: $where, action: $action');
 
         if (!(event == Event.On ||
             event == Event.Off ||

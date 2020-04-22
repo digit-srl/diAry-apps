@@ -10,15 +10,18 @@ abstract class LocationsLocalDataSources {
 }
 
 class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
-  db.MoorDb moorDb;
-  LocationsLocalDataSourcesImpl(this.moorDb);
-
   @override
   Future<List<Location>> getAllLocations() async {
-    final List<db.Location> list = await moorDb.getAllLocations().get();
+    final List<Map<String, dynamic>> list =
+        await db.DiAryDatabase.get().getAllLocations();
     final locations = list
-        .map((dbLoc) =>
-            Location.fromJson(json.decode(String.fromCharCodes(dbLoc.data))))
+        .map(
+          (dbLoc) => Location.fromJson(
+            json.decode(
+              String.fromCharCodes(dbLoc['data']),
+            ),
+          ),
+        )
         .toList();
     return locations;
   }
@@ -26,12 +29,12 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
   @override
   Future<List<Location>> getLocationsBetween(
       DateTime start, DateTime end) async {
-    final List<db.Location> list = await moorDb
-        .getLocationsBetween(start.toIso8601String(), end.toIso8601String())
-        .get();
+    final List<Map<String, dynamic>> list = await db.DiAryDatabase.get()
+        .getLocationsBetween(start.toUtc().toIso8601String().substring(0, 10),
+            end.toUtc().toIso8601String().substring(0, 10));
     final locations = list
         .map((dbLoc) =>
-            Location.fromJson(json.decode(String.fromCharCodes(dbLoc.data))))
+            Location.fromJson(json.decode(String.fromCharCodes(dbLoc['data']))))
         .toList();
     return locations;
   }

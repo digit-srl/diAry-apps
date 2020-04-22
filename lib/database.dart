@@ -1,32 +1,68 @@
 import 'dart:io';
-
-import 'package:moor_flutter/moor_flutter.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:moor/moor.dart';
-part 'database.g.dart';
+import 'package:synchronized/synchronized.dart';
+import 'package:sqflite/sqflite.dart';
 
-LazyDatabase _openConnection() {
-  // the LazyDatabase util lets us find the right location for the file async.
-  return LazyDatabase(() async {
-    // put the database file, called db.sqlite here, into the documents folder
-    // for your app.
+class DiAryDatabase {
+  static final DiAryDatabase _appDatabase = new DiAryDatabase._internal();
+  final _lock = new Lock();
+
+  DiAryDatabase._internal();
+
+  Database _database;
+
+  static DiAryDatabase get() {
+    return _appDatabase;
+  }
+
+  Future<Database> getDb() async {
+    if (_database == null) {
+      await _lock.synchronized(() async {
+        // Check again once entering the synchronized block
+        if (_database == null) {
+          await _init();
+        }
+      });
+    }
+    return _database;
+  }
+
+  Future<String> getPath() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(
-        p.join(dbFolder.parent.path, 'databases/transistor_location_manager'));
-    print(file.path);
-    return FlutterQueryExecutor(
-      path: file.path,
-    );
-  });
-}
+        join(dbFolder.parent.path, 'databases/transistor_location_manager'));
+    return file.path;
+  }
 
-@UseMoor(
-  include: {'tables.moor'},
-)
-class MoorDb extends _$MoorDb {
-  MoorDb() : super(_openConnection());
+  _init() async {
+    final path = await getPath();
+    _database = await openReadOnlyDatabase(path);
+  }
 
-  @override
-  int get schemaVersion => 1;
+  Future<List<Map<String, dynamic>>> getAllLocations() async {
+    try {
+      final _db = await getDb();
+      var result = await _db.rawQuery('SELECT * FROM locations;');
+      return result;
+    } catch (e) {
+      print('[DiAryDatabase] [getAllLocations] $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getLocationsBetween(
+      String start, String end) async {
+    try {
+      final _db = await getDb();
+      final query =
+          'SELECT * FROM locations WHERE timestamp BETWEEN "$start" AND "$end";';
+      print('[DiAryDatabase] [getLocationsBetween] query: $query');
+      var result = await _db.rawQuery(query);
+      return result;
+    } catch (e) {
+      print('[DiAryDatabase] [getLocationsBetween] $e');
+      return [];
+    }
+  }
 }

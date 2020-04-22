@@ -7,7 +7,6 @@ import 'package:diary/infrastructure/data/daily_stats_remote_data_sources.dart';
 import 'package:diary/infrastructure/data/user_local_data_sources.dart';
 import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
-import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -23,21 +22,17 @@ import 'application/location_notifier.dart';
 import 'application/motion_activity_notifier.dart';
 import 'application/date_notifier.dart';
 import 'application/service_notifier.dart';
-import 'database.dart' as db;
 import 'domain/entities/location.dart';
 import 'domain/repositories/daily_stats_repository.dart';
-import 'infrastructure/data/locations_local_data_sources.dart';
 import 'infrastructure/repositories/location_repository_impl.dart';
 import 'infrastructure/repositories/user_repository_impl.dart';
 import 'package:provider/provider.dart';
 
 import 'domain/entities/day.dart';
 
-/*
- * Main widget of the application. It initializes providers, and the first
- * build layer with the custom FAB. It is necessary to keep it separated by the
- * root page, to avoid state changes on the FAB, during page change.
- */
+/// Main widget of the application. It initializes providers, and the first
+/// build layer with the custom FAB. It is necessary to keep it separated by the
+/// root page, to avoid state changes on the FAB, during page change.
 class DiAryApp extends StatefulWidget {
   final Map<DateTime, List<Location>> locationsPerDate;
   final Map<DateTime, Day> days;
@@ -76,11 +71,6 @@ class _DiAryAppState extends State<DiAryApp> {
           create: (BuildContext context) => AppProvider(serviceNotifier),
           lazy: false,
         ),
-        Provider(
-          create: (BuildContext context) => LocationRepositoryImpl(
-              LocationsLocalDataSourcesImpl(db.MoorDb())),
-          lazy: false,
-        ),
         Provider<UserRepositoryImpl>.value(
           value: userRepository,
         ),
@@ -98,7 +88,8 @@ class _DiAryAppState extends State<DiAryApp> {
           create: (_) => DateNotifier(),
         ),
         StateNotifierProvider<DayNotifier, DayState>(
-          create: (_) => DayNotifier(widget.days),
+          create: (_) =>
+              DayNotifier(widget.days, context.read<LocationRepositoryImpl>()),
           lazy: false,
         ),
         StateNotifierProvider<ServiceNotifier, ServiceState>.value(
@@ -142,7 +133,25 @@ class _DiAryAppState extends State<DiAryApp> {
           child: Scaffold(
             body: RootPage(),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+//            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+            floatingActionButton: Builder(
+              builder: (ctx) {
+                return FloatingActionButton(
+                  backgroundColor: Colors.yellow,
+                  onPressed: () async {
+                    final result = await ctx
+                        .read<LocationRepositoryImpl>()
+                        .getLocationsBetween(
+                            DateTime(2020, 4, 21, 0, 0), DateTime.now());
+                    result.fold(
+                      (f) => print(f),
+                      (locs) => print(locs.length),
+                    );
+//                  print(locs.length);
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),
