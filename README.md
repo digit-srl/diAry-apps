@@ -18,7 +18,8 @@ Adopting **responsible behaviors and keeping track of them** is the most effecti
 
 ## Download
 
-_Coming to Google Play very soon…_
+* [Google Play for Android](https://play.google.com/apps/testing/srl.digit.diary)
+* [App Store for Apple iOS](https://testflight.apple.com/join/RMZqdjPh)
 
 ## License
 
