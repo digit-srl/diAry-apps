@@ -11,13 +11,13 @@ class Day {
   final DateTime date;
   final List<Slice> slices;
   final List<Slice> places;
-  final List<Annotation> annotations;
+  List<Annotation> annotations;
   final DailyStatsResponse dailyStatsResponse;
   final int sampleCount;
   final int discardedSampleCount;
   final String centroidHash;
   final double boundingBoxDiagonal;
-  final pointCount;
+//  final pointCount;
   int wom;
 
   bool get isStatsSended => dailyStatsResponse != null;
@@ -30,7 +30,7 @@ class Day {
     this.sampleCount,
     this.discardedSampleCount,
     this.centroidHash,
-    this.pointCount = 0,
+//    this.pointCount = 0,
     this.dailyStatsResponse,
     this.boundingBoxDiagonal,
   }) {
@@ -62,6 +62,7 @@ class Day {
   copyWith({
     List<Slice> slices,
     List<Slice> places,
+    List<Annotation> annotations,
     DailyStatsResponse response,
     int newPoints = 0,
   }) {
@@ -69,8 +70,8 @@ class Day {
       date: this.date,
       slices: slices ?? this.slices,
       places: places ?? this.places,
-      annotations: this.annotations,
-      pointCount: this.pointCount + newPoints,
+      annotations: annotations ?? this.annotations,
+//      pointCount: this.pointCount + newPoints,
 //      dailyStats: this.dailyStats,
       dailyStatsResponse: response ?? this.dailyStatsResponse,
       sampleCount: this.sampleCount,
@@ -108,7 +109,7 @@ class Day {
       slices: this.slices,
       places: this.places,
       annotations: list,
-      pointCount: this.pointCount,
+//      pointCount: this.pointCount,
 //      dailyStats: this.dailyStats,
       dailyStatsResponse: this.dailyStatsResponse,
       sampleCount: this.sampleCount,

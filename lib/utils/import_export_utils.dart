@@ -3,11 +3,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:csv/csv.dart';
+import 'package:diary/domain/entities/day.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../domain/entities/location.dart';
 import 'location_utils.dart';
+import 'logger.dart';
 
 class ImportExportUtils {
   static Future<List<File>> saveFilesOnLocalStorage(
@@ -41,7 +43,7 @@ class ImportExportUtils {
 
   static Future<File> writeCsv(String data, DateTime currentDate) async {
     final file = await _localFile(currentDate);
-    print(file.path);
+    logger.i(file.path);
 
     // Write the file.
     return await file.writeAsString('$data');
@@ -51,7 +53,7 @@ class ImportExportUtils {
     final path = await _localPath(currentDate);
     final file = File(
         '$path/export_${currentDate.day}_${currentDate.month}_${currentDate.year}_${Random().nextInt(10000)}.json');
-    print(file.path);
+    logger.i(file.path);
     return file.writeAsString('$data');
   }
 
@@ -94,14 +96,14 @@ class ImportExportUtils {
         }
       });
       data.add(dataRow);
-      print(map);
+      logger.i(map);
     }
     return converter.convert(<List>[]
       ..add(keys)
       ..addAll(data));
   }
 
-  static Future<AggregationData> importAndProcessJSON() async {
+  static Future<Day> importAndProcessJSON() async {
     final File file = await FilePicker.getFile(
         type: FileType.custom, allowedExtensions: ['json']);
     final String data = await file.readAsString();
@@ -112,7 +114,7 @@ class ImportExportUtils {
 //    final list = List<Map<String, dynamic>>.from(map)
 //        .map((element) => Loc.fromJson(element))
 //        .toList();
-    print(locations.length);
+    logger.i(locations.length);
 
     locations.forEach((loc) {
       final speed = loc?.coords?.speed ?? 0.0;
@@ -120,7 +122,7 @@ class ImportExportUtils {
         loc.activity.type = 'still';
       }
     });
-    return LocationUtils.aggregateLocationsInSlices3(locations);
+    return LocationUtils.aggregateLocationsInSlices3(locations: locations);
   }
 
   static Future<List<Location>> importJSON() async {
@@ -131,7 +133,7 @@ class ImportExportUtils {
     final locations = List<Map<String, dynamic>>.from(map)
         .map((element) => Location.fromJson(element))
         .toList();
-    print(locations.length);
+    logger.i(locations.length);
 
     locations.forEach((loc) {
       final speed = loc?.coords?.speed ?? 0.0;

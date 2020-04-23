@@ -2,11 +2,11 @@ import 'package:diary/application/date_notifier.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/utils/custom_icons.dart';
-import 'package:diary/utils/colors.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/pages/home/widgets/daily_stats_legend.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -34,13 +34,10 @@ class _DailyStatsPageViewState extends State<DailyStatsPageView> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-//
-//
     context.read<DayNotifier>().addListener(
       (state) {
-        print('[DailyStatsPageView] DayNotifier');
+        logger.i('[DailyStatsPageView] DayNotifier');
         days[state.day.date] = state.day;
       },
       fireImmediately: false,
@@ -82,10 +79,10 @@ class DailyStatsWidget extends StatelessWidget {
     return StateNotifierBuilder<DayState>(
       stateNotifier: context.watch<DayNotifier>(),
       builder: (BuildContext context, value, Widget child) {
-        print('StateNotifierBuilder STATS DETAILS');
+        logger.i('StateNotifierBuilder STATS DETAILS');
 
         Day day = value.day;
-        print('[DailyStatsWidget] selected day: $day');
+        logger.i('[DailyStatsWidget] selected day: $day');
         List<CircularSegmentEntry> stationarySliceSegments = [];
         List<CircularSegmentEntry> movementSliceSegments = [];
         List<CircularSegmentEntry> annotationSegments = [];
@@ -309,7 +306,7 @@ class DailyStatsWidget extends StatelessWidget {
                                     width: 4,
                                   ),
                                   Text(
-                                    day.pointCount.toString(),
+                                    day.sampleCount.toString(),
                                     style: Theme.of(context).textTheme.headline,
                                     textAlign: TextAlign.center,
                                   ),
@@ -435,7 +432,7 @@ class DailyStatsWidget2 extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     final height = size.height;
     final _chartSize = Size(height / 3, height / 3);
-    print('[DailyStatsWidget] selected day: $day');
+    logger.i('[DailyStatsWidget] selected day: $day');
     List<CircularSegmentEntry> stationarySliceSegments = [];
     List<CircularSegmentEntry> movementSliceSegments = [];
     List<CircularSegmentEntry> annotationSegments = [];
@@ -602,7 +599,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  day.pointCount.toString(),
+                                  day.sampleCount.toString(),
                                   //style: numberStyle,
                                   textAlign: TextAlign.center,
                                 ),

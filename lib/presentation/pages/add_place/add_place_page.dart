@@ -12,6 +12,7 @@ import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/utils/generic_utils.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -392,7 +393,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
       },
     ).catchError(
       (error) {
-        print('[addGeofence] ERROR: $error');
+        logger.e('[addGeofence] ERROR: $error');
         Alerts.showAlertWithSingleAction(
             context, "Si è verificato un errore!", error.toString());
       },
@@ -415,8 +416,8 @@ class _AddPlacePageState extends State<AddPlacePage> {
         ),
       );
     } catch (ex) {
-      print('[MapPage] [Error] [_goToLocation]');
-      print(ex);
+      logger.e('[MapPage] [Error] [_goToLocation]');
+      logger.e(ex);
     }
   }
 
@@ -515,7 +516,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void _showLocationErrorSnackbar() {
-    print('[AddAnnotationPage] Show location error Snackbar');
+    logger.i('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
         'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
         _gpsClick,
@@ -523,13 +524,13 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void _showWaitPositionSnackbar() {
-    print('[AddAnnotationPage] Show short text Snackbar');
+    logger.i('[AddAnnotationPage] Show short text Snackbar');
     _showSnackbar(
         "Rilevamento della posizione in corso. Attendine la terminazione.");
   }
 
   void _showShortTextSnackbar() {
-    print('[AddPlacePage] Show short text Snackbar');
+    logger.i('[AddPlacePage] Show short text Snackbar');
     _showSnackbar(
         "Il nome del luogo deve avere una lunghezza minima di 3 caratteri.");
   }
@@ -551,7 +552,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
   }
 
   void _showHelper(BuildContext context) async {
-    print('[AddPlacePage] Show helper');
+    logger.i('[AddPlacePage] Show helper');
     BottomSheets.showInfoBottomSheet(
         context,
         StandardBottomSheetColumn(

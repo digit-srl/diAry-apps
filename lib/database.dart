@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:diary/utils/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart';
@@ -46,7 +47,7 @@ class DiAryDatabase {
       var result = await _db.rawQuery('SELECT * FROM locations;');
       return result;
     } catch (e) {
-      print('[DiAryDatabase] [getAllLocations] $e');
+      logger.e('[DiAryDatabase] [getAllLocations] $e');
       return [];
     }
   }
@@ -57,11 +58,11 @@ class DiAryDatabase {
       final _db = await getDb();
       final query =
           'SELECT * FROM locations WHERE timestamp BETWEEN "$start" AND "$end";';
-      print('[DiAryDatabase] [getLocationsBetween] query: $query');
+      logger.i('[DiAryDatabase] [getLocationsBetween] query: $query');
       var result = await _db.rawQuery(query);
       return result;
     } catch (e) {
-      print('[DiAryDatabase] [getLocationsBetween] $e');
+      logger.e('[DiAryDatabase] [getLocationsBetween] $e');
       return [];
     }
   }

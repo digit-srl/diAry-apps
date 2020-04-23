@@ -1,6 +1,7 @@
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/main.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -23,15 +24,14 @@ class LocationState {
 
 class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   final Map<DateTime, List<Location>> locationsPerDate;
-  final Map<DateTime, Day> days;
+//  final Map<DateTime, Day> days;
 
 //  List<bg.Location> liveLocations = [];
 //  Map<DateTime, List<bg.Location>> liveLocationsMap = {
 //    DateTime.now().withoutMinAndSec(): []
 //  };
 
-  LocationNotifier(this.locationsPerDate, this.days)
-      : super(LocationState(null)) {
+  LocationNotifier(this.locationsPerDate) : super(LocationState(null)) {
     bg.BackgroundGeolocation.onLocation(_onLocation, _onLocationError);
   }
 
@@ -69,7 +69,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       }
       return dailyLocations;
     } catch (ex) {
-      print(ex);
+      logger.e(ex);
       analytics.logEvent(
           name: '[LocationNotifier] getDayLocationsWithoutZeroLoc',
           parameters: {'error': ex.toString()});
@@ -111,20 +111,8 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //    return days[selectedDate];
 //  }
 
-  @override
-  void initState() {
-    print('[LocationNotifier] initState');
-    super.initState();
-  }
-
-  @override
-  void update(T Function<T>() watch) {
-    print('[LocationNotifier] update');
-    super.update(watch);
-  }
-
   void addLocation(Location location) {
-    print('[LocationNotifier] total live locations: $location');
+    logger.i('[LocationNotifier] total live locations: $location');
 
     final date = location.dateTime.withoutMinAndSec();
 
@@ -134,15 +122,15 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
     }
     locationsPerDate[date].add(location);
     state = LocationState(location);
-    read<DayNotifier>().updateDay(location, date);
+    read<DayNotifier>().updateDay2(locationsPerDate, date);
   }
 
   void _onLocation(bg.Location location) {
     try {
       Hive.box<String>('logs').add('[onLocation] $location');
-      print('[LocationNotifier] _onLocation()');
+      logger.i('[LocationNotifier] _onLocation()');
       if (location?.sample ?? false) return;
-      print('[LocationNotifier] true loction');
+      logger.i('[LocationNotifier] true loction');
       final loc = Location.fromJson(Map<String, dynamic>.from(location.map));
       addLocation(loc);
     } catch (ex) {
@@ -150,11 +138,12 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       analytics.logEvent(
           name: '[LocationNotifier] _onLocation',
           parameters: {'error': ex.toString()});
+      logger.e('[ERROR onLocation] $ex');
     }
   }
 
   void _onLocationError(bg.LocationError error) {
-    print('[LocationNotifier] _onLocationError()');
+    logger.e('[LocationNotifier] _onLocationError()');
     analytics.logEvent(
         name: '[LocationNotifier] _onLocationError',
         parameters: {'error': error.toString()});

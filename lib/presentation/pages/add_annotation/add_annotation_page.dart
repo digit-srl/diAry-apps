@@ -10,6 +10,7 @@ import 'package:diary/presentation/widgets/manual_detection_position_layer.dart'
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:diary/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -255,8 +256,8 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
         ),
       );
     } catch (ex) {
-      print('[MapPage] [Error] [_goToLocation]');
-      print(ex);
+      logger.e('[MapPage] [Error] [_goToLocation]');
+      logger.e(ex);
     }
   }
 
@@ -273,7 +274,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   void _addAnnotation() async {
-    print('[AddAnnotationPage] Save annotation and close');
+    logger.i('[AddAnnotationPage] Save annotation and close');
     // final box = Hive.box<Annotation>('annotations');
     final annotation = Annotation(
       id: _foundLocation.uuid,
@@ -284,12 +285,12 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
     );
     context.read<AnnotationNotifier>().addAnnotation(annotation);
     // final result = await box.add(annotation);
-    print('[AddAnnotationPage] add annotation');
+    logger.i('[AddAnnotationPage] add annotation');
     Navigator.of(context).pop();
   }
 
   void _showLocationErrorSnackbar() {
-    print('[AddAnnotationPage] Show location error Snackbar');
+    logger.i('[AddAnnotationPage] Show location error Snackbar');
     _showSnackbar(
         'Errore nel rilevamento della tua posizione. Attiva i servizi GPS, se disattivati.',
         _gpsClick,
@@ -297,13 +298,13 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   void _showShortTextSnackbar() {
-    print('[AddAnnotationPage] Show short text Snackbar');
+    logger.i('[AddAnnotationPage] Show short text Snackbar');
     _showSnackbar(
         "Il testo dell'annotazione deve avere una lunghezza minima di 3 caratteri.");
   }
 
   void _showWaitPositionSnackbar() {
-    print('[AddAnnotationPage] Show short text Snackbar');
+    logger.i('[AddAnnotationPage] Show short text Snackbar');
     _showSnackbar(
         "Rilevamento della posizione in corso. Attendine la terminazione.");
   }
@@ -324,7 +325,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
   }
 
   void _showHelper() async {
-    print('[AddAnnotationPage] Show helper');
+    logger.i('[AddAnnotationPage] Show helper');
 
     BottomSheets.showInfoBottomSheet(
         context,

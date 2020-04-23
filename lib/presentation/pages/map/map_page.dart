@@ -14,6 +14,7 @@ import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -90,7 +91,7 @@ class _MapPageState extends State<MapPage>
     final todayLocations = Provider.of<LocationNotifier>(context, listen: false)
         .locationsPerDate[DateTime.now().withoutMinAndSec()];
     if (todayLocations?.isNotEmpty ?? false) {
-      print('[MapPage] initState() todayLocations.isNotEmpty');
+      logger.i('[MapPage] initState() todayLocations.isNotEmpty');
       final ll = LatLng(todayLocations.last.coords.latitude,
           todayLocations.last.coords.longitude);
       _initialPosition = CameraPosition(
@@ -119,7 +120,7 @@ class _MapPageState extends State<MapPage>
 
     removeLocationListener = Provider.of<LocationNotifier>(context).addListener(
       (state) {
-        print('[MapPage] LocationNotifier');
+        logger.i('[MapPage] LocationNotifier');
         if (state.newLocation != null && _currentDate.isToday()) {
           _onLocation(state.newLocation);
         }
@@ -137,7 +138,7 @@ class _MapPageState extends State<MapPage>
 
     removeAnnotationListener = context.read<AnnotationNotifier>().addListener(
       (state) {
-        print('[MapPage] AnnotationNotifier');
+        logger.i('[MapPage] AnnotationNotifier');
         if (state != null && _currentDate.isToday()) {
           _onAnnotation(state);
         }
@@ -147,7 +148,7 @@ class _MapPageState extends State<MapPage>
     removeGeofenceEventListener =
         Provider.of<GeofenceEventNotifier>(context).addListener(
       (state) {
-        print('[MapPage] GeofenceEventNotifier');
+        logger.i('[MapPage] GeofenceEventNotifier');
         if (state.geofenceEvent != null && _currentDate.isToday()) {
           _onGeofenceEvent(state.geofenceEvent);
         }
@@ -156,7 +157,7 @@ class _MapPageState extends State<MapPage>
 
     removeGeofenceListener = Provider.of<GeofenceNotifier>(context).addListener(
       (state) {
-        print('[MapPage] GeofenceNotifier');
+        logger.i('[MapPage] GeofenceNotifier');
         _onGeofence(state.geofences);
       },
     );
@@ -164,7 +165,7 @@ class _MapPageState extends State<MapPage>
 //    removeGeofenceChangeListener =
 //        Provider.of<GeofenceChangeNotifier>(context).addListener(
 //      (state) {
-//        print('[MapPage] GeofenceChangeNotifier');
+//        logger('[MapPage] GeofenceChangeNotifier');
 //        if (state.geofencesChangeEvent != null && _currentDate.isToday()) {
 //          _onGeofencesChange(state.geofencesChangeEvent);
 //        }
@@ -173,14 +174,14 @@ class _MapPageState extends State<MapPage>
 
     removeServiceListener = Provider.of<ServiceNotifier>(context).addListener(
       (state) {
-        print('[MapPage] ServiceNotifier');
-        print(state.isEnabled);
+        logger.i('[MapPage] ServiceNotifier');
+        logger.i(state.isEnabled);
       },
     );
 
     removeDateListener = Provider.of<DateNotifier>(context).addListener(
       (state) {
-        print('[MapPage] DateNotifier');
+        logger.i('[MapPage] DateNotifier');
         if (_currentDate != state.selectedDate) {
           _currentDate = state.selectedDate;
           _loadInitialDailyMarkers();
@@ -190,7 +191,7 @@ class _MapPageState extends State<MapPage>
   }
 
   void _onLocation(Location location) {
-    print('[MapPage] [onLocation]');
+    logger.i('[MapPage] [onLocation]');
     LatLng ll = LatLng(location.coords.latitude, location.coords.longitude);
     _goToLocation(ll);
     _updateCurrentPositionMarker(ll);
@@ -202,7 +203,7 @@ class _MapPageState extends State<MapPage>
   }
 
   void _onGeofenceTap(ColoredGeofence coloredGeofence) {
-    print('[MapPage] _onGeofenceTap');
+    logger.i('[MapPage] _onGeofenceTap');
 
     BottomSheets.showMapBottomSheet(
         context,
@@ -216,13 +217,13 @@ class _MapPageState extends State<MapPage>
     try {
       geofences.forEach((ColoredGeofence coloredGeofence) {
         final geofenceMarker = GeofenceMarker(coloredGeofence, _onGeofenceTap);
-        print(
+        logger.i(
             '[MapPage] _onGeofence add identifier ${coloredGeofence.geofence.identifier}');
-        print('[MapPage] _onGeofence color ${geofenceMarker.fillColor}');
+        logger.i('[MapPage] _onGeofence color ${geofenceMarker.fillColor}');
         _geofences.add(geofenceMarker);
       });
     } catch (ex) {
-      print('[MapPage] _onGeofence error $ex');
+      logger.e('[MapPage] _onGeofence error $ex');
     }
     setState(() {
       updateAllCircles();
@@ -230,19 +231,19 @@ class _MapPageState extends State<MapPage>
   }
 
   void _onGeofenceEvent(bg.GeofenceEvent event) {
-    print('[MapPage] [_onGeofenceEvent]');
+    logger.i('[MapPage] [_onGeofenceEvent]');
     GeofenceMarker marker = _geofences.firstWhere(
         (GeofenceMarker marker) =>
             marker.coloredGeofence.geofence.identifier == event.identifier,
         orElse: () => null);
     if (marker == null) {
-      print(
+      logger.w(
           "[_onGeofence] failed to find geofence marker: ${event.identifier}");
       return;
     }
 
     if (marker == null) {
-      print(
+      logger.w(
           '[onGeofence] WARNING - FAILED TO FIND GEOFENCE MARKER FOR GEOFENCE: ${event.identifier}');
       return;
     }
@@ -266,8 +267,8 @@ class _MapPageState extends State<MapPage>
   }
 
 //  void _onGeofencesChange(bg.GeofencesChangeEvent event) {
-//    print('[MapPage] [_onGeofencesChange]');
-//    print('[${bg.Event.GEOFENCESCHANGE}] - $event');
+//    logger('[MapPage] [_onGeofencesChange]');
+//    logger('[${bg.Event.GEOFENCESCHANGE}] - $event');
 //    event.off.forEach((String identifier) {
 //      _geofences.removeWhere((GeofenceMarker marker) {
 //        return marker.geofence.identifier == identifier;
@@ -424,27 +425,27 @@ class _MapPageState extends State<MapPage>
         ),
       );
     } catch (ex) {
-      print('[MapPage] [Error] [_goToLocation]');
-      print(ex);
+      logger.e('[MapPage] [Error] [_goToLocation]');
+      logger.e(ex);
     }
   }
 
   void updateAllCircles() {
-    print('updateAllCircles');
+    logger.i('updateAllCircles');
     _allCircles.clear();
     _allCircles = _stationaryMarker
         .union(circles)
         .union(_geofences)
         .union(_geofenceEventEdges)
         .union(_geofenceEventLocations);
-    print('_allCircles.length');
-    print(_allCircles.length);
+    logger.i('_allCircles.length');
+    logger.i(_allCircles.length);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print('[MapPage] build');
+    logger.i('[MapPage] build');
     _createMarkerImageFromAsset(context);
     return Scaffold(
       body: Stack(
@@ -456,7 +457,7 @@ class _MapPageState extends State<MapPage>
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
             onMapCreated: (GoogleMapController controller) {
-              print('[MapPage] onMapCreated');
+              logger.i('[MapPage] onMapCreated');
               controller.setMapStyle(AppTheme.isNightModeOn(context)
                   ? _darkMapStyle
                   : _normalMapStyle);
@@ -527,7 +528,7 @@ class _MapPageState extends State<MapPage>
   }
 
   _onLocationTap(Location location) async {
-    print('[MapPage] _onLocationTap');
+    logger.i('[MapPage] _onLocationTap');
     String selectedPinId = '${location.uuid}_tmp';
     final MarkerId markerId = MarkerId(selectedPinId);
 //    final MarkerId markerId = MarkerId('${location.uuid}');
@@ -666,7 +667,7 @@ class _MapPageState extends State<MapPage>
 
   _onAnnotationTap(Annotation annotation) async {
     final notifier = InfoAnnotationNotifier(annotation);
-    print('[MapPage] _onAnnotationTap');
+    logger.i('[MapPage] _onAnnotationTap');
 
     await BottomSheets.showMapBottomSheet(
         context,
@@ -688,20 +689,13 @@ class _MapPageState extends State<MapPage>
 
   @override
   void dispose() {
-    print('[MapPage] dispose()');
+    logger.i('[MapPage] dispose()');
     removeServiceListener();
     removeDateListener();
     removeLocationListener();
     removeGeofenceListener();
     removeGeofenceEventListener();
-    removeGeofenceChangeListener();
     removeAnnotationListener();
     super.dispose();
-  }
-}
-
-class WithClass {
-  void hello() {
-    print('hello');
   }
 }

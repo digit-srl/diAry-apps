@@ -5,6 +5,7 @@ import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/location_utils.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart' show Colors;
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
@@ -12,6 +13,8 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
     as bg;
 import 'package:uuid/uuid.dart';
 import 'package:diary/utils/extensions.dart';
+
+import 'location_notifier.dart';
 
 class GeofenceState {
   final List<ColoredGeofence> geofences;
@@ -46,7 +49,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
         } else {
           final deleted =
               await bg.BackgroundGeolocation.removeGeofence(identifier);
-          print('[GeofenceNotifier] deleted $identifier $oldName');
+          logger.i('[GeofenceNotifier] deleted $identifier $oldName');
           if (deleted) {
             final newIdentifier = Uuid().v1();
             geofence = bg.Geofence(
@@ -70,7 +73,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
             final success =
                 await bg.BackgroundGeolocation.addGeofence(geofence);
             if (success) {
-              print(
+              logger.i(
                   '[GeofenceNotifier] created $newIdentifier $oldName $identifier');
               place = Place(
                   identifier,
@@ -86,12 +89,12 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
         }
         places.add(place);
         list.add(ColoredGeofence(geofence, Color(place.color), place.name));
-        print('[GeofenceNotifier] added $oldName $identifier');
+        logger.i('[GeofenceNotifier] added $oldName $identifier');
       } catch (ex) {
-        print('[GeofenceNotifier] error: $ex');
+        logger.e('[GeofenceNotifier] error: $ex');
       }
     }
-    print('[GeofenceNotifier] updateState');
+    logger.i('[GeofenceNotifier] updateState');
     state = GeofenceState(list);
   }
 
@@ -106,9 +109,7 @@ class GeofenceNotifier extends StateNotifier<GeofenceState> with LocatorMixin {
     if (deleted) {
       final location = await LocationUtils.insertExitFromGeofenceOnDb(
           identifier, DateTime.now());
-      //TODO usare data della location
-      read<DayNotifier>()
-          .updateDay(location, DateTime.now().withoutMinAndSec());
+      read<LocationNotifier>().addLocation(location);
       final place = Hive.box<Place>('places').get(identifier);
       place.enabled = false;
       if (place.isHome) {

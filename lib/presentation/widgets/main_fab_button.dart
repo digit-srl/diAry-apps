@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -29,7 +30,7 @@ class MainFabButton extends StatelessWidget {
     //   // fallback for all non iPhone X
     //   buttonBottomPadding += 30.0;
     // }
-    print('[MainFabButton] build');
+    logger.i('[MainFabButton] build');
     return Container(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, Platform.isIOS ? 30 : 0.0),
       child: UnicornDialer(
@@ -92,22 +93,9 @@ class MainFabButton extends StatelessWidget {
 //  }
 
   void _goToAddAnnotation(context) {
-//    final userRepo = Provider.of<UserRepositoryImpl>(context, listen: false);
-//    final dateProvider = Provider.of<DayNotifier>(context, listen: false);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => AddAnnotationPage(),
-//            MultiProvider(
-//          providers: [
-//            Provider.value(
-//              value: userRepo,
-//            ),
-//            Provider.value(
-//              value: dateProvider,
-//            ),
-//          ],
-//          child: AddAnnotationPage(),
-//        ),
       ),
     );
   }

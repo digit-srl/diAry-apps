@@ -1,6 +1,7 @@
 import 'package:diary/application/info_pin/info_pin_state.dart';
 import 'package:diary/domain/entities/annotation.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:equatable/equatable.dart';
@@ -80,7 +81,7 @@ class CurrentIndexNotifier extends StateNotifier<IndexState> {
       }
       return state.note;
     } catch (e) {
-      print('[CurrentIndexNotifier] saveNote  $e');
+      logger.e('[CurrentIndexNotifier] saveNote  $e');
       return null;
     }
   }
@@ -91,7 +92,7 @@ class CurrentIndexNotifier extends StateNotifier<IndexState> {
       state = IndexState(state.index, state.location, null);
       return state.location.uuid;
     } catch (e) {
-      print('[CurrentIndexNotifier] removeNote $e');
+      logger.e('[CurrentIndexNotifier] removeNote $e');
       return null;
     }
   }

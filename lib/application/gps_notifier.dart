@@ -1,10 +1,12 @@
 import 'package:diary/utils/location_utils.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:diary/utils/extensions.dart';
 import 'day_notifier.dart';
+import 'location_notifier.dart';
 import 'service_notifier.dart';
 
 class GpsState {
@@ -26,7 +28,7 @@ class GpsNotifier extends StateNotifier<GpsState> with LocatorMixin {
     await Hive.box<String>('logs').add('[onEnabledChange] $enabled');
     final dateTime = DateTime.now();
     final location = await LocationUtils.insertOnOffOnDb(dateTime, enabled);
-    read<DayNotifier>().updateDay(location, dateTime.withoutMinAndSec());
+    read<LocationNotifier>().addLocation(location);
     read<ServiceNotifier>().setEnabled(enabled);
   }
 
@@ -40,11 +42,11 @@ class GpsNotifier extends StateNotifier<GpsState> with LocatorMixin {
   getCurrentLoc(Function onDone, Function onError) {
     state = GpsState(state.gpsEnabled, true);
     LocationUtils.getCurrentLocationAndUpdateMap((bg.Location location) {
-      print('[getCurrentPosition] - $location');
+      logger.i('[getCurrentPosition] - $location');
       onDone(location);
       state = GpsState(state.gpsEnabled, false);
     }, (error) {
-      print('[getCurrentPosition] ERROR: $error');
+      logger.e('[getCurrentPosition] ERROR: $error');
       onError(error);
       state = GpsState(state.gpsEnabled, false);
     });

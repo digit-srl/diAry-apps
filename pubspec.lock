@@ -91,14 +91,14 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.1"
+    version: "1.9.0"
   build_runner_core:
     dependency: transitive
     description:
       name: build_runner_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "5.1.0"
   built_collection:
     dependency: transitive
     description:
@@ -436,6 +436,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0+2"
+  logger_flutter:
+    dependency: "direct main"
+    description:
+      name: logger_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.1"
   logging:
     dependency: transitive
     description:
@@ -611,6 +625,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  sensors:
+    dependency: transitive
+    description:
+      name: sensors
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2"
   shared_preferences:
     dependency: transitive
     description:

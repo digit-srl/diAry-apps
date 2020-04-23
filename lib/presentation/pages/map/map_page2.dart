@@ -78,7 +78,7 @@
 //
 //    removeLocationListener = Provider.of<LocationNotifier>(context).addListener(
 //          (state) {
-//        print('[MapPage] LocationNotifier');
+//        logger('[MapPage] LocationNotifier');
 //
 //        if (_currentDay.isToday()) {
 //          for (int i = 0; i < state.liveLocations.length; i++) {
@@ -94,14 +94,14 @@
 //
 //    removeServiceListener = Provider.of<ServiceNotifier>(context).addListener(
 //          (state) {
-//        print('[MapPage] ServiceNotifier');
-//        print(state.isEnabled);
+//        logger('[MapPage] ServiceNotifier');
+//        logger(state.isEnabled);
 //      },
 //    );
 //
 //    removeDateListener = Provider.of<DateNotifier>(context).addListener(
 //          (state) {
-//        print('[MapPage] DateNotifier');
+//        logger('[MapPage] DateNotifier');
 //        _currentDay = state.selectedDate;
 //        _locations.clear();
 //        final limit = Random().nextInt(20);
@@ -166,7 +166,7 @@
 //
 //  @override
 //  void dispose() {
-//    print('[MapPage dispose()]');
+//    logger('[MapPage dispose()]');
 //    removeServiceListener();
 //    removeDateListener();
 //    removeLocationListener();

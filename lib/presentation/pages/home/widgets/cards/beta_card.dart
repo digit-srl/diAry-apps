@@ -1,10 +1,12 @@
 import 'package:diary/presentation/pages/logs_page.dart';
 import 'package:diary/presentation/pages/slices_page.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/motion_activity_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:logger_flutter/logger_flutter.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,11 +41,30 @@ class _BetaCardState extends State<BetaCard> {
           iconData: CustomIcons.flask_outline,
           title: 'diAry ' + version + " Beta",
           description: 'Scheda mostrata solo ai beta tester. Contiene '
-                       'funzioni per il test.',
+              'funzioni per il test.',
           bottomButtons: <Widget>[
+            if (!kReleaseMode)
+              IconButton(
+                icon: Icon(
+                  Icons.bug_report,
+                  color: Colors.red,
+                ),
+                tooltip: "Debug report",
+                onPressed: () async {
+                  LogConsole.init();
+                  var logConsole = LogConsole(
+                    showCloseButton: true,
+                    dark: true,
+                  );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => logConsole),
+                  );
+                },
+              ),
             IconButton(
               icon: Icon(Icons.bug_report),
-              tooltip: "Log report",
+              tooltip: "Peersistent log report",
               onPressed: () {
                 Navigator.push(
                   context,
@@ -53,7 +74,6 @@ class _BetaCardState extends State<BetaCard> {
                 );
               },
             ),
-
             IconButton(
               icon: Icon(Icons.format_list_bulleted),
               tooltip: "Spicchi giornalieri",
@@ -66,7 +86,6 @@ class _BetaCardState extends State<BetaCard> {
                 );
               },
             ),
-
             GenericButton(
               text: "Changelog",
               onPressed: _launchChangelogURL,

@@ -7,6 +7,7 @@ import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/domain/repositories/daily_stats_repository.dart';
 import 'package:diary/infrastructure/data/daily_stats_local_data_sources.dart';
 import 'package:diary/infrastructure/data/daily_stats_remote_data_sources.dart';
+import 'package:diary/utils/logger.dart';
 
 class DailyStatsRepositoryImpl extends DailyStatsRepository {
   final DailyStatsLocalDataSources dailyStatsLocalDataSources;
@@ -28,7 +29,7 @@ class DailyStatsRepositoryImpl extends DailyStatsRepository {
     } on UnprocessableEntity {
       return Left(UnprocessableDayFailure());
     } catch (ex) {
-      print(ex);
+      logger.e(ex);
       return Left(UnknownFailure(ex.toString()));
     }
   }

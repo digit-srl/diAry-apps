@@ -4,6 +4,7 @@ import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
+import 'package:diary/utils/logger.dart';
 
 abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getAllLocations();
@@ -23,7 +24,7 @@ class LocationRepositoryImpl implements LocationRepository {
       final locations = await locationsLocalDataSources.getAllLocations();
       return right(locations);
     } catch (e) {
-      print(e);
+      logger.e(e);
       return left(UnknownFailure(e.toString()));
     }
   }
@@ -36,7 +37,7 @@ class LocationRepositoryImpl implements LocationRepository {
           await locationsLocalDataSources.getLocationsBetween(start, end);
       return right(locations);
     } catch (e) {
-      print(e);
+      logger.e(e);
       return left(UnknownFailure(e.toString()));
     }
   }
@@ -44,7 +45,7 @@ class LocationRepositoryImpl implements LocationRepository {
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay() async {
     Map<DateTime, List<Location>> locationsPerDay = {};
     final locations = await locationsLocalDataSources.getAllLocations();
-    print('[LocationUtils] total records: ${locations.length}');
+    logger.i('[LocationUtils] total records: ${locations.length}');
     final DateTime today = DateTime.now().withoutMinAndSec();
     if (locations.isEmpty) {
       return {today: []};
@@ -57,11 +58,31 @@ class LocationRepositoryImpl implements LocationRepository {
         }
         locationsPerDay[date].add(loc);
       } catch (ex) {
-        print('[ERROR] _readLocations $ex');
+        logger.e('[ERROR] _readLocations $ex');
       }
     }
-    print('Locations from DB: ${locations.length}');
+    logger.i('Locations from DB: ${locations.length}');
     return locationsPerDay;
+  }
+
+  Future<Map<DateTime, Set<String>>> callToAction() async {
+    final map = <DateTime, Set<String>>{};
+
+    final result = await getAllLocations();
+    final locations = result.getOrElse(() => []);
+    for (int i = 0; i < locations.length; i++) {
+      final loc = locations[i];
+      final date = loc.dateTime.withoutMinAndSec();
+      if (!map.containsKey(date)) {
+        map[date] = {};
+      }
+      final geohash = LocationUtils.getGeohash(
+          loc.coords.latitude, loc.coords.longitude,
+          precision: 4);
+      map[date].add(geohash);
+    }
+
+    return map;
   }
 
   getLocationsPerDate() async {

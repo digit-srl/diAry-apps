@@ -1,3 +1,4 @@
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -13,7 +14,7 @@ class DetectionErrorPositionLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('[DetectionErrorPositionLayer] build');
+    logger.i('[DetectionErrorPositionLayer] build');
 
     return errorDetected
         ? Container(
@@ -39,7 +40,6 @@ class DetectionErrorPositionLayer extends StatelessWidget {
               ],
             ),
           )
-
         : Container();
   }
 }

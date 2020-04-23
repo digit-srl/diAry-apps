@@ -3,6 +3,7 @@ import 'package:diary/domain/entities/slice.dart';
 import 'package:hive/hive.dart';
 
 import 'constants.dart';
+import 'logger.dart';
 
 class GenericUtils {
   static List<int> minutesToHourAndMinutes(int minutes) {
@@ -126,7 +127,7 @@ class GenericUtils {
             ?.reduce((curr, next) => curr + next);
       }
 
-      print('[GeneriUtils] offMinutes : $offMinutes');
+      logger.i('[GeneriUtils] offMinutes : $offMinutes');
 
       // TODO leggere anche gli id dei precedenti luoghi intesi come "CASA"
       // altrimenti cambianddo casa l algo non riconosce i luoghi impostati
@@ -157,12 +158,12 @@ class GenericUtils {
         wom = onWom + tmp;
       }
 
-      print(
+      logger.i(
           '[DayNotifier] homeMinutes : $homeMinutes, offMinutes $offMinutes, onMinutes: $onMinutes. WOM $wom');
 
       return wom;
     } catch (ex) {
-      print('[DayNotifier] [ERROR] getWomCountForThisDay() $ex');
+      logger.e('[DayNotifier] [ERROR] getWomCountForThisDay() $ex');
       return -1;
     }
   }

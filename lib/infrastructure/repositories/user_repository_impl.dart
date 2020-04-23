@@ -1,5 +1,6 @@
 import 'package:diary/infrastructure/data/user_local_data_sources.dart';
 import 'package:diary/domain/repositories/user_repository.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:uuid/uuid.dart';
 
 class UserRepositoryImpl extends UserRepository {
@@ -10,25 +11,25 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   bool isThereHomeGeofence() {
-    print('[UserRepositoryImpl] isThereHomeGeofence()');
+    logger.i('[UserRepositoryImpl] isThereHomeGeofence()');
     return userLocalDataSources.isThereHomeGeofence();
   }
 
   @override
   Future<void> setHomeGeofenceIdentifier(String identifier) async {
-    print('[UserRepositoryImpl] setHomeGeofenceIdentifier()');
+    logger.i('[UserRepositoryImpl] setHomeGeofenceIdentifier()');
     await userLocalDataSources.setHomeGeofenceIdentifier(identifier);
   }
 
   @override
   Future<void> removeHomeGeofence() async {
-    print('[UserRepositoryImpl] removeHomeGeofence()');
+    logger.i('[UserRepositoryImpl] removeHomeGeofence()');
     await userLocalDataSources.removeHomeGeofence();
   }
 
   @override
   String getHomeGeofenceIdentifier() {
-    print('[UserRepositoryImpl] getHomeGeofenceIdentifier()');
+    logger.i('[UserRepositoryImpl] getHomeGeofenceIdentifier()');
     return userLocalDataSources.getHomeGeofenceIdentifier();
   }
 

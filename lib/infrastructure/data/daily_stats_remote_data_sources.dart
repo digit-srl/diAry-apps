@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:diary/utils/logger.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:diary/core/errors/exceptions.dart';
@@ -21,9 +22,9 @@ class DailyStatsRemoteDataSourcesImpl extends DailyStatsRemoteDataSources {
           'Content-Type': 'application/json',
         });
     final statusCode = response.statusCode;
-    print('$statusCode - ${response.body}');
+    logger.i('$statusCode - ${response.body}');
     if (statusCode == 200) {
-      print(response.body);
+      logger.i(response.body);
       final map = json.decode(response.body);
       return DailyStatsResponse.fromJson(map);
     } else if (statusCode == 409) {
@@ -31,7 +32,7 @@ class DailyStatsRemoteDataSourcesImpl extends DailyStatsRemoteDataSources {
     } else if (statusCode == 422) {
       throw UnprocessableEntity();
     }
-    print('$statusCode - ${response.body}');
+    logger.e('$statusCode - ${response.body}');
     throw Exception('$statusCode - ${response.body}');
   }
 }

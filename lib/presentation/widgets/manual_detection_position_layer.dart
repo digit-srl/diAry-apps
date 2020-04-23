@@ -1,4 +1,5 @@
 import 'package:diary/application/gps_notifier.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 class ManualDetectionPositionLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print('[ManualDetectionPositionLayer] build');
+    logger.i('[ManualDetectionPositionLayer] build');
 
     return context.watch<GpsState>().manualPositionDetection
         ? Container(

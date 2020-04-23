@@ -44,6 +44,6 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
                   final result = await ctx
                       .read<LocationRepositoryImpl>()
                       .getAllLocations();
-                  result.fold((f) => print(f), (locs) => print(locs.length));
-//                  print(locs.length);
+                  result.fold((f) => logger(f), (locs) => logger(locs.length));
+//                  logger(locs.length);
                 },*/

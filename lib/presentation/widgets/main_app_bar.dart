@@ -4,6 +4,7 @@ import 'package:diary/application/gps_notifier.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/colors.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
@@ -31,7 +32,7 @@ class _MainAppBarState extends State<MainAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    print('[RootAppBar] build');
+    logger.i('[RootAppBar] build');
 
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
     double _elevation =

@@ -13,6 +13,8 @@ import '../domain/entities/motion_activity.dart';
 import 'dart:math';
 import 'package:diary/main.dart';
 
+import 'logger.dart';
+
 enum Action { Enter, Exit, Unknown }
 
 class LocationUtils {
@@ -57,32 +59,24 @@ class LocationUtils {
           yesterdayPlace.addAll(oldPlaceIdentifiers);
         }
         final tmp = aggregateLocationsInSlices3(
-          locationsPerDay[key],
+          date: key,
+          locations: locationsPerDay[key],
           yesterdayPlaces: yesterdayPlace,
         );
         final dailyStatsResponse =
             Hive.box('dailyStatsResponse').get(key.toIso8601String());
-        days[key] = Day(
-          date: key,
-          slices: tmp.slices,
-          places: tmp.places,
+        days[key] = tmp.copyWith(
           annotations: Hive.box<Annotation>('annotations')
                   .values
                   ?.where((annotation) => annotation.dateTime.isSameDay(key))
                   ?.toList() ??
               [],
-          pointCount: locationsPerDay[key].length,
-          dailyStatsResponse: dailyStatsResponse,
-          sampleCount: tmp.sampleCount,
-          discardedSampleCount: tmp.discardedSampleCount,
-          centroidHash: tmp.centroidHash,
-          boundingBoxDiagonal: tmp.boundingBoxDiagonal,
         );
       } catch (ex) {
         analytics.logEvent(
             name: '[LocationUtils] aggregateLocationsInDayPerDate',
             parameters: {'error': ex.toString()});
-        print(ex);
+        logger.e(ex);
       }
       i++;
     }
@@ -94,7 +88,7 @@ class LocationUtils {
 //    Map<DateTime, List<Location>> locationsPerDay = {};
 //
 //    List locationsMap = await bg.BackgroundGeolocation.locations;
-//    print('[LocationUtils] total records: ${locationsMap.length}');
+//    logger('[LocationUtils] total records: ${locationsMap.length}');
 //    final DateTime today = DateTime.now().withoutMinAndSec();
 //    if (locationsMap.isEmpty) {
 //      return {today: []};
@@ -112,8 +106,8 @@ class LocationUtils {
 //        }
 //        locationsPerDay[date].add(loc);
 //      } catch (ex) {
-//        print('[ERROR] _readLocations \n$map\n$ex');
-//        print('[END_ERROR _readLocations');
+//        logger('[ERROR] _readLocations \n$map\n$ex');
+//        logger('[END_ERROR _readLocations');
 //      }
 //    }
 //    return locationsPerDay;
@@ -124,13 +118,14 @@ class LocationUtils {
 //    DateTime(2020, 3, 27, 17, 25): true,
 //  };
 
-  static AggregationData aggregateLocationsInSlices3(
-    List<Location> locations, {
+  static Day aggregateLocationsInSlices3({
+    DateTime date,
+    List<Location> locations,
     List<Slice> partialDaySlices,
     List<Slice> partialDayPlaces,
     Set<String> yesterdayPlaces,
   }) {
-    if (locations.isEmpty) return AggregationData();
+    if (locations.isEmpty) return Day(date: date);
 
     if (partialDaySlices == null) {
       partialDaySlices = [];
@@ -433,7 +428,7 @@ class LocationUtils {
       cumulativeMinutes = currentMinutes;
     }
 
-    print('cumulative minutes before last = $cumulativeMinutes');
+    logger.i('cumulative minutes before last = $cumulativeMinutes');
 
     if (cumulativePlacesMinutes < maxMinutes) {
       if (currentDay.isToday()) {
@@ -481,7 +476,7 @@ class LocationUtils {
       cumulativeMinutes += maxMinutes - cumulativeMinutes;
     }
 
-    print('cumulative minutes complete = $cumulativeMinutes');
+    logger.i('cumulative minutes complete = $cumulativeMinutes');
 
     if (postProcessingEnabled) {
       places.removeWhere((p) =>
@@ -505,7 +500,7 @@ class LocationUtils {
     String centroidHash = '00000';
     if (!(lat.isNaN || long.isNaN)) {
       centroidHash = getGeohash(lat, long);
-      print('$centroidHash');
+      logger.i('$centroidHash');
     }
     double boundingBoxDiagonal = 0.0;
 
@@ -517,7 +512,8 @@ class LocationUtils {
           minLat: minLat, maxLat: maxLat, minLong: minLong, maxLong: maxLong);
     }
 
-    final data = AggregationData(
+    final data = Day(
+      date: date,
       slices: slices,
       places: places,
       centroidHash: centroidHash,
@@ -552,12 +548,12 @@ class LocationUtils {
     return (oneDeg * degree);
   }
 
-  static String getGeohash(double lat, double long) {
+  static String getGeohash(double lat, double long, {int precision = 5}) {
     // Separately you can use only the Geohasher functions
     GeoHasher geoHasher = GeoHasher();
-    print('$lat $long');
+    logger.i('$lat $long');
     return geoHasher.encode(long, lat,
-        precision: 5); // Returns a string geohash
+        precision: precision); // Returns a string geohash
   }
 
   static List<Slice> reduceOnOff(List<Slice> slices) {
@@ -660,11 +656,11 @@ class LocationUtils {
 
     try {
       await bg.BackgroundGeolocation.insertLocation(map);
-      print('[EXIT] location inserted');
+      logger.i('[EXIT] location inserted');
     } catch (ex) {
-      print('[EXIT] $ex');
+      logger.e('[EXIT] $ex');
     }
-    print('[EXIT] return location');
+    logger.i('[EXIT] return location');
     return Location.fromJson(map);
   }
 
@@ -693,11 +689,11 @@ class LocationUtils {
 
     try {
       await bg.BackgroundGeolocation.insertLocation(map);
-      print('[ON/OFF] location inserted');
+      logger.i('[ON/OFF] location inserted');
     } catch (ex) {
-      print('[ON/OFF] $ex');
+      logger.e('[ON/OFF] $ex');
     }
-    print('[ON/OFF] return location');
+    logger.i('[ON/OFF] return location');
     return Location.fromJson(map);
   }
 }

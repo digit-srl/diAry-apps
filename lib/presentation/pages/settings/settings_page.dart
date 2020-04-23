@@ -3,6 +3,7 @@ import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/import_export_utils.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/application/location_notifier.dart';
@@ -118,7 +119,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               items.indexOf(item) == items.length - 1
                   ? Container()
-                  : Divider(indent: 72, endIndent: 16,),
+                  : Divider(
+                      indent: 72,
+                      endIndent: 16,
+                    ),
             ],
             Padding(
               padding: titlePadding,
@@ -161,7 +165,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               utils.indexOf(item) == utils.length - 1
                   ? Container()
-                  : Divider(indent: 72, endIndent: 16,),
+                  : Divider(
+                      indent: 72,
+                      endIndent: 16,
+                    ),
             ],
             Padding(
               padding: titlePadding,
@@ -189,7 +196,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               legals.indexOf(item) == legals.length - 1
                   ? Container()
-                  : Divider(indent: 72, endIndent: 16,),
+                  : Divider(
+                      indent: 72,
+                      endIndent: 16,
+                    ),
             ],
           ],
         ),
@@ -201,17 +211,16 @@ class _SettingsPageState extends State<SettingsPage> {
     PermissionStatus permissionStatus = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.storage);
 
-    print(permissionStatus);
+    logger.i(permissionStatus);
     if (permissionStatus == PermissionStatus.neverAskAgain) {
       Alerts.showAlertWithPosNegActions(
           context,
           "Attenzione",
           "In percedenza hai disabilitato il permesso di archiviazione. E' "
-          "necessario abilitarlo manualmente dalle impostazioni di sistema.",
-          "Vai a Impostazioni",
-          () {
-            PermissionHandler().openAppSettings();
-          });
+              "necessario abilitarlo manualmente dalle impostazioni di sistema.",
+          "Vai a Impostazioni", () {
+        PermissionHandler().openAppSettings();
+      });
       return;
     } else if (permissionStatus != PermissionStatus.granted) {
       final permissions = await PermissionHandler()
@@ -249,8 +258,7 @@ class _SettingsPageState extends State<SettingsPage> {
         () {
           Share.file('Il mio file JSON', jsonPath.split('/').last,
               jsonFile.readAsBytesSync(), 'application/*');
-        }
-    );
+        });
   }
 
   void _scrollListener() {

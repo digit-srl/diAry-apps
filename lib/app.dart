@@ -8,12 +8,15 @@ import 'package:diary/infrastructure/data/user_local_data_sources.dart';
 import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
+import 'package:logger_flutter/logger_flutter.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'application/annotation_notifier.dart';
 import 'application/app_provider.dart';
@@ -96,7 +99,7 @@ class _DiAryAppState extends State<DiAryApp> {
           value: serviceNotifier,
         ),
         StateNotifierProvider<LocationNotifier, LocationState>(
-          create: (_) => LocationNotifier(widget.locationsPerDate, widget.days),
+          create: (_) => LocationNotifier(widget.locationsPerDate),
         ),
         StateNotifierProvider<MotionActivityNotifier, MotionActivityState>(
           create: (_) => MotionActivityNotifier(),
@@ -133,25 +136,24 @@ class _DiAryAppState extends State<DiAryApp> {
           child: Scaffold(
             body: RootPage(),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
-            floatingActionButton: Builder(
-              builder: (ctx) {
-                return FloatingActionButton(
-                  backgroundColor: Colors.yellow,
-                  onPressed: () async {
-                    final result = await ctx
-                        .read<LocationRepositoryImpl>()
-                        .getLocationsBetween(
-                            DateTime(2020, 4, 21, 0, 0), DateTime.now());
-                    result.fold(
-                      (f) => print(f),
-                      (locs) => print(locs.length),
-                    );
-//                  print(locs.length);
-                  },
-                );
-              },
-            ),
+            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
+//            floatingActionButton: Builder(
+//              builder: (ctx) {
+//                return FloatingActionButton(
+//                  backgroundColor: Colors.yellow,
+//                  onPressed: () async {
+//                    final result = await ctx
+//                        .read<LocationRepositoryImpl>()
+//                        .getLocationsBetween(
+//                            DateTime(2020, 4, 21, 0, 0), DateTime.now());
+//                    result.fold(
+//                      (f) => logger(f),
+//                      (locs) => logger(locs.length),
+//                    );
+//                  },
+//                );
+//              },
+//            ),
           ),
         ),
       ),
@@ -162,7 +164,7 @@ class _DiAryAppState extends State<DiAryApp> {
   Future<bool> handleBackButtonWithFab(
       GlobalKey<UnicornDialerState> dialerKey) {
     final isFabExpanded = dialerKey.currentState.close();
-    print("Handle back button FAB. Expanded? " + isFabExpanded.toString());
+    logger.i("Handle back button FAB. Expanded? " + isFabExpanded.toString());
 
     if (isFabExpanded) {
       return Future.value(false);

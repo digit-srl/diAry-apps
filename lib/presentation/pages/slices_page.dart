@@ -42,7 +42,8 @@ class _TabBarDemoState extends State<TabBarDemo> {
 
   updateSlices() async {
     final output = LocationUtils.aggregateLocationsInSlices3(
-      widget.locations,
+      date: widget.locations.first.dateTime,
+      locations: widget.locations,
     );
     slices = output.slices;
     places = output.places;

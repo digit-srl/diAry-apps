@@ -1,4 +1,5 @@
 import 'package:diary/domain/entities/location.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -32,7 +33,7 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
         'extras': geofenceEvent.extras,
       });
       location.geofence = event;
-      print('[Geofence Location] location $location');
+      logger.i('[Geofence Location] location $location');
       if (location != null) {
         read<LocationNotifier>().addLocation(location);
       }

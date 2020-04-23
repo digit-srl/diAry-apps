@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:diary/utils/place_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -103,7 +104,7 @@ class PlaceRowLegend extends StatelessWidget {
               Theme.of(context).textTheme.body1.color.withOpacity(0.3),
           splashColor: Theme.of(context).textTheme.body1.color.withOpacity(0.3),
           onTap: () {
-            print("hey");
+            logger.i("hey");
             // todo edit place
           },
           child: Container(

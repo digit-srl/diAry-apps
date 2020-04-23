@@ -54,11 +54,12 @@ dependencies:
   equatable:
   path:
   sqflite:
+  logger_flutter: ^0.7.1
 
 
 dev_dependencies:
   hive_generator: ^0.7.0+2
-  build_runner: ^1.8.1
+  build_runner: ^1.9.0
   freezed:
   flutter_test:
     sdk: flutter
