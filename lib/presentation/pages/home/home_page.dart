@@ -168,7 +168,7 @@ class UploadStatsIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final day = context.watch<DayState>().day;
     final response = day.dailyStatsResponse;
-    final isToday = day.date.isToday();
+    final isToday = day.date.isToday;
     final isStatsSended = day.isStatsSended;
 
     return IconButton(
@@ -188,18 +188,18 @@ class UploadStatsIconButton extends StatelessWidget {
     );
   }
 
-  showInfoStatsBottomsheet(BuildContext context, DailyStatsResponse response) async {
+  showInfoStatsBottomsheet(
+      BuildContext context, DailyStatsResponse response) async {
     final dailyStats = await context.read<DayNotifier>().buildDailyStats();
 
     BottomSheets.showFullPageBottomSheet(
         context,
         StateNotifierProvider(
-          create: (BuildContext context) => 
+          create: (BuildContext context) =>
               UploadStatsNotifier(dailyStats, response),
           child: InfoStatsWidget(
             dailyStats: dailyStats,
           ),
-        )
-    );
+        ));
   }
 }

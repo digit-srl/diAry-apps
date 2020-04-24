@@ -306,7 +306,7 @@ class DailyStatsWidget extends StatelessWidget {
                                     width: 4,
                                   ),
                                   Text(
-                                    day.sampleCount.toString(),
+                                    day.effectiveSampleCount.toString(),
                                     style: Theme.of(context).textTheme.headline,
                                     textAlign: TextAlign.center,
                                   ),
@@ -533,7 +533,7 @@ class DailyStatsWidget2 extends StatelessWidget {
                         fontSize: 30,
                         color: Colors.black,
                         fontWeight: FontWeight.bold),
-                    holeLabel: day.date.isToday()
+                    holeLabel: day.date.isToday
                         ? dateFormat.format(DateTime.now())
                         : null,
                   ),

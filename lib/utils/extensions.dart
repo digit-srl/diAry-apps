@@ -5,13 +5,9 @@ extension ExtensionDateTime on DateTime {
         this.year == date.year;
   }
 
-  DateTime withoutMinAndSec() {
-    return DateTime(this.year, this.month, this.day);
-  }
+  DateTime get midnight => DateTime(this.year, this.month, this.day);
 
-  bool isToday() {
-    return this.isSameDay(DateTime.now());
-  }
+  bool get isToday => this.isSameDay(DateTime.now());
 
   DateTime copyWith(
       {int day, int month, int year, int hour, int minute, int second}) {
@@ -20,4 +16,5 @@ extension ExtensionDateTime on DateTime {
   }
 
   int toMinutes() => this.hour * 60 + this.minute;
+  DateTime get yesterday => this.subtract(Duration(days: 1));
 }

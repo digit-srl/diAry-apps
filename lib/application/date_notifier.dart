@@ -15,7 +15,7 @@ class DateState {
 
 //  Day get selectedDay => _days[selectedDate];
 //  List<DateTime> get dates => _days.keys.toList();
-  bool get isToday => selectedDate.isToday();
+  bool get isToday => selectedDate.isToday;
 
   DateState copyWith({DateTime date}) {
     return DateState(date ?? this.selectedDate);
@@ -23,7 +23,7 @@ class DateState {
 }
 
 class DateNotifier extends StateNotifier<DateState> with LocatorMixin {
-  DateNotifier() : super(DateState(DateTime.now().withoutMinAndSec()));
+  DateNotifier() : super(DateState(DateTime.now().midnight));
 
   DateTime get selectedDate => state.selectedDate;
 

@@ -80,7 +80,7 @@
 //          (state) {
 //        logger('[MapPage] LocationNotifier');
 //
-//        if (_currentDay.isToday()) {
+//        if (_currentDay.isToday) {
 //          for (int i = 0; i < state.liveLocations.length; i++) {
 //            _locations.add(CircleMarker(
 //                point: LatLng(

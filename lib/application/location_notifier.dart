@@ -50,7 +50,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //    if (locations == null) {
 //      return liveLocations;
 //    }
-//    if (selectedDay.isToday()) {
+//    if (selectedDay.isToday) {
 //      locations?.addAll(liveLocations);
 //    }
     return locations ?? [];
@@ -79,9 +79,9 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 
 //  int getTotalPoint(DateTime selectedDate) {
 //    if (!locationsPerDate.containsKey(selectedDate)) {
-//      return selectedDate.isToday() ? liveLocations.length : 0;
+//      return selectedDate.isToday ? liveLocations.length : 0;
 //    }
-//    return selectedDate.isToday()
+//    return selectedDate.isToday
 //        ? locationsPerDate[selectedDate].length + liveLocations.length
 //        : locationsPerDate[selectedDate].length;
 //  }
@@ -89,7 +89,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 //  Day getDay() {
 //    final selectedDate = read<DateNotifier>().selectedDate;
 //    Day day;
-//    if (selectedDate.isToday() && liveLocations.isNotEmpty) {
+//    if (selectedDate.isToday && liveLocations.isNotEmpty) {
 //      final partialSlices = days[selectedDate]?.slices ?? [];
 //      liveLocations.sort((a, b) => DateTime.tryParse(a.timestamp)
 //          .compareTo(DateTime.tryParse(b.timestamp)));
@@ -114,14 +114,21 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
   void addLocation(Location location) {
     logger.i('[LocationNotifier] total live locations: $location');
 
-    final date = location.dateTime.withoutMinAndSec();
+    final date = location.dateTime.midnight;
 
     //aggiorno la map
     if (!locationsPerDate.containsKey(date)) {
       locationsPerDate[date] = [];
     }
     locationsPerDate[date].add(location);
-    state = LocationState(location);
+    if (!(location.coords.latitude == 0.0 &&
+        location.coords.longitude == 0.0 &&
+        (location.event == Event.Off ||
+            location.event == Event.On ||
+            location.event == Event.Geofence))) {
+      state = LocationState(location);
+    }
+
     read<DayNotifier>().updateDay2(locationsPerDate, date);
   }
 

@@ -78,11 +78,11 @@ class _MainAppBarState extends State<MainAppBar> {
                     context: context,
                     initialDate: Provider.of<DateState>(context, listen: false)
                         .selectedDate
-                        .withoutMinAndSec(),
+                        .midnight,
                     firstDate: dates.first,
                     lastDate: dates.last.add(Duration(minutes: 1)),
                     selectableDayPredicate: (DateTime date) =>
-                        dates.contains(date.withoutMinAndSec()),
+                        dates.contains(date.midnight),
 
                     // datepicker manual customization (it is a flutter bug):
                     // https://github.com/flutter/flutter/issues/19623#issuecomment-568009162)
@@ -177,7 +177,7 @@ class _MainAppBarState extends State<MainAppBar> {
           });
     } else if (currentPage == 1) {
       // map page
-      final isToday = context.read<DateNotifier>().selectedDate.isToday();
+      final isToday = context.read<DateNotifier>().selectedDate.isToday;
 
       return Opacity(
         opacity: isToday ? 1.0 : 0.0,

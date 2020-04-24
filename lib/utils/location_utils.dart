@@ -232,9 +232,8 @@ class LocationUtils {
         } else if (i == 0 && event == Event.On) {
           places.add(
             Slice(
-              startTime: partialDayPlaces.isEmpty
-                  ? currentDate.withoutMinAndSec()
-                  : currentDate,
+              startTime:
+                  partialDayPlaces.isEmpty ? currentDate.midnight : currentDate,
               minutes: partialPlaceMinutes,
               activity: MotionActivity.Off,
             ),
@@ -273,7 +272,7 @@ class LocationUtils {
             Slice(
               id: 0,
               minutes: partialPlaceMinutes,
-              startTime: currentDate.withoutMinAndSec(),
+              startTime: currentDate.midnight,
               places: action == Action.Enter
                   ? {where, ...yesterdayPlaces}
                   : yesterdayPlaces,
@@ -369,7 +368,7 @@ class LocationUtils {
           } else if (action == Action.Exit) {
             places.last.placeRecords += 1;
             //situazione di primo EXIT della giornata visto che ol luogo non è contenuto nel precedente spicchio
-            if (isFirstGeofence) {
+            if (isFirstGeofence && places.last.activity != MotionActivity.Off) {
               places.last.places.add(where);
             }
             //TODO potrebbe anche uscire da 2 posti di fila
@@ -409,7 +408,7 @@ class LocationUtils {
             id: 0,
             minutes: partialMinutes,
             activity: MotionActivity.Still,
-            startTime: currentDate.withoutMinAndSec(),
+            startTime: currentDate.midnight,
           ),
         );
       } else if (slices.last.activity == currentActivity) {
@@ -431,7 +430,7 @@ class LocationUtils {
     logger.i('cumulative minutes before last = $cumulativeMinutes');
 
     if (cumulativePlacesMinutes < maxMinutes) {
-      if (currentDay.isToday()) {
+      if (currentDay.isToday) {
         final nowMinutes = DateTime.now().toMinutes();
         final currentPartialTime = nowMinutes - cumulativePlacesMinutes;
         DateTime startTime;
@@ -458,7 +457,7 @@ class LocationUtils {
     }
 
     if (cumulativeMinutes < maxMinutes) {
-      if (currentDay.isToday()) {
+      if (currentDay.isToday) {
         DateTime startTime = slices.last.endTime;
         slices.add(
           Slice(
@@ -517,7 +516,8 @@ class LocationUtils {
       slices: slices,
       places: places,
       centroidHash: centroidHash,
-      sampleCount: effectiveSampleCount,
+      effectiveSampleCount: effectiveSampleCount + discardedSampleCount,
+      sampleCount: sampleCount,
       discardedSampleCount: discardedSampleCount,
       boundingBoxDiagonal: boundingBoxDiagonal,
     );

@@ -59,7 +59,7 @@ class _MapPageState extends State<MapPage>
   Function removeGeofenceChangeListener;
   Function removeAnnotationListener;
 
-  DateTime _currentDate = DateTime.now().withoutMinAndSec();
+  DateTime _currentDate = DateTime.now().midnight;
   String log = "";
   Completer<GoogleMapController> _controller = Completer();
   Set<Circle> circles = {};
@@ -89,7 +89,7 @@ class _MapPageState extends State<MapPage>
   void initState() {
     super.initState();
     final todayLocations = Provider.of<LocationNotifier>(context, listen: false)
-        .locationsPerDate[DateTime.now().withoutMinAndSec()];
+        .locationsPerDate[DateTime.now().midnight];
     if (todayLocations?.isNotEmpty ?? false) {
       logger.i('[MapPage] initState() todayLocations.isNotEmpty');
       final ll = LatLng(todayLocations.last.coords.latitude,
@@ -121,10 +121,10 @@ class _MapPageState extends State<MapPage>
     removeLocationListener = Provider.of<LocationNotifier>(context).addListener(
       (state) {
         logger.i('[MapPage] LocationNotifier');
-        if (state.newLocation != null && _currentDate.isToday()) {
+        if (state.newLocation != null && _currentDate.isToday) {
           _onLocation(state.newLocation);
         }
-//        if (_currentDay.isToday()) {
+//        if (_currentDay.isToday) {
 //          for (int i = 0; i < state.liveLocations.length; i++) {
 //            _locations.add(CircleMarker(
 //                point: LatLng(
@@ -139,7 +139,7 @@ class _MapPageState extends State<MapPage>
     removeAnnotationListener = context.read<AnnotationNotifier>().addListener(
       (state) {
         logger.i('[MapPage] AnnotationNotifier');
-        if (state != null && _currentDate.isToday()) {
+        if (state != null && _currentDate.isToday) {
           _onAnnotation(state);
         }
       },
@@ -149,7 +149,7 @@ class _MapPageState extends State<MapPage>
         Provider.of<GeofenceEventNotifier>(context).addListener(
       (state) {
         logger.i('[MapPage] GeofenceEventNotifier');
-        if (state.geofenceEvent != null && _currentDate.isToday()) {
+        if (state.geofenceEvent != null && _currentDate.isToday) {
           _onGeofenceEvent(state.geofenceEvent);
         }
       },
@@ -166,7 +166,7 @@ class _MapPageState extends State<MapPage>
 //        Provider.of<GeofenceChangeNotifier>(context).addListener(
 //      (state) {
 //        logger('[MapPage] GeofenceChangeNotifier');
-//        if (state.geofencesChangeEvent != null && _currentDate.isToday()) {
+//        if (state.geofencesChangeEvent != null && _currentDate.isToday) {
 //          _onGeofencesChange(state.geofencesChangeEvent);
 //        }
 //      },
@@ -495,7 +495,7 @@ class _MapPageState extends State<MapPage>
         );
         markers[markerId] = marker;
       }
-      if (_currentDate.isToday()) {
+      if (_currentDate.isToday) {
         _updateCurrentPositionMarker(
           LatLng(
             dailyLocations.last.coords.latitude,

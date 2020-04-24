@@ -56,7 +56,7 @@ void main() async {
       await repository.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
 
-  final today = DateTime.now().withoutMinAndSec();
+  final today = DateTime.now().midnight;
   if (!days.containsKey(today)) {
     days[today] = Day(date: today);
   }

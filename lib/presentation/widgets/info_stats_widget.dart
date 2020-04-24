@@ -67,7 +67,7 @@ class InfoStatsWidget extends StatelessWidget {
               builder: (contest, state, child) {
                 return state.map(
                   initial: (_) {
-                    if (dailyStats.date.isToday()) {
+                    if (dailyStats.date.isToday) {
                       return Card(
                         elevation: 2.0,
                         shape: RoundedRectangleBorder(

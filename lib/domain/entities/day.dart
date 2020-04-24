@@ -13,11 +13,17 @@ class Day {
   final List<Slice> places;
   List<Annotation> annotations;
   final DailyStatsResponse dailyStatsResponse;
+
+  /// Total sample
   final int sampleCount;
+
+  /// Total sample less that ON/OFF/EXIT EVENTS
+  final int effectiveSampleCount;
+
+  /// Inaccurate and EVENT sample count
   final int discardedSampleCount;
   final String centroidHash;
   final double boundingBoxDiagonal;
-//  final pointCount;
   int wom;
 
   bool get isStatsSended => dailyStatsResponse != null;
@@ -27,10 +33,10 @@ class Day {
     @required this.date,
     this.slices = const [],
     this.places = const [],
-    this.sampleCount,
-    this.discardedSampleCount,
+    this.sampleCount = 0,
+    this.effectiveSampleCount = 0,
+    this.discardedSampleCount = 0,
     this.centroidHash,
-//    this.pointCount = 0,
     this.dailyStatsResponse,
     this.boundingBoxDiagonal,
   }) {
@@ -71,10 +77,9 @@ class Day {
       slices: slices ?? this.slices,
       places: places ?? this.places,
       annotations: annotations ?? this.annotations,
-//      pointCount: this.pointCount + newPoints,
-//      dailyStats: this.dailyStats,
       dailyStatsResponse: response ?? this.dailyStatsResponse,
       sampleCount: this.sampleCount,
+      effectiveSampleCount: this.effectiveSampleCount,
       discardedSampleCount: this.discardedSampleCount,
       centroidHash: this.centroidHash,
       boundingBoxDiagonal: this.boundingBoxDiagonal,
@@ -109,8 +114,6 @@ class Day {
       slices: this.slices,
       places: this.places,
       annotations: list,
-//      pointCount: this.pointCount,
-//      dailyStats: this.dailyStats,
       dailyStatsResponse: this.dailyStatsResponse,
       sampleCount: this.sampleCount,
       discardedSampleCount: this.discardedSampleCount,

@@ -46,13 +46,13 @@ class LocationRepositoryImpl implements LocationRepository {
     Map<DateTime, List<Location>> locationsPerDay = {};
     final locations = await locationsLocalDataSources.getAllLocations();
     logger.i('[LocationUtils] total records: ${locations.length}');
-    final DateTime today = DateTime.now().withoutMinAndSec();
+    final DateTime today = DateTime.now().midnight;
     if (locations.isEmpty) {
       return {today: []};
     }
     for (var loc in locations) {
       try {
-        final date = loc.dateTime.withoutMinAndSec();
+        final date = loc.dateTime.midnight;
         if (!locationsPerDay.containsKey(date)) {
           locationsPerDay[date] = [];
         }
@@ -72,7 +72,7 @@ class LocationRepositoryImpl implements LocationRepository {
     final locations = result.getOrElse(() => []);
     for (int i = 0; i < locations.length; i++) {
       final loc = locations[i];
-      final date = loc.dateTime.withoutMinAndSec();
+      final date = loc.dateTime.midnight;
       if (!map.containsKey(date)) {
         map[date] = {};
       }

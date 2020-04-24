@@ -20,7 +20,7 @@ class DailyStatsLegend extends StatelessWidget {
         Set<Place> places;
         /*
         essendo in questo modo la scheda di sola lettura, vengono mostrate tutte anche se si è nel giorno oggi
-        if (value.day.date.isToday()) {
+        if (value.day.date.isToday) {
           places = Hive.box<Place>('places')
               .values
               .where((place) => place.enabled == true)

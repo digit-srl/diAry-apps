@@ -1,20 +1,16 @@
 import 'package:diary/application/annotation_notifier.dart';
-import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/daily_stats.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
-import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:state_notifier/state_notifier.dart';
-
-import 'package:intl/intl.dart';
 import 'package:diary/utils/extensions.dart';
-import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 import 'date_notifier.dart';
 
@@ -28,16 +24,16 @@ class DayState {
     return formatter.format(day.date);
   }
 
-  bool get isToday => day.date.isToday();
+  bool get isToday => day.date.isToday;
 }
 
 class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
   Map<DateTime, Day> days;
   final LocationRepository locationRepository;
-  static DateTime openAppDate = DateTime.now().withoutMinAndSec();
+  static DateTime openAppDate = DateTime.now().midnight;
 
   DayNotifier(this.days, this.locationRepository)
-      : super(DayState(days[DateTime.now().withoutMinAndSec()]));
+      : super(DayState(days[DateTime.now().midnight]));
 
   @override
   void update(T Function<T>() watch) {
@@ -58,7 +54,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
     final newDays =
         LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
 
-    final today = DateTime.now().withoutMinAndSec();
+    final today = DateTime.now().midnight;
     if (!newDays.containsKey(today)) {
       newDays[today] = Day(date: today);
     }
@@ -80,9 +76,18 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
       yesterdayAggregation.annotations = days[openAppDate]?.annotations ?? [];
       days[openAppDate] = yesterdayAggregation;
     }
+
+    Set<String> yesterdayPlaces = {};
+    final yDate = date.yesterday.midnight;
+    if (days.containsKey(yDate) && days[yDate].places.isNotEmpty) {
+      final oldPlaces = days[yDate].places.last.places;
+      yesterdayPlaces.addAll(oldPlaces);
+    }
+
     final aggregationData = LocationUtils.aggregateLocationsInSlices3(
       date: date,
       locations: locationsPerDate[date],
+      yesterdayPlaces: yesterdayPlaces,
     );
     aggregationData.annotations = days[date]?.annotations ?? [];
     days[date] = aggregationData;
@@ -111,13 +116,13 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
 //          ? partialSlices.sublist(
 //              0,
 //              partialSlices.length -
-//                  1) // Pass partial list withou Unknown slice (used to show future hours in today)
+//                  1) // Pass partial list without Unknown slice (used to show future hours in today)
 //          : partialSlices,
 //      partialDayPlaces: date.isSameDay(openAppDate) && partialPlaces.isNotEmpty
 //          ? partialPlaces.sublist(
 //              0,
 //              partialPlaces.length -
-//                  1) // Pass partial list withou Unknown slice (used to show future hours in today)
+//                  1) // Pass partial list without Unknown slice (used to show future hours in today)
 //          : partialPlaces,
 //    );
 //    days[date] = days[date].copyWith(
@@ -137,7 +142,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
   void manageAnnotation(AnnotationState annotationState) {
     logger.i('[DayNotifier] addAnnotation() $annotationState');
     if (annotationState != null) {
-      final date = annotationState.annotation.dateTime.withoutMinAndSec();
+      final date = annotationState.annotation.dateTime.midnight;
       days[date] = days[date].copyWithAnnotationAction(
           annotationState.annotation, annotationState.action);
       if (state.day.date.isSameDay(annotationState.annotation.dateTime)) {
