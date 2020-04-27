@@ -119,6 +119,7 @@ class Day {
       discardedSampleCount: this.discardedSampleCount,
       centroidHash: this.centroidHash,
       boundingBoxDiagonal: this.boundingBoxDiagonal,
+      effectiveSampleCount: this.effectiveSampleCount,
     );
   }
 
