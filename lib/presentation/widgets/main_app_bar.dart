@@ -37,7 +37,7 @@ class _MainAppBarState extends State<MainAppBar> {
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
     double _elevation =
         context.watch<ElevationState>().elevations[_currentPage];
-    final dates = Provider.of<LocationNotifier>(context, listen: false).dates;
+    final dates = Provider.of<DayNotifier>(context, listen: false).days.keys;
 
     return SafeArea(
       // workaround for wrong height problem in iPhone X:
