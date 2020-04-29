@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:diary/core/errors/failures.dart';
 import 'package:diary/domain/entities/call_to_action.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
-import 'package:diary/domain/entities/call_to_action_result.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/data/call_to_action_remote_data_sources.dart';
@@ -13,7 +10,6 @@ import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:geodesy/geodesy.dart';
-import 'package:path/path.dart';
 
 abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getAllLocations();

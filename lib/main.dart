@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/infrastructure/data/call_to_action_remote_data_sources.dart';
 import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:diary/utils/location_utils.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'app.dart';
