@@ -22,7 +22,7 @@ dependencies:
 
   flutter_background_geolocation: ^1.7.3
   auto_size_text: ^2.1.0
-  google_maps_flutter: ^0.5.26+2
+  google_maps_flutter: ^0.5.26+4
   flutter_statusbarcolor: ^0.2.3
   flutter_circular_chart: ^0.1.0
   flutter_state_notifier: ^0.3.0
