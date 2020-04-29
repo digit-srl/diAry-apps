@@ -4,6 +4,8 @@ class ConflictDayFailure extends Failure {}
 
 class UnprocessableDayFailure extends Failure {}
 
+class NoLocationsFoundFailure extends Failure {}
+
 class UnknownFailure extends Failure {
   final String message;
 

@@ -1,4 +1,6 @@
+import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
@@ -12,8 +14,8 @@ import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:provider/provider.dart';
+import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
 import 'package:diary/utils/extensions.dart';
 
@@ -131,13 +133,7 @@ class _HomePageState extends State<HomePage> {
                     width: 8,
                   ),
                   UploadStatsIconButton(),
-                  IconButton(
-                    icon: Icon(
-                      CustomIcons.hospital_box_outline,
-                    ),
-                    onPressed: () {},
-                    tooltip: "Notifica sanitaria... Coming soon!",
-                  ),
+                  CallToActionIconButton(),
                   IconButton(
                     icon: Icon(Icons.settings),
                     tooltip: "Impostazioni",
@@ -163,6 +159,36 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class CallToActionIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+//    final day = context.watch<DayState>().day;
+//    final response = day.dailyStatsResponse;
+//    final isToday = day.date.isToday;
+//    final isStatsSended = day.isStatsSended;
+
+    return IconButton(
+      icon: Icon(
+        CustomIcons.hospital_box_outline,
+      ),
+      onPressed: () {
+        showCallToActionBottomSheet(context);
+      },
+      tooltip: "Notifica sanitaria... Coming soon!",
+    );
+  }
+
+  showCallToActionBottomSheet(BuildContext context) async {
+    BottomSheets.showFullPageBottomSheet(
+        context,
+        StateNotifierProvider(
+          create: (BuildContext context) =>
+              CallToActionNotifier(context.read<LocationRepositoryImpl>()),
+          child: CallToActionWidget(),
+        ));
+  }
+}
+
 class UploadStatsIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -184,11 +210,11 @@ class UploadStatsIconButton extends StatelessWidget {
           : Icon(
               isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
             ),
-      onPressed: () => showInfoStatsBottomsheet(context, response),
+      onPressed: () => showInfoStatsBottomSheet(context, response),
     );
   }
 
-  showInfoStatsBottomsheet(
+  showInfoStatsBottomSheet(
       BuildContext context, DailyStatsResponse response) async {
     final dailyStats = await context.read<DayNotifier>().buildDailyStats();
 

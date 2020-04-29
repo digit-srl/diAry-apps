@@ -551,7 +551,6 @@ class LocationUtils {
   static String getGeohash(double lat, double long, {int precision = 5}) {
     // Separately you can use only the Geohasher functions
     GeoHasher geoHasher = GeoHasher();
-    logger.i('$lat $long');
     return geoHasher.encode(long, lat,
         precision: precision); // Returns a string geohash
   }

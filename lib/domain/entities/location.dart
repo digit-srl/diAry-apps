@@ -124,9 +124,15 @@ class Location {
 
   @override
   String toString() {
-    // TODO: implement toString
     return 'uuid: $uuid';
   }
+
+  bool get isNotificationEvent =>
+      coords.latitude == 0.0 &&
+      coords.longitude == 0.0 &&
+      (event == Event.Off || event == Event.On || event == Event.Geofence);
+
+  bool get isGoodPoint => !isNotificationEvent && coords.accuracy < 1000;
 }
 
 class Coords {

@@ -1,5 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
+import 'package:diary/infrastructure/data/call_to_action_remote_data_sources.dart';
 import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -51,7 +52,8 @@ void main() async {
   await Hive.openBox<Place>('places');
   await Hive.openBox<String>('pinNotes');
 
-  final repository = LocationRepositoryImpl(LocationsLocalDataSourcesImpl());
+  final repository = LocationRepositoryImpl(
+      LocationsLocalDataSourcesImpl(), CallToActionRemoteDataSourcesImpl());
   final Map<DateTime, List<Location>> locationsPerDate =
       await repository.readAndFilterLocationsPerDay();
   final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);

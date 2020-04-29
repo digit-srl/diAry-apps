@@ -1,6 +1,7 @@
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:hive/hive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 import 'logger.dart';
@@ -165,6 +166,14 @@ class GenericUtils {
     } catch (ex) {
       logger.e('[DayNotifier] [ERROR] getWomCountForThisDay() $ex');
       return -1;
+    }
+  }
+
+  static launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 }

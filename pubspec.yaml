@@ -55,6 +55,8 @@ dependencies:
   path:
   sqflite:
   logger_flutter: ^0.7.1
+  geodesy: ^0.3.2
+
 
 
 dev_dependencies:

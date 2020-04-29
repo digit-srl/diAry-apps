@@ -1,6 +1,7 @@
 import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/bottom_sheets.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
@@ -301,20 +302,12 @@ class WomResponseWidget extends StatelessWidget {
             GenericButton(
               text: 'Apri il Pocket',
               onPressed: () {
-                _launchURL(_dailyStatsResponse.womLink);
+                GenericUtils.launchURL(_dailyStatsResponse.womLink);
               },
             ),
           ],
         ),
       ],
     );
-  }
-
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }
