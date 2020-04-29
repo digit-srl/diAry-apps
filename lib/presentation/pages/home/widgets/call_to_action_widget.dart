@@ -25,10 +25,16 @@ class CallToActionWidget extends StatelessWidget {
           'dall\'autorità sanitaria che verranno incrociate (direttamente '
           'sullo smartphone) con le tracce locali. Sono se le tracce locali '
           'incrociano i luoghi e gli orari segnalati, le corrispondenti '
-          '"Call to Action" vengono mostrate all\'utente. '
+          '"Call to Action" vengono mostrate all\'utente.\n',
+          style: Theme.of(context).textTheme.body1,
+        ),
+        Text(
           'PER ORA SI TRATTA SOLO DI SEGNALAZIONI DI PROVA SENZA ALCUNA '
           'RILEVANZA DAL PUNTO DI VISTA SANITARIO',
-          style: Theme.of(context).textTheme.body1,
+          style: Theme.of(context)
+              .textTheme
+              .body1
+              .copyWith(fontWeight: FontWeight.bold),
         ),
         SizedBox(
           height: 16,
@@ -86,8 +92,25 @@ class CallToActionResponseWidget extends StatelessWidget {
   const CallToActionResponseWidget({Key key, this.calls}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    if (calls.isEmpty) return Text('Nessuno dei tuoi punti r');
-
+    if (calls.isEmpty)
+      return Container(
+        height: 200,
+        child: Card(
+          elevation: 2.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(
+              child: Text(
+                'Non ci sono segnalazioni relative a luoghi che hai visitato',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.body1,
+              ),
+            ),
+          ),
+        ),
+      );
     return Column(
       children: calls.map((c) {
         return Card(
