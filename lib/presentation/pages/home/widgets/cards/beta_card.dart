@@ -43,25 +43,24 @@ class _BetaCardState extends State<BetaCard> {
           description: 'Scheda mostrata solo ai beta tester. Contiene '
               'funzioni per il test.',
           bottomButtons: <Widget>[
-            if (!kReleaseMode)
-              IconButton(
-                icon: Icon(
-                  Icons.bug_report,
-                  color: Colors.red,
-                ),
-                tooltip: "Debug report",
-                onPressed: () async {
-                  LogConsole.init();
-                  var logConsole = LogConsole(
-                    showCloseButton: true,
-                    dark: true,
-                  );
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => logConsole),
-                  );
-                },
+            IconButton(
+              icon: Icon(
+                Icons.bug_report,
+                color: Colors.red,
               ),
+              tooltip: "Debug report",
+              onPressed: () async {
+                LogConsole.init();
+                var logConsole = LogConsole(
+                  showCloseButton: true,
+                  dark: true,
+                );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => logConsole),
+                );
+              },
+            ),
             IconButton(
               icon: Icon(Icons.bug_report),
               tooltip: "Peersistent log report",
