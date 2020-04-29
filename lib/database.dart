@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:diary/utils/logger.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart';
@@ -30,9 +31,21 @@ class DiAryDatabase {
   }
 
   Future<String> getPath() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(
-        join(dbFolder.parent.path, 'databases/transistor_location_manager'));
+    String path;
+
+    if (Platform.isIOS) {
+      final dbFolder = await getApplicationSupportDirectory();
+      path =
+          join(dbFolder.path, 'TSLocationManager/ts_location_manager.sqlite');
+    } else if (Platform.isAndroid) {
+      final dbFolder = await getApplicationDocumentsDirectory();
+      path =
+          join(dbFolder.parent.path, 'databases/transistor_location_manager');
+    } else {
+      throw Exception('The platform is not supported');
+    }
+    logger.i(path);
+    final file = File(path);
     return file.path;
   }
 
