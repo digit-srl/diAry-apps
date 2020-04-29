@@ -1,6 +1,5 @@
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
-import 'package:diary/domain/entities/call_to_action_result.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:diary/utils/bottom_sheets.dart';
@@ -22,7 +21,13 @@ class CallToActionWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Descrizione operazione',
+          'Questo pulsante consulta il server per ricevere segnalazioni '
+          'dall\'autorità sanitaria che verranno incrociate (direttamente '
+          'sullo smartphone) con le tracce locali. Sono se le tracce locali '
+          'incrociano i luoghi e gli orari segnalati, le corrispondenti '
+          '"Call to Action" vengono mostrate all\'utente. '
+          'PER ORA SI TRATTA SOLO DI SEGNALAZIONI DI PROVA SENZA ALCUNA '
+          'RILEVANZA DAL PUNTO DI VISTA SANITARIO',
           style: Theme.of(context).textTheme.body1,
         ),
         SizedBox(
