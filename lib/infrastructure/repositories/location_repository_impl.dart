@@ -16,7 +16,6 @@ abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getLocationsBetween(
       DateTime start, DateTime end);
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay();
-//  Future<Either<Failure, CallToAction>> buildCallToAction();
   Future<Either<Failure, List<Call>>> performCallToAction();
 }
 
@@ -103,7 +102,7 @@ class LocationRepositoryImpl implements LocationRepository {
     return result;
   }
 
-  @override
+/*  @override
   Future<Either<Failure, CallToAction>> builregegege() async {
     try {
       final map = <DateTime, Set<String>>{};
@@ -134,7 +133,7 @@ class LocationRepositoryImpl implements LocationRepository {
       logger.e(e);
       return left(UnknownFailure(e.toString()));
     }
-  }
+  }*/
 
   @override
   Future<Either<Failure, List<Call>>> performCallToAction() async {
