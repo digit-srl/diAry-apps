@@ -23,7 +23,7 @@ class CallToActionWidget extends StatelessWidget {
         Text(
           'Questo pulsante consulta il server per ricevere segnalazioni '
           'dall\'autorità sanitaria che verranno incrociate (direttamente '
-          'sullo smartphone) con le tracce locali. Sono se le tracce locali '
+          'sullo smartphone) con le tracce locali. Solo se le tracce locali '
           'incrociano i luoghi e gli orari segnalati, le corrispondenti '
           '"Call to Action" vengono mostrate all\'utente.\n',
           style: Theme.of(context).textTheme.body1,
@@ -112,61 +112,38 @@ class CallToActionResponseWidget extends StatelessWidget {
         ),
       );
     return Column(
-      children: calls.map((c) {
-        return Card(
-          elevation: 2.0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(
-                    c.description,
-                    textAlign: TextAlign.start,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: GenericButton(
-                      text: 'Apri Url',
-                      onPressed: () {
-                        GenericUtils.launchURL(c.url);
-                      },
+      children: calls.map(
+        (c) {
+          return Card(
+            elevation: 2.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0)),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Text(
+                      c.description,
+                      textAlign: TextAlign.start,
                     ),
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: GenericButton(
+                        text: 'Apri Url',
+                        onPressed: () {
+                          GenericUtils.launchURL(c.url);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }).toList(),
-
-      /* <Widget>[
-
-        SizedBox(
-          height: 16,
-        ),
-        Row(
-          children: <Widget>[
-            GenericButton(
-              withBorder: false,
-              text: 'Lo farò in seguito',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            Spacer(),
-            GenericButton(
-              text: 'Apri il Pocket',
-              onPressed: () {
-                _launchURL(_dailyStatsResponse.womLink);
-              },
-            ),
-          ],
-        ),
-      ],*/
+          );
+        },
+      ).toList(),
     );
   }
 }
