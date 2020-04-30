@@ -48,4 +48,16 @@ class UserRepositoryImpl extends UserRepository {
   int getDailyAnnotationCount(DateTime date) {
     return userLocalDataSources.getAnnotationCount(date);
   }
+
+  @override
+  DateTime getLastCallToActionDate() {
+    final date = userLocalDataSources.getLastCallToActionDate();
+    if (date == null) return null;
+    return date.isUtc ? date : date.toUtc();
+  }
+
+  @override
+  Future<void> saveCallToActionDate(DateTime dateTime) async {
+    await userLocalDataSources.saveCallToActionDate(dateTime);
+  }
 }

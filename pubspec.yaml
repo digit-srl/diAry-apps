@@ -55,6 +55,7 @@ dependencies:
   sqflite:
   logger_flutter: ^0.7.1
   geodesy: ^0.3.2
+  flutter_slidable: ^0.5.4
 
 
 

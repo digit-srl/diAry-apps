@@ -14,6 +14,9 @@ abstract class UserLocalDataSources {
   String getUserUuid();
 
   int getAnnotationCount(DateTime date);
+
+  DateTime getLastCallToActionDate();
+  Future<void> saveCallToActionDate(DateTime dateTime);
 }
 
 class UserLocalDataSourcesImpl extends UserLocalDataSources {
@@ -63,5 +66,15 @@ class UserLocalDataSourcesImpl extends UserLocalDataSources {
         .values
         .where((a) => a.dateTime.isSameDay(date))
         .length;
+  }
+
+  @override
+  DateTime getLastCallToActionDate() {
+    return userBox.get('lastCallToAction');
+  }
+
+  @override
+  Future<void> saveCallToActionDate(DateTime dateTime) async {
+    await userBox.put('lastCallToAction', dateTime);
   }
 }

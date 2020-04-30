@@ -1,15 +1,25 @@
 import 'dart:convert';
 
+import 'package:diary/domain/entities/call_to_action_response.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:hive/hive.dart';
 
 import '../../database.dart' as db;
 
 abstract class LocationsLocalDataSources {
   Future<List<Location>> getAllLocations();
   Future<List<Location>> getLocationsBetween(DateTime start, DateTime end);
+  Future saveNewCallToActionResult(Call call);
+  List<Call> getAllCalls();
 }
 
 class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
+  Box<Call> box;
+
+  LocationsLocalDataSourcesImpl() {
+    box = Hive.box('calls');
+  }
+
   @override
   Future<List<Location>> getAllLocations() async {
     final List<Map<String, dynamic>> list =
@@ -38,12 +48,14 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
         .toList();
     return locations;
   }
-}
 
-/*onPressed: () async {
-                  final result = await ctx
-                      .read<LocationRepositoryImpl>()
-                      .getAllLocations();
-                  result.fold((f) => logger(f), (locs) => logger(locs.length));
-//                  logger(locs.length);
-                },*/
+  @override
+  Future saveNewCallToActionResult(Call call) async {
+    await box.put(call.id, call);
+  }
+
+  @override
+  List<Call> getAllCalls() {
+    return box.values.toList();
+  }
+}

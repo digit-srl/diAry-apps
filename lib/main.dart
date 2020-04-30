@@ -14,6 +14,7 @@ import 'package:diary/utils/extensions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'domain/entities/annotation.dart';
+import 'domain/entities/call_to_action_response.dart';
 import 'domain/entities/day.dart';
 import 'domain/entities/location.dart';
 import 'domain/entities/place.dart';
@@ -43,12 +44,17 @@ void main() async {
   Hive.registerAdapter(AnnotationAdapter());
   Hive.registerAdapter(PlaceAdapter());
   Hive.registerAdapter(DailyStatsResponseAdapter());
+  Hive.registerAdapter(CallAdapter());
+  Hive.registerAdapter(QueryAdapter());
+  Hive.registerAdapter(GeometryAdapter());
+  Hive.registerAdapter(CoordinatesAdapter());
   await Hive.openBox<String>('logs');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox('dailyStatsResponse');
   await Hive.openBox<Place>('places');
   await Hive.openBox<String>('pinNotes');
+  await Hive.openBox<Call>('calls');
 
   final repository = LocationRepositoryImpl(
       LocationsLocalDataSourcesImpl(), CallToActionRemoteDataSourcesImpl());

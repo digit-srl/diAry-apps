@@ -1,6 +1,6 @@
 import 'package:diary/core/errors/failures.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
-import 'package:diary/domain/entities/call_to_action_result.dart';
+import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -12,11 +12,28 @@ part 'call_to_action_notifier.freezed.dart';
 class CallToActionNotifier extends StateNotifier<CallToActionState>
     with LocatorMixin {
   final LocationRepository locationRepository;
-  CallToActionNotifier(this.locationRepository) : super(Initial());
+  final UserRepository userRepository;
+  CallToActionNotifier(this.locationRepository, this.userRepository)
+      : super(Initial());
+
+  loadCalls() async {
+    final e = locationRepository.getAllCalls();
+    e.fold((f) {
+      String error = 'ERRORE SCONOSCIUTO';
+      if (f is UnknownFailure) {
+        error = f.message;
+      }
+      state = Error(error);
+    }, (calls) {
+      state = CallResult(calls);
+    });
+  }
 
   performCall() async {
     state = Loading();
-    final either = await locationRepository.performCallToAction();
+    final lastCallToAction = userRepository.getLastCallToActionDate();
+    final either =
+        await locationRepository.performCallToAction(lastCallToAction);
 
     either.fold((f) {
       String error = 'ERRORE SCONOSCIUTO';
@@ -26,9 +43,14 @@ class CallToActionNotifier extends StateNotifier<CallToActionState>
         error = f.message;
       }
       state = Error(error);
-    }, (calls) {
+    }, (calls) async {
+      await userRepository.saveCallToActionDate(DateTime.now());
       state = CallResult(calls);
     });
+  }
+
+  Future<void> updateCall(Call call) async {
+    await locationRepository.updateCall(call);
   }
 }
 

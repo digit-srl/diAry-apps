@@ -16,7 +16,11 @@ abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getLocationsBetween(
       DateTime start, DateTime end);
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay();
-  Future<Either<Failure, List<Call>>> performCallToAction();
+  Future<Either<Failure, List<Call>>> performCallToAction(
+      DateTime lastCallToAction);
+  Either<Failure, List<Call>> getAllCalls();
+
+  Future updateCall(Call call);
 }
 
 class LocationRepositoryImpl implements LocationRepository {
@@ -136,7 +140,8 @@ class LocationRepositoryImpl implements LocationRepository {
   }*/
 
   @override
-  Future<Either<Failure, List<Call>>> performCallToAction() async {
+  Future<Either<Failure, List<Call>>> performCallToAction(
+      DateTime lastCallToAction) async {
     try {
       final result = await getAllLocations();
       final locations = List<Location>.unmodifiable(
@@ -145,7 +150,7 @@ class LocationRepositoryImpl implements LocationRepository {
         return left(NoLocationsFoundFailure());
       }
 
-      final callToAction = buildCallToAction(locations);
+      final callToAction = buildCallToAction(locations, lastCallToAction);
 //      final callToAction =
 //          CallToAction(lastCheckTimestamp: DateTime.now().toUtc(), activities: [
 //        DailyHash(
@@ -159,17 +164,22 @@ class LocationRepositoryImpl implements LocationRepository {
       final response =
           await callToActionRemoteDataSources.sendData(callToAction);
       final calls = processCallToActionResponse(response, locations);
-      return right(calls);
+      for (int i = 0; i < calls.length; i++) {
+        await locationsLocalDataSources.saveNewCallToActionResult(calls[i]);
+      }
+
+      return right(locationsLocalDataSources.getAllCalls());
     } catch (e) {
       logger.e(e);
       return left(UnknownFailure(e.toString()));
     }
   }
 
-  CallToAction buildCallToAction(List<Location> locations) {
+  CallToAction buildCallToAction(
+      List<Location> locations, DateTime lastCallToActionDate) {
     final map = <DateTime, Set<String>>{};
     final callToAction = CallToAction(
-      lastCheckTimestamp: DateTime.now().toUtc(),
+      lastCheckTimestamp: lastCallToActionDate,
       activities: [],
     );
     for (int i = 0; i < locations.length; i++) {
@@ -204,15 +214,33 @@ class LocationRepositoryImpl implements LocationRepository {
         bool hasMatch = false;
         for (int i = 0; i < call.queries.length && !hasMatch; i++) {
           final q = call.queries[i];
-          hasMatch = isLocationsInPolygon(locations, q.geometry.coordinates);
+          final coords = q.geometry.coordinates;
+          hasMatch = isLocationsInPolygon(locations, coords);
         }
         if (hasMatch) {
-          resultCalls.add(Call(description: call.description, url: call.url));
+          resultCalls.add(call);
           continue;
         }
       }
     }
     return resultCalls;
+  }
+
+  @override
+  Either<Failure, List<Call>> getAllCalls() {
+    try {
+      final calls = locationsLocalDataSources.getAllCalls();
+//      if (calls.isEmpty) return left(NoCallsFoundFailure());
+      return right(calls);
+    } catch (e) {
+      logger.e(e);
+      return left(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future updateCall(Call call) async {
+    await locationsLocalDataSources.saveNewCallToActionResult(call);
   }
 }
 

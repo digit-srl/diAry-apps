@@ -1,6 +1,7 @@
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
@@ -182,8 +183,10 @@ class CallToActionIconButton extends StatelessWidget {
     BottomSheets.showFullPageBottomSheet(
         context,
         StateNotifierProvider(
-          create: (BuildContext context) =>
-              CallToActionNotifier(context.read<LocationRepositoryImpl>()),
+          create: (BuildContext context) => CallToActionNotifier(
+              context.read<LocationRepositoryImpl>(),
+              context.read<UserRepositoryImpl>())
+            ..loadCalls(),
           child: CallToActionWidget(),
         ));
   }
