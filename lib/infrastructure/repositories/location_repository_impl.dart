@@ -21,6 +21,7 @@ abstract class LocationRepository {
   Either<Failure, List<Call>> getAllCalls();
 
   Future updateCall(Call call);
+  Future deleteCall(Call call);
 }
 
 class LocationRepositoryImpl implements LocationRepository {
@@ -241,6 +242,11 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future updateCall(Call call) async {
     await locationsLocalDataSources.saveNewCallToActionResult(call);
+  }
+
+  @override
+  Future deleteCall(Call call) async {
+    await locationsLocalDataSources.deleteCall(call);
   }
 }
 

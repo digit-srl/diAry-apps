@@ -11,6 +11,7 @@ abstract class LocationsLocalDataSources {
   Future<List<Location>> getLocationsBetween(DateTime start, DateTime end);
   Future saveNewCallToActionResult(Call call);
   List<Call> getAllCalls();
+  Future deleteCall(Call call);
 }
 
 class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
@@ -57,5 +58,10 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
   @override
   List<Call> getAllCalls() {
     return box.values.toList();
+  }
+
+  @override
+  Future deleteCall(Call call) async {
+    await box.delete(call.id);
   }
 }

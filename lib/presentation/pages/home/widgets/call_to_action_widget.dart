@@ -82,10 +82,6 @@ class CallToActionWidget extends StatelessWidget {
       ],
     );
   }
-
-  _performCallToAction(BuildContext context) {
-    context.read<CallToActionNotifier>().performCall();
-  }
 }
 
 class CallToActionResponseWidget extends StatelessWidget {
@@ -96,23 +92,34 @@ class CallToActionResponseWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (calls.isEmpty)
-      return Container(
-        height: 200,
-        child: Card(
-          elevation: 2.0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: Text(
-                'Non ci sono segnalazioni relative a luoghi che hai visitato',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.body1,
+      return Column(
+        children: <Widget>[
+          Container(
+            height: 200,
+            child: Card(
+              elevation: 2.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0)),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(
+                  child: Text(
+                    'Non ci sono segnalazioni relative a luoghi che hai visitato',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.body1,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: GenericButton(
+              text: calls.isEmpty ? 'Esegui' : 'Aggiorna',
+              onPressed: () => _performCallToAction(context),
+            ),
+          ),
+        ],
       );
     return Column(
       children: [
@@ -177,11 +184,11 @@ class ActionCard extends StatelessWidget {
                         color:
                             (call.opened ?? false) ? Colors.blue : Colors.grey,
                       ),
-                      Icon(
-                        Icons.remove_circle,
-                        color:
-                            (call.archived ?? false) ? Colors.red : Colors.grey,
-                      ),
+//                      Icon(
+//                        Icons.remove_circle,
+//                        color:
+//                            (call.archived ?? false) ? Colors.red : Colors.grey,
+//                      ),
                       Spacer(),
                       GenericButton(
                         text: 'Apri Url',
@@ -227,7 +234,7 @@ class ActionCard extends StatelessWidget {
             onTap: () async {
               await context
                   .read<CallToActionNotifier>()
-                  .updateCall(call.copyWith(archived: true));
+                  .deleteCall(call.copyWith(archived: true));
               context.read<CallToActionNotifier>().loadCalls();
             },
           ),

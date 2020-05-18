@@ -52,6 +52,10 @@ class CallToActionNotifier extends StateNotifier<CallToActionState>
   Future<void> updateCall(Call call) async {
     await locationRepository.updateCall(call);
   }
+
+  Future<void> deleteCall(Call call) async {
+    await locationRepository.deleteCall(call);
+  }
 }
 
 @freezed

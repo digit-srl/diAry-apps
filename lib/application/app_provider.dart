@@ -36,6 +36,7 @@ class AppProvider with LocatorMixin {
             enableHeadless: false,
             maxDaysToPersist: 30,
             stationaryRadius: 25,
+            preventSuspend: true,
             notification: bg.Notification(
                 priority:
                     -2, // bassa priorità: l'icona risulta meno invasiva (ridotta, quando possibile)

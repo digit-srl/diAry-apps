@@ -1,20 +1,30 @@
+import 'dart:io';
+
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
+import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
+import 'package:diary/utils/import_export_utils.dart';
+import 'package:diary/utils/logger.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
@@ -78,7 +88,7 @@ class _HomePageState extends State<HomePage> {
             // CarCard(),
             GpsCard(),
             TrackingCard(),
-            BetaCard(),
+//            BetaCard(),
             MyPlacesCard(),
             SizedBox(
               height: 16,
@@ -136,6 +146,13 @@ class _HomePageState extends State<HomePage> {
                   UploadStatsIconButton(),
                   CallToActionIconButton(),
                   IconButton(
+                    icon: Icon(Icons.file_download),
+                    tooltip: "Esporta CSV/JSON",
+                    onPressed: () {
+                      ImportExportUtils.exportAllData(context);
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(Icons.settings),
                     tooltip: "Impostazioni",
                     onPressed: () {
@@ -175,7 +192,7 @@ class CallToActionIconButton extends StatelessWidget {
       onPressed: () {
         showCallToActionBottomSheet(context);
       },
-      tooltip: "Notifica sanitaria... Coming soon!",
+      tooltip: "Notifica sanitaria",
     );
   }
 
@@ -187,7 +204,10 @@ class CallToActionIconButton extends StatelessWidget {
               context.read<LocationRepositoryImpl>(),
               context.read<UserRepositoryImpl>())
             ..loadCalls(),
-          child: CallToActionWidget(),
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: CallToActionWidget(),
+          ),
         ));
   }
 }
@@ -226,8 +246,11 @@ class UploadStatsIconButton extends StatelessWidget {
         StateNotifierProvider(
           create: (BuildContext context) =>
               UploadStatsNotifier(dailyStats, response),
-          child: InfoStatsWidget(
-            dailyStats: dailyStats,
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: InfoStatsWidget(
+              dailyStats: dailyStats,
+            ),
           ),
         ));
   }

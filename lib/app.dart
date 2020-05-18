@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/gps_notifier.dart';
@@ -8,6 +10,7 @@ import 'package:diary/infrastructure/data/user_local_data_sources.dart';
 import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
+import 'package:diary/main.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/logger.dart';
@@ -17,6 +20,7 @@ import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
 import 'package:logger_flutter/logger_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'application/annotation_notifier.dart';
 import 'application/app_provider.dart';
@@ -64,6 +68,24 @@ class _DiAryAppState extends State<DiAryApp> {
 //        DailyStatsRemoteDataSourcesImpl());
     serviceNotifier = ServiceNotifier();
 //    dayNotifier = DayNotifier(widget.days);
+    if (Platform.isAndroid) requestIgnoreBatteryOptimization();
+  }
+
+  requestIgnoreBatteryOptimization() async {
+    try {
+      PermissionStatus permissionStatus = await PermissionHandler()
+          .checkPermissionStatus(PermissionGroup.ignoreBatteryOptimizations);
+      if (permissionStatus == PermissionStatus.denied) {
+        await PermissionHandler()
+            .requestPermissions([PermissionGroup.ignoreBatteryOptimizations]);
+      }
+    } catch (ex) {
+      print('[App] Error requestIgnoreBatteryOptimization');
+      print(ex);
+      analytics.logEvent(
+          name: 'Error Ignore Optimization Battery',
+          parameters: {'error': ex.toString()});
+    }
   }
 
   @override

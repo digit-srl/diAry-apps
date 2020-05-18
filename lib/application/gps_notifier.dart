@@ -4,8 +4,6 @@ import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
-import 'package:diary/utils/extensions.dart';
-import 'day_notifier.dart';
 import 'location_notifier.dart';
 import 'service_notifier.dart';
 

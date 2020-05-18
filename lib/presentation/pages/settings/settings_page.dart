@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/utils/alerts.dart';
+import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
@@ -10,9 +12,10 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/colors.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -36,37 +39,52 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingItem(
         Icons.file_download,
         'Exporta i dati degli spostamenti',
-        'Salva in locale i dati relativi agli spostamenti effettuati. Puoi decidere periodo e formato di esportazione.',
+        'Salva in locale tutti i dati relativi agli spostamenti effettuati. Puoi decidere il formato di esportazione.',
         onTap: exportJson,
       ),
-      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
-          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
-          enabled: false),
-      SettingItem(CustomIcons.hospital_box_outline, 'Allerta sanitaria:',
-          'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
-          enabled: false),
+//      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
+//          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
+//          enabled: false),
+//      SettingItem(CustomIcons.hospital_box_outline, 'Allerta sanitaria:',
+//          'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
+//          enabled: false),
     ];
 
     utils = [
       SettingItem(null, 'diAry - digital Arianna',
           'Premi per visualizzare il changelog',
-          enabled: false, customImageIconAsset: 'assets/diary_logo.png'),
-      SettingItem(Icons.bug_report, 'Segnala un bug',
-          'Notifica un problema al team di sviluppo tramite mail.',
-          enabled: false),
-      SettingItem(Icons.star, 'Valutaci sullo store!',
-          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
-          enabled: false),
+          enabled: true,
+          customImageIconAsset: 'assets/diary_logo.png', onTap: () {
+        GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
+      }),
+//      SettingItem(Icons.bug_report, 'Segnala un bug',
+//          'Notifica un problema al team di sviluppo tramite mail.',
+//          enabled: false),
+//      SettingItem(Icons.star, 'Valutaci sullo store!',
+//          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
+//          enabled: false),
       SettingItem(Icons.supervised_user_circle, 'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più',
-          enabled: false),
+          enabled: true, onTap: () {
+        GenericUtils.launchURL('https://digit.srl');
+      }),
     ];
 
     legals = [
-      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
-      SettingItem(Icons.info_outline, 'Privacy Policy', null, enabled: false),
-      SettingItem(Icons.info_outline, 'Licence open source', null,
-          enabled: false),
+//      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
+      SettingItem(Icons.info_outline, 'Privacy Policy', null, enabled: true,
+          onTap: () {
+        GenericUtils.launchURL(
+          'https://covid19app.uniurb.it/privacy-policy/',
+        );
+//        BottomSheets.showFullPageBottomSheet(
+//            context,
+//            MyWebView(
+//              url: 'https://covid19app.uniurb.it/privacy-policy/',
+//            ));
+      }),
+//      SettingItem(Icons.info_outline, 'Licence open source', null,
+//          enabled: false),
     ];
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
@@ -207,6 +225,16 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+//  requestIgnoreBatteryOptimization() async {
+//    try {
+//      PermissionStatus permissionStatus = await PermissionHandler()
+//          .checkPermissionStatus(PermissionGroup.ignoreBatteryOptimizations);
+//      print(permissionStatus);
+//    } catch (ex) {
+//      await PermissionHandler().openAppSettings();
+//    }
+//  }
+
   exportJson() async {
     PermissionStatus permissionStatus = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.storage);
@@ -247,7 +275,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     Alerts.showAlertWithTwoActions(
         context,
-        "Esporta dati",
+        "Esporta tutti i dati",
         "Seleziona il formato per l'esportazione dei dati.",
         "CSV",
         () {
@@ -303,4 +331,22 @@ class SettingItem {
       : assert(title != null),
         assert(iconData != null ||
             (iconData == null && customImageIconAsset != null));
+}
+
+class MyWebView extends StatelessWidget {
+  final String url;
+
+  const MyWebView({Key key, this.url}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      child: Container(
+        child: WebView(
+          initialUrl: url,
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+  }
 }

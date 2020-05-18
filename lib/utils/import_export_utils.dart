@@ -4,12 +4,17 @@ import 'dart:math';
 
 import 'package:csv/csv.dart';
 import 'package:diary/domain/entities/day.dart';
+import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../domain/entities/location.dart';
+import 'alerts.dart';
 import 'location_utils.dart';
 import 'logger.dart';
+import 'package:provider/provider.dart';
 
 class ImportExportUtils {
   static Future<List<File>> saveFilesOnLocalStorage(
@@ -142,5 +147,56 @@ class ImportExportUtils {
       }
     });
     return locations;
+  }
+
+  static exportAllData(BuildContext context) async {
+    PermissionStatus permissionStatus = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+
+    logger.i(permissionStatus);
+    if (permissionStatus == PermissionStatus.neverAskAgain) {
+      Alerts.showAlertWithPosNegActions(
+          context,
+          "Attenzione",
+          "In percedenza hai disabilitato il permesso di archiviazione. E' "
+              "necessario abilitarlo manualmente dalle impostazioni di sistema.",
+          "Vai a Impostazioni", () {
+        PermissionHandler().openAppSettings();
+      });
+      return;
+    } else if (permissionStatus != PermissionStatus.granted) {
+      final permissions = await PermissionHandler()
+          .requestPermissions([PermissionGroup.storage]);
+      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    final List<Location> locations =
+        (await context.read<LocationRepositoryImpl>().getAllLocations())
+            .getOrElse(() => []);
+
+    final List<File> files = await ImportExportUtils.saveFilesOnLocalStorage(
+        locations, DateTime.now());
+    if (files == null || files.isEmpty) return;
+    final csvFile = files[0];
+    final jsonFile = files[1];
+    final csvPath = csvFile.path;
+    final jsonPath = jsonFile.path;
+
+    Alerts.showAlertWithTwoActions(
+        context,
+        "Esporta i dati relativi al giorno visualizzato",
+        "Seleziona il formato per l'esportazione dei dati.",
+        "CSV",
+        () {
+          Share.file('Il mio file CSV', csvPath.split('/').last,
+              csvFile.readAsBytesSync(), 'application/*');
+        },
+        "JSON",
+        () {
+          Share.file('Il mio file JSON', jsonPath.split('/').last,
+              jsonFile.readAsBytesSync(), 'application/*');
+        });
   }
 }
