@@ -272,9 +272,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller?.removeListener(_scrollListener);
     _controller?.dispose();
+    super.dispose();
   }
 
   void readVersion() async {
