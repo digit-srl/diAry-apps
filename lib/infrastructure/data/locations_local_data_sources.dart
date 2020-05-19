@@ -52,12 +52,15 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
 
   @override
   Future saveNewCallToActionResult(Call call) async {
+    call.insertedDate = DateTime.now();
     await box.put(call.id, call);
   }
 
   @override
   List<Call> getAllCalls() {
-    return box.values.toList();
+    final list = box.values.toList();
+    list.sort((a, b) => b.insertedDate.compareTo(a.insertedDate));
+    return list;
   }
 
   @override

@@ -30,7 +30,8 @@ class CallToActionWidget extends StatelessWidget {
           style: Theme.of(context).textTheme.body1,
         ),
         Text(
-          'PER ORA SI TRATTA SOLO DI SEGNALAZIONI DI PROVA SENZA ALCUNA '
+          'QUESTO STESSO MECCANISMO È UTILIZZATO ANCHE PER FORNIRE '
+          'INFORMAZIONI DI SERVIZIO SENZA ALCUNA '
           'RILEVANZA DAL PUNTO DI VISTA SANITARIO',
           style: Theme.of(context)
               .textTheme

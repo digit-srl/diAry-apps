@@ -1,19 +1,7 @@
-import 'dart:io';
-import 'package:diary/domain/entities/location.dart';
-import 'package:diary/utils/alerts.dart';
-import 'package:diary/utils/bottom_sheets.dart';
-import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
-import 'package:diary/utils/logger.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/date_notifier.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -40,7 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Icons.file_download,
         'Exporta i dati degli spostamenti',
         'Salva in locale tutti i dati relativi agli spostamenti effettuati. Puoi decidere il formato di esportazione.',
-        onTap: exportJson,
+        onTap: () => ImportExportUtils.exportAllData(context),
       ),
 //      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
 //          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
@@ -234,60 +222,6 @@ class _SettingsPageState extends State<SettingsPage> {
 //      await PermissionHandler().openAppSettings();
 //    }
 //  }
-
-  exportJson() async {
-    PermissionStatus permissionStatus = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.storage);
-
-    logger.i(permissionStatus);
-    if (permissionStatus == PermissionStatus.neverAskAgain) {
-      Alerts.showAlertWithPosNegActions(
-          context,
-          "Attenzione",
-          "In percedenza hai disabilitato il permesso di archiviazione. E' "
-              "necessario abilitarlo manualmente dalle impostazioni di sistema.",
-          "Vai a Impostazioni", () {
-        PermissionHandler().openAppSettings();
-      });
-      return;
-    } else if (permissionStatus != PermissionStatus.granted) {
-      final permissions = await PermissionHandler()
-          .requestPermissions([PermissionGroup.storage]);
-      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    final currentDate =
-        Provider.of<DateState>(context, listen: false).selectedDate;
-
-    final List<Location> locations =
-        Provider.of<LocationNotifier>(context, listen: false)
-            .getCurrentDayLocations;
-
-    final List<File> files =
-        await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);
-    if (files == null || files.isEmpty) return;
-    final csvFile = files[0];
-    final jsonFile = files[1];
-    final csvPath = csvFile.path;
-    final jsonPath = jsonFile.path;
-
-    Alerts.showAlertWithTwoActions(
-        context,
-        "Esporta tutti i dati",
-        "Seleziona il formato per l'esportazione dei dati.",
-        "CSV",
-        () {
-          Share.file('Il mio file CSV', csvPath.split('/').last,
-              csvFile.readAsBytesSync(), 'application/*');
-        },
-        "JSON",
-        () {
-          Share.file('Il mio file JSON', jsonPath.split('/').last,
-              jsonFile.readAsBytesSync(), 'application/*');
-        });
-  }
 
   void _scrollListener() {
     double newElevation = _controller.offset > 1 ? targetElevation : 0;

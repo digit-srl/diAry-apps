@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:csv/csv.dart';
+import 'package:diary/application/date_notifier.dart';
+import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
@@ -187,6 +189,60 @@ class ImportExportUtils {
     Alerts.showAlertWithTwoActions(
         context,
         "Esporta i dati relativi al giorno visualizzato",
+        "Seleziona il formato per l'esportazione dei dati.",
+        "CSV",
+        () {
+          Share.file('Il mio file CSV', csvPath.split('/').last,
+              csvFile.readAsBytesSync(), 'application/*');
+        },
+        "JSON",
+        () {
+          Share.file('Il mio file JSON', jsonPath.split('/').last,
+              jsonFile.readAsBytesSync(), 'application/*');
+        });
+  }
+
+  static exportSingleDay(BuildContext context) async {
+    PermissionStatus permissionStatus = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+
+    logger.i(permissionStatus);
+    if (permissionStatus == PermissionStatus.neverAskAgain) {
+      Alerts.showAlertWithPosNegActions(
+          context,
+          "Attenzione",
+          "In percedenza hai disabilitato il permesso di archiviazione. E' "
+              "necessario abilitarlo manualmente dalle impostazioni di sistema.",
+          "Vai a Impostazioni", () {
+        PermissionHandler().openAppSettings();
+      });
+      return;
+    } else if (permissionStatus != PermissionStatus.granted) {
+      final permissions = await PermissionHandler()
+          .requestPermissions([PermissionGroup.storage]);
+      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    final currentDate =
+        Provider.of<DateState>(context, listen: false).selectedDate;
+
+    final List<Location> locations =
+        Provider.of<LocationNotifier>(context, listen: false)
+            .getCurrentDayLocations;
+
+    final List<File> files =
+        await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);
+    if (files == null || files.isEmpty) return;
+    final csvFile = files[0];
+    final jsonFile = files[1];
+    final csvPath = csvFile.path;
+    final jsonPath = jsonFile.path;
+
+    Alerts.showAlertWithTwoActions(
+        context,
+        "Esporta tutti i dati",
         "Seleziona il formato per l'esportazione dei dati.",
         "CSV",
         () {

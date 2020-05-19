@@ -25,13 +25,13 @@ class CallAdapter extends TypeAdapter<Call> {
       archived: fields[6] as bool,
       opened: fields[5] as bool,
       executed: fields[7] as bool,
-    );
+    )..insertedDate = fields[8] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, Call obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +47,9 @@ class CallAdapter extends TypeAdapter<Call> {
       ..writeByte(6)
       ..write(obj.archived)
       ..writeByte(7)
-      ..write(obj.executed);
+      ..write(obj.executed)
+      ..writeByte(8)
+      ..write(obj.insertedDate);
   }
 }
 

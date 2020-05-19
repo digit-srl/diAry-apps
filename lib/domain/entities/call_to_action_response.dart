@@ -39,6 +39,8 @@ class Call {
   bool archived;
   @HiveField(7)
   bool executed;
+  @HiveField(8)
+  DateTime insertedDate;
 
   Call({
     this.id,

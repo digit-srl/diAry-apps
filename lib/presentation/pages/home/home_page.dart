@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     icon: Icon(Icons.file_download),
                     tooltip: "Esporta CSV/JSON",
                     onPressed: () {
-                      ImportExportUtils.exportAllData(context);
+                      ImportExportUtils.exportSingleDay(context);
                     },
                   ),
                   IconButton(
