@@ -23,16 +23,15 @@ class CallToActionWidget extends StatelessWidget {
         ),
         Text(
           'Questo pulsante consulta il server per ricevere segnalazioni '
-          'dall\'autorità sanitaria che verranno incrociate (direttamente '
+          'che verranno incrociate (direttamente '
           'sullo smartphone) con le tracce locali. Solo se le tracce locali '
           'incrociano i luoghi e gli orari segnalati, le corrispondenti '
           '"Call to Action" vengono mostrate all\'utente.\n',
           style: Theme.of(context).textTheme.body1,
         ),
         Text(
-          'QUESTO STESSO MECCANISMO È UTILIZZATO ANCHE PER FORNIRE '
-          'INFORMAZIONI DI SERVIZIO SENZA ALCUNA '
-          'RILEVANZA DAL PUNTO DI VISTA SANITARIO',
+          'LE SEGNALAZIONI DI RILEVANZA SANITARIA SONO EVIDENZIATE '
+          'DA UN CERCHIO ROSSO NEL TITOLO',
           style: Theme.of(context)
               .textTheme
               .body1
@@ -72,7 +71,10 @@ class CallToActionWidget extends StatelessWidget {
                 );
               },
               error: (error) {
-                return ErrorResponseWidget(error: error.message);
+                return ErrorResponseWidget(
+                  error:
+                      'Si è verificato un errore, sicuro di essere connesso ad internet?',
+                );
               },
               callResult: (res) => CallToActionResponseWidget(
                 calls: res.calls,

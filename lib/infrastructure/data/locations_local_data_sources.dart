@@ -10,6 +10,7 @@ abstract class LocationsLocalDataSources {
   Future<List<Location>> getAllLocations();
   Future<List<Location>> getLocationsBetween(DateTime start, DateTime end);
   Future saveNewCallToActionResult(Call call);
+  Future updateCall(Call call);
   List<Call> getAllCalls();
   Future deleteCall(Call call);
 }
@@ -57,9 +58,17 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
   }
 
   @override
+  Future updateCall(Call call) async {
+    await box.put(call.id, call);
+  }
+
+  @override
   List<Call> getAllCalls() {
     final list = box.values.toList();
-    list.sort((a, b) => b.insertedDate.compareTo(a.insertedDate));
+    if (list.isNotEmpty) {
+      list.sort((a, b) => (b.insertedDate ?? DateTime.now())
+          .compareTo(a.insertedDate ?? DateTime.now()));
+    }
     return list;
   }
 

@@ -241,7 +241,7 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   Future updateCall(Call call) async {
-    await locationsLocalDataSources.saveNewCallToActionResult(call);
+    await locationsLocalDataSources.updateCall(call);
   }
 
   @override
