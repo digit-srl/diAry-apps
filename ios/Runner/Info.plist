@@ -23,22 +23,19 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requests your location when it's in use and in background.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requests to always update your location data.</string>
-	<key>NSLocationUsageDescription</key>
-	<string>This app requests to use your location.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requests your location when it's in use.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>This app requests the device's accelerators to access movement data.</string>
+    <string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>NSLocationAlwaysUsageDescription</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>NSLocationWhenInUseUsageDescription</string>
+    <key>NSMotionUsageDescription</key>
+    <string>NSMotionUsageDescription</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requests access to your files to store the location data on your device.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
 		<string>location</string>
-		<string>processing</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
