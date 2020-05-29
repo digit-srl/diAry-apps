@@ -154,6 +154,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             rotateGesturesEnabled: false,
             tiltGesturesEnabled: false,
             myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
             initialCameraPosition: CameraPosition(
               target:
                   _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),

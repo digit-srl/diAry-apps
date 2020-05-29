@@ -456,6 +456,7 @@ class _MapPageState extends State<MapPage>
             initialCameraPosition: _initialPosition ?? _kGooglePlex,
             mapToolbarEnabled: false,
             myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
             onMapCreated: (GoogleMapController controller) {
               logger.i('[MapPage] onMapCreated');
               controller.setMapStyle(AppTheme.isNightModeOn(context)
