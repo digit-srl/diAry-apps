@@ -148,6 +148,7 @@ class _DiAryAppState extends State<DiAryApp> {
       child: MaterialApp(
         // locale: DevicePreview.of(context).locale, // <--- Add the locale
         // builder: DevicePreview.appBuilder,        // <--- Add the builder
+        // debugShowCheckedModeBanner: false, // <-- Uncomment for screenshots
         title: 'diAry',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme, // <--- Handles dark theme
