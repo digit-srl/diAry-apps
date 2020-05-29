@@ -188,7 +188,7 @@ class ImportExportUtils {
 
     Alerts.showAlertWithTwoActions(
         context,
-        "Esporta i dati relativi al giorno visualizzato",
+        "Esporta tutti i dati",
         "Seleziona il formato per l'esportazione dei dati.",
         "CSV",
         () {
@@ -242,7 +242,7 @@ class ImportExportUtils {
 
     Alerts.showAlertWithTwoActions(
         context,
-        "Esporta tutti i dati",
+        "Esporta i dati relativi al giorno visualizzato",
         "Seleziona il formato per l'esportazione dei dati.",
         "CSV",
         () {
