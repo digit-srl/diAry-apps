@@ -1,4 +1,5 @@
 import 'package:diary/presentation/widgets/generic_button.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -65,9 +66,7 @@ class InfoGeofenceFooter extends StatelessWidget {
         text: 'Elimina',
         onPressed: () async {
           await PlaceUtils.showRemovePlaceAlert(
-              context, geofence.geofence.identifier);
-          // chiude il bottomsheet
-          Navigator.pop(context);
+              context, geofence.geofence.identifier, true);
         },
       ),
     ]);

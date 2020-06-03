@@ -85,8 +85,8 @@ class Alerts {
                 Navigator.pop(context);
               }
                   : () {
-                onNegative();
                 Navigator.pop(context);
+                onNegative();
               }
           ),
           DialogButton(
@@ -97,8 +97,8 @@ class Alerts {
             ),
             color: Theme.of(context).accentColor,
             onPressed: () {
-              onPositive();
               Navigator.pop(context);
+              onPositive();
             },
           )
         ]).show();

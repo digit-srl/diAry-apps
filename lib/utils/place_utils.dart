@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PlaceUtils {
-  // todo modified following new alert standard
-  static showRemovePlaceAlert(BuildContext context, String identifier) async {
+  // This is the alert to remove a place from the map. The boolean last
+  // parameter handles elimination from map, that needs an additional pop to
+  // close the bottomSheet.
+  static showRemovePlaceAlert(BuildContext context, String identifier, [bool additionalPop]) async {
     return Alerts.showAlertWithPosNegActions(
         context,
         "Elimina luogo",
@@ -23,6 +25,10 @@ class PlaceUtils {
             if (identifier == homeIdentifier) {
                 Provider.of<UserRepositoryImpl>(context, listen: false)
                     .removeHomeGeofence();
+            }
+
+            if (!!additionalPop) {
+              Navigator.pop(context);
             }
           },
     ).show();
