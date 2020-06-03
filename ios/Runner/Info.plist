@@ -23,15 +23,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>NSLocationAlwaysUsageDescription</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>NSLocationWhenInUseUsageDescription</string>
-    <key>NSMotionUsageDescription</key>
-    <string>NSMotionUsageDescription</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requests access to your files to store the location data on your device.</string>
+	<string>diAry requests your location when it’s in use and in background in order to track your movements. All information is stored on your device only.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>diAry requests your location in order to track your movements. All information is stored on your device only.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>diAry requests your location when it’s in use in order to track your movements. All information is stored on your device only.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>diAry requests your accelerometer data in order to detect your movements and activate location tracking.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

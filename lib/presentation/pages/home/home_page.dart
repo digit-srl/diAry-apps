@@ -1,13 +1,7 @@
-import 'dart:io';
-
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
-import 'package:diary/application/date_notifier.dart';
-import 'package:diary/application/location_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
-import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
-import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
@@ -20,12 +14,9 @@ import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:diary/utils/import_export_utils.dart';
-import 'package:diary/utils/logger.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/call_to_action_widget.dart';
@@ -61,7 +52,6 @@ class _HomePageState extends State<HomePage> {
     launchIntroIfNecessary();
   }
 
-
   void _scrollListener() {
     double newElevation = _controller.offset > 1 ? elevationOn : elevationOff;
     Provider.of<RootElevationNotifier>(context, listen: false)
@@ -89,7 +79,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: ScrollConfiguration(
         behavior: NoRippleOnScrollBehavior(),

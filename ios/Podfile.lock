@@ -9,8 +9,6 @@ PODS:
   - esys_flutter_share (0.0.1):
     - Flutter
   - Fabric (1.10.2)
-  - file_picker (0.0.1):
-    - Flutter
   - Firebase/Analytics (6.15.0):
     - Firebase/Core
   - Firebase/Core (6.15.0):
@@ -141,7 +139,6 @@ PODS:
 DEPENDENCIES:
   - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
   - esys_flutter_share (from `.symlinks/plugins/esys_flutter_share/ios`)
-  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - Flutter (from `Flutter`)
@@ -189,8 +186,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/background_fetch/ios"
   esys_flutter_share:
     :path: ".symlinks/plugins/esys_flutter_share/ios"
-  file_picker:
-    :path: ".symlinks/plugins/file_picker/ios"
   firebase_analytics:
     :path: ".symlinks/plugins/firebase_analytics/ios"
   firebase_crashlytics:
@@ -238,9 +233,8 @@ SPEC CHECKSUMS:
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   esys_flutter_share: 403498dab005b36ce1f8d7aff377e81f0621b0b4
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
-  file_picker: 408623be2125b79a4539cf703be3d4b3abe5e245
   Firebase: 5d77105d9740a07ca6b16927ca971db7e860faaf
-  firebase_analytics: dacdcfc524d722fff13dcff942f0dfa47e6be567
+  firebase_analytics: c3f1a6c8189b737c4f2c677fec8432c475d08617
   firebase_crashlytics: bd8c58df07f107cb7e1a20cb190b9a468e0a69fd
   FirebaseAnalytics: e83e64b1231dedcd9ddd4bdecd9bcfd6ba341679
   FirebaseCore: 4aeb81ff53dcd9a3634ca725dc1fb8c2a4622046

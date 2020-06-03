@@ -91,13 +91,13 @@ class _TabBarDemoState extends State<TabBarDemo> {
   }
 
   _importJson() async {
-    final locations = await ImportExportUtils.importJSON();
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
-      return TabBarDemo(
-        locations: locations,
-      );
-    }));
+//    final locations = await ImportExportUtils.importJSON();
+//    Navigator.of(context)
+//        .push(MaterialPageRoute(builder: (BuildContext context) {
+//      return TabBarDemo(
+//        locations: locations,
+//      );
+//    }));
   }
 }
 

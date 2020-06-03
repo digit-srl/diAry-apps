@@ -1,6 +1,7 @@
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/main.dart';
+import 'package:diary/utils/constants.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:hive/hive.dart';
 import 'package:state_notifier/state_notifier.dart';
@@ -61,11 +62,12 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       final dailyLocations = List<Location>.from(locationsPerDate[date]);
       if (dailyLocations.isNotEmpty) {
         dailyLocations.removeWhere((location) =>
-            location.coords.latitude == 0.0 &&
-            location.coords.longitude == 0.0 &&
-            (location.event == Event.Off ||
-                location.event == Event.On ||
-                location.event == Event.Geofence));
+            (location.coords.latitude == 0.0 &&
+                location.coords.longitude == 0.0 &&
+                (location.event == Event.Off ||
+                    location.event == Event.On ||
+                    location.event == Event.Geofence)) ||
+            location.coords.accuracy > kMaxAccuracy);
       }
       return dailyLocations;
     } catch (ex) {
@@ -121,11 +123,12 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
       locationsPerDate[date] = [];
     }
     locationsPerDate[date].add(location);
-    if (!(location.coords.latitude == 0.0 &&
-        location.coords.longitude == 0.0 &&
-        (location.event == Event.Off ||
-            location.event == Event.On ||
-            location.event == Event.Geofence))) {
+    if (!((location.coords.latitude == 0.0 &&
+            location.coords.longitude == 0.0 &&
+            (location.event == Event.Off ||
+                location.event == Event.On ||
+                location.event == Event.Geofence)) ||
+        location.coords.accuracy > kMaxAccuracy)) {
       state = LocationState(location);
     }
 
