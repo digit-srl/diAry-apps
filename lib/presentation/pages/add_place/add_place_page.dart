@@ -278,6 +278,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
                     LatLng(37.42796133580664, -122.085749655962),
                 zoom: _zoom,
               ),
+              zoomControlsEnabled: false,
               // onCameraMove: (cameraPosition) {
               //   setState(() {
               //   addCircle(cameraPosition.target);

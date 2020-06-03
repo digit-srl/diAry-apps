@@ -67,10 +67,10 @@ class _DiAryAppState extends State<DiAryApp> {
 //        DailyStatsRemoteDataSourcesImpl());
     serviceNotifier = ServiceNotifier();
 //    dayNotifier = DayNotifier(widget.days);
-    if (Platform.isAndroid) requestIgnoreBatteryOptimization();
+    //if (Platform.isAndroid) requestIgnoreBatteryOptimization();
   }
 
-  requestIgnoreBatteryOptimization() async {
+  /*requestIgnoreBatteryOptimization() async {
     try {
       PermissionStatus permissionStatus = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.ignoreBatteryOptimizations);
@@ -85,7 +85,7 @@ class _DiAryAppState extends State<DiAryApp> {
           name: 'Error Ignore Optimization Battery',
           parameters: {'error': ex.toString()});
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +147,7 @@ class _DiAryAppState extends State<DiAryApp> {
       child: MaterialApp(
         // locale: DevicePreview.of(context).locale, // <--- Add the locale
         // builder: DevicePreview.appBuilder,        // <--- Add the builder
+        // debugShowCheckedModeBanner: false, // <-- Uncomment for screenshots
         title: 'diAry',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme, // <--- Handles dark theme

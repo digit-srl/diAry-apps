@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
+import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import '../../../utils/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../intro_page.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -26,10 +31,21 @@ class _SettingsPageState extends State<SettingsPage> {
     items = [
       SettingItem(
         Icons.file_download,
-        'Exporta i dati degli spostamenti',
+        'Esporta i dati degli spostamenti',
         'Salva in locale tutti i dati relativi agli spostamenti effettuati. Puoi decidere il formato di esportazione.',
         onTap: () => ImportExportUtils.exportAllData(context),
       ),
+      if (Platform.isAndroid)
+        SettingItem(
+          Icons.flip_to_back,
+          'Abilita l\'esecuzione in background',
+          'Alcuni produttori di smartphone non consentono '
+              'alle applicazioni di essere eseguite adeguatamente'
+              'in background, rendendo il rilevamento poco preciso. '
+              'Con questo permesso, DiAry può risolvere'
+              'tale inconveniente.',
+          onTap: () => requestIgnoreBatteryOptimization(),
+        ),
 //      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
 //          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
 //          enabled: false),
@@ -51,6 +67,17 @@ class _SettingsPageState extends State<SettingsPage> {
 //      SettingItem(Icons.star, 'Valutaci sullo store!',
 //          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
 //          enabled: false),
+      SettingItem(
+        Icons.help_outline,
+        'Tutorial',
+        'Visualizza il tutorial iniziale.',
+        onTap: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => IntroPage()),
+          )
+        },
+      ),
       SettingItem(Icons.supervised_user_circle, 'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più',
           enabled: true, onTap: () {

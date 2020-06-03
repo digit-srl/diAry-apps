@@ -5,6 +5,8 @@ import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
+import 'package:diary/presentation/pages/intro_page.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
@@ -16,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
 import 'package:diary/utils/extensions.dart';
@@ -45,6 +48,8 @@ class _HomePageState extends State<HomePage> {
     _controller.addListener(_scrollListener);
     Provider.of<RootElevationNotifier>(context, listen: false)
         .changeElevationIfDifferent(0, 0);
+
+    launchIntroIfNecessary();
   }
 
   void _scrollListener() {
@@ -59,6 +64,18 @@ class _HomePageState extends State<HomePage> {
     _controller?.removeListener(_scrollListener);
     _controller?.dispose();
   }
+
+
+  launchIntroIfNecessary() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('firstTime') ?? true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => IntroPage()),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
