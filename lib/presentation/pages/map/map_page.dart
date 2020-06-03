@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/annotation_notifier.dart';
 import 'package:diary/application/geofence_notifier.dart';
 import 'package:diary/application/info_pin/info_pin_notifier.dart';
@@ -10,7 +9,6 @@ import 'package:diary/domain/entities/colored_geofence.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/presentation/pages/map/widgets/info_annotation.dart';
 import 'package:diary/presentation/pages/map/widgets/info_geofence.dart';
-import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/manual_detection_position_layer.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/bottom_sheets.dart';
@@ -30,7 +28,6 @@ import 'package:provider/provider.dart';
 import '../../../main.dart';
 import 'widgets/geofence_marker.dart';
 import 'package:diary/utils/extensions.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'widgets/info_pin.dart';
 

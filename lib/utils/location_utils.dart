@@ -7,6 +7,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'constants.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
@@ -161,7 +162,7 @@ class LocationUtils {
             partialDayPlaces.last.minutes
         : 0;
     final maxAccuracy =
-        Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
+        Hive.box('user').get('aggregationAccuracy', defaultValue: kMaxAccuracy);
     final postProcessingEnabled =
         Hive.box('user').get('postProcessing', defaultValue: true);
     bool waitingOn = false;
