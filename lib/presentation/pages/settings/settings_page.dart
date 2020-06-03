@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:diary/domain/entities/call_to_action_source.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/utils/permissions_utils.dart';
@@ -36,17 +37,18 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingItem(
         Icons.file_download,
         'Esporta i dati degli spostamenti',
-        'Salva in locale tutti i dati relativi agli spostamenti effettuati. Puoi decidere il formato di esportazione.',
+        'Salva in locale tutti i dati relativi agli spostamenti effettuati. '
+            'Puoi decidere il formato di esportazione.',
         onTap: () => ImportExportUtils.exportAllData(context),
       ),
       if (Platform.isAndroid)
         SettingItem(
-          Icons.flip_to_back,
+          CustomIcons.flip_to_back,
           'Abilita l\'esecuzione in background',
           'Alcuni produttori di smartphone non consentono '
-              'alle applicazioni di essere eseguite adeguatamente'
+              'alle applicazioni di essere eseguite adeguatamente '
               'in background, rendendo il rilevamento poco preciso. '
-              'Con questo permesso, DiAry può risolvere'
+              'Con questo permesso, DiAry può risolvere '
               'tale inconveniente.',
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
@@ -69,12 +71,14 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     utils = [
-      SettingItem(null, 'diAry - digital Arianna',
-          'Premi per visualizzare il changelog',
-          enabled: true,
-          customImageIconAsset: 'assets/diary_logo.png', onTap: () {
-        GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
-      }),
+      SettingItem(
+        CustomIcons.diary_logo,
+        'diAry - digital Arianna',
+        'Premi per visualizzare il changelog',
+        onTap: () {
+          GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
+        }
+      ),
 //      SettingItem(Icons.bug_report, 'Segnala un bug',
 //          'Notifica un problema al team di sviluppo tramite mail.',
 //          enabled: false),
@@ -95,8 +99,9 @@ class _SettingsPageState extends State<SettingsPage> {
           )
         },
       ),
-      SettingItem(Icons.supervised_user_circle, 'Su di noi...',
-          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più',
+      SettingItem(CustomIcons.account_multiple_outline, 'Su di noi...',
+          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
+              'innovativa, società benefit. Scopri di più.',
           enabled: true, onTap: () {
         GenericUtils.launchURL('https://digit.srl');
       }),
@@ -104,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     legals = [
 //      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
-      SettingItem(Icons.info_outline, 'Privacy Policy', null, enabled: true,
+      SettingItem(CustomIcons.shield_account_outline, 'Privacy Policy', null, enabled: true,
           onTap: () {
         GenericUtils.launchURL(
           'https://covid19app.uniurb.it/privacy-policy/',
