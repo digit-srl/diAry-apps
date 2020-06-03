@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info/package_info.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../utils/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -46,6 +50,16 @@ class _SettingsPageState extends State<SettingsPage> {
               'tale inconveniente.',
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
+      SettingItem(
+        Icons.list,
+        'Organizza la black list',
+        'Visualizzerai le sorgenti delle call to action da cui non vuoi ricevere nuove segnalazioni. Potrai riabilitarle',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CallToActionManagerPage(),
+          ),
+        ),
+      ),
 //      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
 //          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
 //          enabled: false),
@@ -310,6 +324,68 @@ class MyWebView extends StatelessWidget {
           initialUrl: url,
           javascriptMode: JavascriptMode.unrestricted,
         ),
+      ),
+    );
+  }
+}
+
+class CallToActionManagerPage extends StatefulWidget {
+  @override
+  _CallToActionManagerPageState createState() =>
+      _CallToActionManagerPageState();
+}
+
+class _CallToActionManagerPageState extends State<CallToActionManagerPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Call To Action Black List'),
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box<CallToActionSource>('blackList').listenable(),
+        builder: (BuildContext context, Box<CallToActionSource> value,
+            Widget child) {
+          final list = value.values.toList();
+          if (list.isEmpty) {
+            return Center(child: Text('Nessuna sorgente nella black list'));
+          }
+          return ListView.builder(
+            itemCount: list.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                trailing: IconButton(
+                    icon: Icon(Icons.remove_circle),
+                    color: Colors.red,
+                    onPressed: () {
+                      Alert(
+                        context: context,
+                        style: AlertStyle(isCloseButton: false),
+                        title:
+                            'Vuoi rimuovere ${list[index].source} dalla black list e tornare a ricevere le sue call to action?',
+                        buttons: [
+                          DialogButton(
+                            child: Text('Annulla'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          DialogButton(
+                            child: Text('Si'),
+                            onPressed: () {
+                              value.deleteAt(index);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ).show();
+                    }),
+                title: Text(list[index].source),
+                subtitle: Text(list[index].sourceName),
+              );
+            },
+          );
+        },
       ),
     );
   }

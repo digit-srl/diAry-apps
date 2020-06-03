@@ -41,6 +41,10 @@ class Call {
   bool executed;
   @HiveField(8)
   DateTime insertedDate;
+  @HiveField(9)
+  String source;
+  @HiveField(10)
+  String sourceName;
 
   Call({
     this.id,
@@ -48,6 +52,8 @@ class Call {
     this.url,
     this.queries,
     this.lastUpdate,
+    this.source,
+    this.sourceName,
     this.archived = false,
     this.opened = false,
     this.executed = false,
@@ -58,6 +64,8 @@ class Call {
     description = json['description'];
     url = json['url'];
     lastUpdate = json['lastUpdate'];
+    source = json['source'];
+    sourceName = json['sourceName'];
     if (json['queries'] != null) {
       queries = new List<Query>();
       json['queries'].forEach((v) {
@@ -89,6 +97,8 @@ class Call {
     bool opened,
     bool archived,
     bool executed,
+    String source,
+    String sourceName,
   }) {
     return Call(
       id: id ?? this.id,
@@ -99,6 +109,8 @@ class Call {
       opened: opened ?? this.opened,
       archived: archived ?? this.archived,
       executed: executed ?? this.executed,
+      source: source ?? this.source,
+      sourceName: sourceName ?? this.sourceName,
     );
   }
 }

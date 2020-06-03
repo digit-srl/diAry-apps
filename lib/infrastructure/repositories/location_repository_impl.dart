@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:diary/core/errors/failures.dart';
 import 'package:diary/domain/entities/call_to_action.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
+import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/data/call_to_action_remote_data_sources.dart';
@@ -10,6 +11,7 @@ import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:geodesy/geodesy.dart';
+import 'package:hive/hive.dart';
 
 abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getAllLocations();
@@ -206,12 +208,18 @@ class LocationRepositoryImpl implements LocationRepository {
 
   List<Call> processCallToActionResponse(
       CallToActionResponse response, List<Location> locations) {
+    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
     List<Call> resultCalls = [];
     if (response.hasMatch) {
       final calls = response.calls;
 
       for (int k = 0; k < calls.length; k++) {
         final call = calls[k];
+        final source = call.source;
+        if (source != null &&
+            blackList.where((c) => c.source == source).isNotEmpty) {
+          continue;
+        }
         bool hasMatch = false;
         for (int i = 0; i < call.queries.length && !hasMatch; i++) {
           final q = call.queries[i];

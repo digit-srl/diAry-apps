@@ -15,6 +15,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'domain/entities/annotation.dart';
 import 'domain/entities/call_to_action_response.dart';
+import 'domain/entities/call_to_action_source.dart';
 import 'domain/entities/day.dart';
 import 'domain/entities/location.dart';
 import 'domain/entities/place.dart';
@@ -41,6 +42,7 @@ void main() async {
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
   await Hive.initFlutter();
+  Hive.registerAdapter(CallToActionSourceAdapter());
   Hive.registerAdapter(AnnotationAdapter());
   Hive.registerAdapter(PlaceAdapter());
   Hive.registerAdapter(DailyStatsResponseAdapter());
@@ -49,6 +51,7 @@ void main() async {
   Hive.registerAdapter(GeometryAdapter());
   Hive.registerAdapter(CoordinatesAdapter());
   await Hive.openBox<String>('logs');
+  await Hive.openBox<CallToActionSource>('blackList');
   await Hive.openBox('user');
   await Hive.openBox<Annotation>('annotations');
   await Hive.openBox('dailyStatsResponse');

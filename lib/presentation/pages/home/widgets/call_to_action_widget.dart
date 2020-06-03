@@ -1,13 +1,16 @@
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
+import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class CallToActionWidget extends StatelessWidget {
   @override
@@ -235,10 +238,58 @@ class ActionCard extends StatelessWidget {
             color: Colors.red,
             caption: 'Rimuovi',
             onTap: () async {
-              await context
-                  .read<CallToActionNotifier>()
-                  .deleteCall(call.copyWith(archived: true));
-              context.read<CallToActionNotifier>().loadCalls();
+              Alert(
+                context: context,
+                style: AlertStyle(isCloseButton: false),
+                title: 'Sicuro di voler rimuovere questa Call to Action?',
+                content: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DialogButton(
+                        child: Text('Si'),
+                        onPressed: () async {
+                          await context
+                              .read<CallToActionNotifier>()
+                              .deleteCall(call.copyWith(archived: true));
+                          context.read<CallToActionNotifier>().loadCalls();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    if (call.source != null && call.source.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DialogButton(
+                          child: Text(
+                            'Si e non voglio ricevere più questi aggiornamenti',
+                            textAlign: TextAlign.center,
+                          ),
+                          onPressed: () async {
+                            await Hive.box<CallToActionSource>('blackList').add(
+                                CallToActionSource(
+                                    call.source, call.sourceName));
+                            await context
+                                .read<CallToActionNotifier>()
+                                .deleteCall(call.copyWith(archived: true));
+                            context.read<CallToActionNotifier>().loadCalls();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DialogButton(
+                        child: Text('Annulla'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                buttons: [],
+              ).show();
             },
           ),
       ],
