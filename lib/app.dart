@@ -19,7 +19,6 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/geofence_event_notifier.dart';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:hive/hive.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorndial/unicorndial.dart';
 import 'application/annotation_notifier.dart';

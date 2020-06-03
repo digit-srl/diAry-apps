@@ -8,7 +8,7 @@ import 'package:diary/application/location_notifier.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
-import 'package:file_picker/file_picker.dart';
+//import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -110,46 +110,46 @@ class ImportExportUtils {
       ..addAll(data));
   }
 
-  static Future<Day> importAndProcessJSON() async {
-    final File file = await FilePicker.getFile(
-        type: FileType.custom, allowedExtensions: ['json']);
-    final String data = await file.readAsString();
-    final map = json.decode(data);
-    final locations = List<Map<String, dynamic>>.from(map)
-        .map((element) => Location.fromJson(element))
-        .toList();
-//    final list = List<Map<String, dynamic>>.from(map)
-//        .map((element) => Loc.fromJson(element))
+//  static Future<Day> importAndProcessJSON() async {
+//    final File file = await FilePicker.getFile(
+//        type: FileType.custom, allowedExtensions: ['json']);
+//    final String data = await file.readAsString();
+//    final map = json.decode(data);
+//    final locations = List<Map<String, dynamic>>.from(map)
+//        .map((element) => Location.fromJson(element))
 //        .toList();
-    logger.i(locations.length);
+////    final list = List<Map<String, dynamic>>.from(map)
+////        .map((element) => Loc.fromJson(element))
+////        .toList();
+//    logger.i(locations.length);
+//
+//    locations.forEach((loc) {
+//      final speed = loc?.coords?.speed ?? 0.0;
+//      if (speed < 0.5) {
+//        loc.activity.type = 'still';
+//      }
+//    });
+//    return LocationUtils.aggregateLocationsInSlices3(locations: locations);
+//  }
 
-    locations.forEach((loc) {
-      final speed = loc?.coords?.speed ?? 0.0;
-      if (speed < 0.5) {
-        loc.activity.type = 'still';
-      }
-    });
-    return LocationUtils.aggregateLocationsInSlices3(locations: locations);
-  }
-
-  static Future<List<Location>> importJSON() async {
-    final File file = await FilePicker.getFile(
-        type: FileType.custom, allowedExtensions: ['json']);
-    final String data = await file.readAsString();
-    final map = json.decode(data);
-    final locations = List<Map<String, dynamic>>.from(map)
-        .map((element) => Location.fromJson(element))
-        .toList();
-    logger.i(locations.length);
-
-    locations.forEach((loc) {
-      final speed = loc?.coords?.speed ?? 0.0;
-      if (speed < 0.5) {
-        loc.activity.type = 'still';
-      }
-    });
-    return locations;
-  }
+//  static Future<List<Location>> importJSON() async {
+//    final File file = await FilePicker.getFile(
+//        type: FileType.custom, allowedExtensions: ['json']);
+//    final String data = await file.readAsString();
+//    final map = json.decode(data);
+//    final locations = List<Map<String, dynamic>>.from(map)
+//        .map((element) => Location.fromJson(element))
+//        .toList();
+//    logger.i(locations.length);
+//
+//    locations.forEach((loc) {
+//      final speed = loc?.coords?.speed ?? 0.0;
+//      if (speed < 0.5) {
+//        loc.activity.type = 'still';
+//      }
+//    });
+//    return locations;
+//  }
 
   static exportAllData(BuildContext context) async {
     PermissionStatus permissionStatus = await PermissionHandler()
