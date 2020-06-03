@@ -236,7 +236,7 @@ SPEC CHECKSUMS:
   background_fetch: 733393ca9893eadff0f7297a3818afe57fd68cb1
   CocoaLumberjack: b17ae15142558d08bbacf69775fa10c4abbebcc9
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
-  esys_flutter_share: bb47e3a9047ce7d8718b48bcb81fc23d4a6f1e4c
+  esys_flutter_share: 403498dab005b36ce1f8d7aff377e81f0621b0b4
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   file_picker: 408623be2125b79a4539cf703be3d4b3abe5e245
   Firebase: 5d77105d9740a07ca6b16927ca971db7e860faaf
@@ -266,7 +266,7 @@ SPEC CHECKSUMS:
   permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   sensors: 84eb7a30e47a649e4172b71d6e81be614c280336
-  shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
   shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
   sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
@@ -277,4 +277,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: df843281060625850c17c2081dc2de7d232ce6ee
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
