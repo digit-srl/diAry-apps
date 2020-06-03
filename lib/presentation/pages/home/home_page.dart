@@ -114,13 +114,9 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(
                         children: <Widget>[
-                          Image.asset(
-                            'assets/wom_pin.png',
-                            color: Theme.of(context).iconTheme.color,
-                            width: 16,
-                          ),
+                          Icon(CustomIcons.wom_logo),
                           SizedBox(
-                            width: 8,
+                            width: 2,
                           ),
                           Text(
                             context.select((DayState value) =>
@@ -180,12 +176,13 @@ class CallToActionIconButton extends StatelessWidget {
 
     return IconButton(
       icon: Icon(
-        CustomIcons.hospital_box_outline,
+        CustomIcons.call_to_action,
+        size: 20,
       ),
       onPressed: () {
         showCallToActionBottomSheet(context);
       },
-      tooltip: "Notifica sanitaria",
+      tooltip: "Call to action",
     );
   }
 
@@ -216,13 +213,7 @@ class UploadStatsIconButton extends StatelessWidget {
     return IconButton(
       tooltip: "Condividi statistiche e riscatta WOM",
       icon: isStatsSended
-          ? Container(
-//              height: 30,
-              child: Image.asset(
-                'assets/wom_pocket_logo.png',
-                color: Theme.of(context).iconTheme.color,
-              ),
-            )
+          ? Icon(CustomIcons.pocket_logo, size: 32,)
           : Icon(
               isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
             ),
