@@ -74,7 +74,10 @@ class _SettingsPageState extends State<SettingsPage> {
         onTap: () => {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => IntroPage()),
+            MaterialPageRoute(
+                builder: (context) => IntroPage(
+                      fromSettings: true,
+                    )),
           )
         },
       ),

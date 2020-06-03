@@ -11,6 +11,7 @@ import 'package:diary/domain/repositories/user_repository.dart';
 import 'package:diary/infrastructure/repositories/daily_stats_repository_impl.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/main.dart';
+import 'package:diary/presentation/pages/intro_page.dart';
 import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/logger.dart';
@@ -54,8 +55,8 @@ class _DiAryAppState extends State<DiAryApp> {
 //  DayNotifier dayNotifier;
   UserRepository userRepository;
   DailyStatsRepository dailyStatsRepository;
-  final GlobalKey<UnicornDialerState> _dialerKey =
-      GlobalKey<UnicornDialerState>(debugLabel: 'prova');
+//  final GlobalKey<UnicornDialerState> _dialerKey =
+//      GlobalKey<UnicornDialerState>(debugLabel: 'prova');
 
   @override
   void initState() {
@@ -151,33 +152,9 @@ class _DiAryAppState extends State<DiAryApp> {
         title: 'diAry',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme, // <--- Handles dark theme
-        home: WillPopScope(
-          onWillPop: () {
-            return handleBackButtonWithFab(_dialerKey);
-          },
-          child: Scaffold(
-            body: RootPage(),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: MainFabButton(dialerKey: _dialerKey),
-//            floatingActionButton: Builder(
-//              builder: (ctx) {
-//                return FloatingActionButton(
-//                  backgroundColor: Colors.yellow,
-//                  onPressed: () async {
-//                    final result = await ctx
-//                        .read<LocationRepositoryImpl>()
-//                        .getLocationsBetween(
-//                            DateTime(2020, 4, 21, 0, 0), DateTime.now());
-//                    result.fold(
-//                      (f) => logger(f),
-//                      (locs) => logger(locs.length),
-//                    );
-//                  },
-//                );
-//              },
-//            ),
-          ),
-        ),
+        home: Hive.box('user').get('firstTime', defaultValue: true)
+            ? IntroPage()
+            : RootPage(),
       ),
     );
   }

@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:diary/application/current_root_page_notifier.dart';
 import 'package:diary/presentation/pages/annotations/annotations_page.dart';
+import 'package:diary/presentation/widgets/main_fab_button.dart';
 import 'package:diary/utils/app_theme.dart';
+import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/home/home_page.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:diary/presentation/widgets/main_app_bar.dart';
+import 'package:unicorndial/unicorndial.dart';
 
 import '../map/map_page.dart';
 
@@ -20,6 +25,15 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final GlobalKey<UnicornDialerState> _dialerKey =
+      GlobalKey<UnicornDialerState>(debugLabel: 'prova');
+
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isAndroid) requestIgnoreBatteryOptimization();
+  }
+
   @override
   Widget build(BuildContext context) {
     int _currentPage = context.watch<CurrentRootPageState>().currentPage;
@@ -58,6 +72,8 @@ class _RootPageState extends State<RootPage> {
               ],
             ),
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          floatingActionButton: MainFabButton(dialerKey: _dialerKey),
         ),
       ),
     );

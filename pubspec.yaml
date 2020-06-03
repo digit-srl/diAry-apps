@@ -58,7 +58,6 @@ dependencies:
   flutter_slidable: ^0.5.4
   webview_flutter: ^0.3.21
   intro_slider: ^2.3.1
-  shared_preferences: ^0.5.7+3
 
 dev_dependencies:
   hive_generator: ^0.7.0+2

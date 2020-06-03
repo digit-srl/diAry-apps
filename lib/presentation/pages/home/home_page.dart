@@ -48,8 +48,6 @@ class _HomePageState extends State<HomePage> {
     _controller.addListener(_scrollListener);
     Provider.of<RootElevationNotifier>(context, listen: false)
         .changeElevationIfDifferent(0, 0);
-
-    launchIntroIfNecessary();
   }
 
   void _scrollListener() {
@@ -64,18 +62,6 @@ class _HomePageState extends State<HomePage> {
     _controller?.removeListener(_scrollListener);
     _controller?.dispose();
   }
-
-
-  launchIntroIfNecessary() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('firstTime') ?? true) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => IntroPage()),
-      );
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
