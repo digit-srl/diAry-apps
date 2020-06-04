@@ -7,7 +7,6 @@ import 'package:rflutter_alert/rflutter_alert.dart';
  * dialog templates.
  */
 class Alerts {
-
   // alerts' common custom style
   static AlertStyle customStyle(BuildContext context) {
     return AlertStyle(
@@ -15,7 +14,7 @@ class Alerts {
       isCloseButton: false,
       isOverlayTapDismiss: true,
       descStyle: Theme.of(context).textTheme.body1,
-      overlayColor: Colors.black.withOpacity(0.8),
+      overlayColor: Colors.black.withOpacity(0.6),
       backgroundColor: Theme.of(context).primaryColor,
       animationDuration: Duration(milliseconds: 200),
       alertBorder: RoundedRectangleBorder(
@@ -28,6 +27,7 @@ class Alerts {
     );
   }
 
+
   // alert with a single button. At the end of the passed action, it dismiss the
   // dialog automatically. If button text or actions are not passed, it
   // implements a standard behavior (OK as button text, dismiss as action)
@@ -37,7 +37,6 @@ class Alerts {
         context: context,
         title: title,
         desc: description,
-        style: customStyle(context),
         buttons: [
           DialogButton(
               radius: BorderRadius.circular(10.0),
@@ -104,6 +103,7 @@ class Alerts {
         ]).show();
   }
 
+
   // Alert with two equally important actions.
   // At the end of the passed actions, it dismiss the dialog automatically.
   // Both actions must be passed in order for the button to work
@@ -149,13 +149,47 @@ class Alerts {
   }
 
 
+  // Alert with a personalized content and no buttons.
+  // It has a custom style to remove the default border of the buttons, that,
+  // without buttons, makes the dialog asymmetric.
+  static showAlertWithContentAndNoButtons(
+      BuildContext context,
+      String title,
+      String description,
+      Widget content) async {
+    return await Alert(
+      context: context,
+      title: title,
+      desc: description,
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+        isCloseButton: false,
+        isOverlayTapDismiss: true,
+        descStyle: Theme.of(context).textTheme.body1,
+        overlayColor: Colors.black.withOpacity(0.6),
+        backgroundColor: Theme.of(context).primaryColor,
+        animationDuration: Duration(milliseconds: 200),
+        alertBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          side: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+        buttonAreaPadding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+        titleStyle: Theme.of(context).textTheme.headline,
+      ),
+      buttons: [],
+      content: content,
+    ).show();
+  }
+
+
   // Alert a content, passed as widget, and an action button
   // At the end of the passed actions, it dismiss the dialog automatically.
   // If button text or actions are not passed, it implements a standard behavior
   // (OK as button text, dismiss as action)
   static showAlertWithContent(BuildContext context, String title,
       Widget content, String positiveButtonText, Function onPositive) async {
-
     await Alert(
       style: customStyle(context),
       context: context,

@@ -3,6 +3,7 @@ import 'package:diary/domain/entities/call_to_action_response.dart';
 import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
+import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +26,17 @@ class CallToActionWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Questo pulsante consulta il server per ricevere segnalazioni '
-          'che verranno incrociate (direttamente '
-          'sullo smartphone) con le tracce locali. Solo se le tracce locali '
-          'incrociano i luoghi e gli orari segnalati, le corrispondenti '
-          '"Call to Action" vengono mostrate all\'utente.\n',
+          'Premendo nel pulsante sottostante, diAry consulterà il proprio server, '
+          'per verifiare se sono presenti segnalazioni. Queste verranno '
+          'incrociate, direttamente sullo smartphone, con le tracce memorizzate '
+          'in locale. Se tale operazione, basata su orario e luogo della '
+          'segnalazione, ha esito positivo, la corrispondente Call To Action '
+          'verrà mostrata nel box sottostante.\n',
           style: Theme.of(context).textTheme.body1,
         ),
         Text(
-          'LE SEGNALAZIONI DI RILEVANZA SANITARIA SONO EVIDENZIATE '
-          'DA UN CERCHIO ROSSO NEL TITOLO',
+          'Le segnalazioni di rilevanza sanitaria sono evidenziate '
+          'con un cerchio di colore rosso nel titolo.',
           style: Theme.of(context)
               .textTheme
               .body1
@@ -154,6 +156,7 @@ class ActionCard extends StatelessWidget {
   final Call call;
 
   const ActionCard({Key key, this.call}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -238,17 +241,67 @@ class ActionCard extends StatelessWidget {
             color: Colors.red,
             caption: 'Rimuovi',
             onTap: () async {
-              Alert(
-                context: context,
-                style: AlertStyle(isCloseButton: false),
-                title: 'Sicuro di voler rimuovere questa Call to Action?',
-                content: Column(
+              // it is used a dialog without standard buttons: the buttons are
+              // inserted as content, to show them vertically
+              Alerts.showAlertWithContentAndNoButtons(
+                context,
+                'Rimuovi Call To Action',
+                "Sei sicuro di voler rimuovere questa Call to Action dalla lista?",
+                Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DialogButton(
-                        child: Text('Si'),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    DialogButton(
+                        radius: BorderRadius.circular(10.0),
+                        child: Text(
+                          "Annulla",
+                          style: Theme.of(context).textTheme.button.copyWith(
+                              color: Theme.of(context).textTheme.body2.color),
+                        ),
+                        color: Colors.transparent,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    DialogButton(
+                      radius: BorderRadius.circular(10.0),
+                      child: Text(
+                        "Sì, rimuovi",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.button,
+                      ),
+                      color: Theme.of(context).accentColor,
+                      onPressed: () async {
+                        await context
+                            .read<CallToActionNotifier>()
+                            .deleteCall(call.copyWith(archived: true));
+                        context.read<CallToActionNotifier>().loadCalls();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    if (call.source != null && call.source.isNotEmpty)
+                      SizedBox(
+                        height: 8,
+                      ),
+                    if (call.source != null && call.source.isNotEmpty)
+                      DialogButton(
+                        radius: BorderRadius.circular(10.0),
+                        height: 60,
+                        child: Padding(
+                          padding: EdgeInsets.all(2),
+                          child: Text(
+                              "Sì, e non riceverne più dalla fonte " +
+                                  call.sourceName,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.button),
+                        ),
+                        color: Theme.of(context).accentColor,
                         onPressed: () async {
+                          await Hive.box<CallToActionSource>('blackList').add(
+                              CallToActionSource(call.source, call.sourceName));
                           await context
                               .read<CallToActionNotifier>()
                               .deleteCall(call.copyWith(archived: true));
@@ -256,40 +309,9 @@ class ActionCard extends StatelessWidget {
                           Navigator.of(context).pop();
                         },
                       ),
-                    ),
-                    if (call.source != null && call.source.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: DialogButton(
-                          child: Text(
-                            'Si e non voglio ricevere più questi aggiornamenti',
-                            textAlign: TextAlign.center,
-                          ),
-                          onPressed: () async {
-                            await Hive.box<CallToActionSource>('blackList').add(
-                                CallToActionSource(
-                                    call.source, call.sourceName));
-                            await context
-                                .read<CallToActionNotifier>()
-                                .deleteCall(call.copyWith(archived: true));
-                            context.read<CallToActionNotifier>().loadCalls();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DialogButton(
-                        child: Text('Annulla'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
                   ],
                 ),
-                buttons: [],
-              ).show();
+              );
             },
           ),
       ],
