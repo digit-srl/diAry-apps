@@ -27,11 +27,11 @@ class CallToActionWidget extends StatelessWidget {
         ),
         Text(
           'Premendo nel pulsante sottostante, diAry consulterà il proprio server, '
-          'per verifiare se sono presenti segnalazioni. Queste verranno '
+          'per verifiare se sono presenti Call To Action. Queste verranno '
           'incrociate, direttamente sullo smartphone, con le tracce memorizzate '
-          'in locale. Se tale operazione, basata su orario e luogo della '
-          'segnalazione, ha esito positivo, la corrispondente Call To Action '
-          'verrà mostrata nel box sottostante.\n',
+          'in locale. L\'operazione è basata su orario e luogo della '
+          'segnalazione: se ha esito positivo, le Call To Action verranno '
+          'mostrate nel box sottostante.\n',
           style: Theme.of(context).textTheme.body1,
         ),
         Text(
@@ -156,7 +156,6 @@ class ActionCard extends StatelessWidget {
   final Call call;
 
   const ActionCard({Key key, this.call}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -182,17 +181,26 @@ class ActionCard extends StatelessWidget {
                   ),
                   Row(
                     children: <Widget>[
-                      Icon(
-                        Icons.done_all,
-                        color: (call.executed ?? false)
-                            ? Colors.green
-                            : Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(
+                          Icons.done_all,
+                          color: (call.executed ?? false)
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
                       ),
-                      Icon(
-                        Icons.remove_red_eye,
-                        color:
-                            (call.opened ?? false) ? Colors.blue : Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(
+                          Icons.remove_red_eye,
+                          color: (call.opened ?? false)
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
                       ),
+                      if (call.maxTime != null && call.maxTime > 0)
+                        Text('${call.maxTime} sec'),
 //                      Icon(
 //                        Icons.remove_circle,
 //                        color:
@@ -300,8 +308,12 @@ class ActionCard extends StatelessWidget {
                         ),
                         color: Theme.of(context).accentColor,
                         onPressed: () async {
-                          await Hive.box<CallToActionSource>('blackList').add(
-                              CallToActionSource(call.source, call.sourceName));
+                          await Hive.box<CallToActionSource>('blackList')
+                              .add(CallToActionSource(
+                            call.source,
+                            call.sourceName,
+                            call.sourceDesc,
+                          ));
                           await context
                               .read<CallToActionNotifier>()
                               .deleteCall(call.copyWith(archived: true));

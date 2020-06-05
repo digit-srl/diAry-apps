@@ -1,3 +1,5 @@
+import 'package:diary/utils/constants.dart';
+
 enum Event {
   On,
   Off,
@@ -132,7 +134,8 @@ class Location {
       coords.longitude == 0.0 &&
       (event == Event.Off || event == Event.On || event == Event.Geofence);
 
-  bool get isGoodPoint => !isNotificationEvent && coords.accuracy < 1000;
+  bool get isGoodPoint =>
+      !isNotificationEvent && coords.accuracy < kMaxAccuracy;
 }
 
 class Coords {

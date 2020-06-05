@@ -101,7 +101,9 @@ class _SettingsPageState extends State<SettingsPage> {
           )
         },
       ),
-      SettingItem(CustomIcons.account_multiple_outline, 'Su di noi...',
+      SettingItem(
+          CustomIcons.account_multiple_outline,
+          'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
               'innovativa, società benefit. Scopri di più.',
           enabled: true, onTap: () {
@@ -354,8 +356,8 @@ class _CallToActionManagerPageState extends State<CallToActionManagerPage> {
                         ],
                       ).show();
                     }),
-                title: Text(list[index].source),
-                subtitle: Text(list[index].sourceName),
+                title: Text(list[index].sourceName ?? '-'),
+                subtitle: Text(list[index].sourceDesc ?? '-'),
               );
             },
           );
