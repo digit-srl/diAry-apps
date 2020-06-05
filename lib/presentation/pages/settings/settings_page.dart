@@ -23,7 +23,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   List<SettingItem> items;
   List<SettingItem> utils;
-  List<SettingItem> legals;
   final double targetElevation = 3;
   double _elevation = 0;
   ScrollController _controller;
@@ -38,7 +37,8 @@ class _SettingsPageState extends State<SettingsPage> {
         Icons.file_download,
         'Esporta i dati degli spostamenti',
         'Salva in locale tutti i dati relativi agli spostamenti effettuati. '
-            'Puoi decidere il formato di esportazione.',
+            'Puoi scegliere quale formato di esportazione utilizzare, tra JSON '
+            'e CSV.',
         onTap: () => ImportExportUtils.exportAllData(context),
       ),
       if (Platform.isAndroid)
@@ -53,9 +53,11 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
       SettingItem(
-        Icons.list,
-        'Organizza la black list',
-        'Visualizzerai le sorgenti delle call to action da cui non vuoi ricevere nuove segnalazioni. Potrai riabilitarle',
+        Icons.format_list_bulleted,
+        'Blacklist Call To Action',
+        'Le fonti dalle quali non desideri più ricevere Call To Action vengono '
+            'visualizzate all\'interno di questa schermata. Questa permette '
+            'di gestirle, ed eventualmente riabilitarle.',
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => CallToActionManagerPage(),
@@ -71,10 +73,14 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     utils = [
-      SettingItem(CustomIcons.diary_logo, 'diAry - digital Arianna',
-          'Premi per visualizzare il changelog', onTap: () {
-        GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
-      }),
+      SettingItem(
+        CustomIcons.diary_logo,
+        'diAry - digital Arianna',
+        'Visualizza il changelog.',
+        onTap: () {
+          GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
+        }
+      ),
 //      SettingItem(Icons.bug_report, 'Segnala un bug',
 //          'Notifica un problema al team di sviluppo tramite mail.',
 //          enabled: false),
@@ -103,24 +109,19 @@ class _SettingsPageState extends State<SettingsPage> {
           enabled: true, onTap: () {
         GenericUtils.launchURL('https://digit.srl');
       }),
+
+      SettingItem(
+        CustomIcons.shield_account_outline, 'Privacy Policy',
+        'La privacy è un tema fondamentale per diAry. Scopri in che modo '
+            'questa viene tutelata dall\'app.',
+        enabled: true,
+        onTap: () {
+          GenericUtils.launchURL('https://covid19app.uniurb.it/privacy-policy/');
+        },
+      ),
+      // SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
     ];
 
-    legals = [
-//      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
-      SettingItem(CustomIcons.shield_account_outline, 'Privacy Policy', null,
-          enabled: true, onTap: () {
-        GenericUtils.launchURL(
-          'https://covid19app.uniurb.it/privacy-policy/',
-        );
-//        BottomSheets.showFullPageBottomSheet(
-//            context,
-//            MyWebView(
-//              url: 'https://covid19app.uniurb.it/privacy-policy/',
-//            ));
-      }),
-//      SettingItem(Icons.info_outline, 'Licence open source', null,
-//          enabled: false),
-    ];
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
   }
@@ -180,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
             Padding(
               padding: titlePadding,
               child: Text(
-                'Informazioni utili',
+                'Informazioni',
                 style: Theme.of(context).textTheme.body2,
               ),
             ),
@@ -223,37 +224,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       endIndent: 16,
                     ),
             ],
-            Padding(
-              padding: titlePadding,
-              child: Text(
-                'Informazioni Legali',
-                style: Theme.of(context).textTheme.body2,
-              ),
-            ),
-            for (SettingItem item in legals) ...[
-              ListTile(
-                leading: Icon(
-                  item.iconData,
-                  color: item.enabled
-                      ? Theme.of(context).iconTheme.color
-                      : secondaryText,
-                ),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
-              ),
-              legals.indexOf(item) == legals.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
-            ],
+            SizedBox(
+              height: 16,
+            )
           ],
         ),
       ),
