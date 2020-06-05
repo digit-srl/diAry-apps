@@ -8,6 +8,8 @@ class CallToActionSource {
   final String source;
   @HiveField(1)
   final String sourceName;
+  @HiveField(2)
+  final String sourceDesc;
 
-  CallToActionSource(this.source, this.sourceName);
+  CallToActionSource(this.source, this.sourceName, this.sourceDesc);
 }

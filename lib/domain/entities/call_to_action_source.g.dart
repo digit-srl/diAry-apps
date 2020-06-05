@@ -19,16 +19,19 @@ class CallToActionSourceAdapter extends TypeAdapter<CallToActionSource> {
     return CallToActionSource(
       fields[0] as String,
       fields[1] as String,
+      fields[2] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, CallToActionSource obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.source)
       ..writeByte(1)
-      ..write(obj.sourceName);
+      ..write(obj.sourceName)
+      ..writeByte(2)
+      ..write(obj.sourceDesc);
   }
 }

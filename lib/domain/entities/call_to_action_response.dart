@@ -45,6 +45,10 @@ class Call {
   String source;
   @HiveField(10)
   String sourceName;
+  @HiveField(11)
+  String sourceDesc;
+  @HiveField(12)
+  int maxTime;
 
   Call({
     this.id,
@@ -54,6 +58,8 @@ class Call {
     this.lastUpdate,
     this.source,
     this.sourceName,
+    this.sourceDesc,
+    this.maxTime,
     this.archived = false,
     this.opened = false,
     this.executed = false,
@@ -66,6 +72,8 @@ class Call {
     lastUpdate = json['lastUpdate'];
     source = json['source'];
     sourceName = json['sourceName'];
+    sourceDesc = json['sourceDescription'];
+    maxTime = json['exposureSeconds'];
     if (json['queries'] != null) {
       queries = new List<Query>();
       json['queries'].forEach((v) {
@@ -99,6 +107,8 @@ class Call {
     bool executed,
     String source,
     String sourceName,
+    String sourceDesc,
+    int maxTime,
   }) {
     return Call(
       id: id ?? this.id,
@@ -111,6 +121,8 @@ class Call {
       executed: executed ?? this.executed,
       source: source ?? this.source,
       sourceName: sourceName ?? this.sourceName,
+      sourceDesc: sourceDesc ?? this.sourceDesc,
+      maxTime: maxTime ?? this.maxTime,
     );
   }
 }

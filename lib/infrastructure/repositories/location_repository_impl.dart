@@ -109,6 +109,32 @@ class LocationRepositoryImpl implements LocationRepository {
     return result;
   }
 
+  int isLocationsInPolygon2(List<Location> locations, List<LatLng> polygon,
+      int maxTime, int counter) {
+    Geodesy geo = Geodesy();
+    bool result = false;
+    DateTime lastTimestamp;
+    for (int i = 0; i < locations.length; i++) {
+      if (locations[i].isGoodPoint) {
+        if (result) {
+          counter += locations[i].dateTime.difference(lastTimestamp).inSeconds;
+          result = false;
+          if (counter >= maxTime) {
+            logger.i('stop locations cycle');
+            logger.i('partial time : $counter');
+            break;
+          }
+        }
+
+        final latLng =
+            LatLng(locations[i].coords.latitude, locations[i].coords.longitude);
+        result = geo.isGeoPointInPolygon(latLng, polygon);
+        lastTimestamp = locations[i].dateTime;
+      }
+    }
+    return counter;
+  }
+
 /*  @override
   Future<Either<Failure, CallToAction>> builregegege() async {
     try {
@@ -166,7 +192,7 @@ class LocationRepositoryImpl implements LocationRepository {
 //      ]);
       final response =
           await callToActionRemoteDataSources.sendData(callToAction);
-      final calls = processCallToActionResponse(response, locations);
+      final calls = processCallToActionResponse2(response, locations);
       for (int i = 0; i < calls.length; i++) {
         await locationsLocalDataSources.saveNewCallToActionResult(calls[i]);
       }
@@ -209,7 +235,7 @@ class LocationRepositoryImpl implements LocationRepository {
   List<Call> processCallToActionResponse(
       CallToActionResponse response, List<Location> locations) {
     final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
-    List<Call> resultCalls = [];
+    final resultCalls = <Call>[];
     if (response.hasMatch) {
       final calls = response.calls;
 
@@ -228,6 +254,45 @@ class LocationRepositoryImpl implements LocationRepository {
         }
         if (hasMatch) {
           resultCalls.add(call);
+          continue;
+        }
+      }
+    }
+    return resultCalls;
+  }
+
+  List<Call> processCallToActionResponse2(
+      CallToActionResponse response, List<Location> locations) {
+    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
+    final resultCalls = <Call>[];
+    if (response.hasMatch) {
+      final calls = response.calls;
+
+      for (int k = 0; k < calls.length; k++) {
+        final call = calls[k];
+        final maxTime = call.maxTime ?? 0;
+        logger.i('maxTime = $maxTime');
+        final source = call.source;
+        if (source != null &&
+            blackList.where((c) => c.source == source).isNotEmpty) {
+          continue;
+        }
+        int partialTime = 0;
+        for (int i = 0; i < call.queries.length; i++) {
+          final q = call.queries[i];
+          final coords = q.geometry.coordinates;
+          partialTime =
+              isLocationsInPolygon2(locations, coords, maxTime, partialTime);
+          logger.i('partialTime = $partialTime');
+          if (partialTime >= maxTime) {
+            logger.i('stop query cycle');
+            logger.i('matching');
+            resultCalls.add(call);
+            break;
+          }
+        }
+        if (partialTime >= maxTime) {
+          logger.i('go to next call');
           continue;
         }
       }

@@ -71,14 +71,10 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     utils = [
-      SettingItem(
-        CustomIcons.diary_logo,
-        'diAry - digital Arianna',
-        'Premi per visualizzare il changelog',
-        onTap: () {
-          GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
-        }
-      ),
+      SettingItem(CustomIcons.diary_logo, 'diAry - digital Arianna',
+          'Premi per visualizzare il changelog', onTap: () {
+        GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
+      }),
 //      SettingItem(Icons.bug_report, 'Segnala un bug',
 //          'Notifica un problema al team di sviluppo tramite mail.',
 //          enabled: false),
@@ -99,7 +95,9 @@ class _SettingsPageState extends State<SettingsPage> {
           )
         },
       ),
-      SettingItem(CustomIcons.account_multiple_outline, 'Su di noi...',
+      SettingItem(
+          CustomIcons.account_multiple_outline,
+          'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
               'innovativa, società benefit. Scopri di più.',
           enabled: true, onTap: () {
@@ -109,8 +107,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
     legals = [
 //      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
-      SettingItem(CustomIcons.shield_account_outline, 'Privacy Policy', null, enabled: true,
-          onTap: () {
+      SettingItem(CustomIcons.shield_account_outline, 'Privacy Policy', null,
+          enabled: true, onTap: () {
         GenericUtils.launchURL(
           'https://covid19app.uniurb.it/privacy-policy/',
         );
@@ -385,8 +383,8 @@ class _CallToActionManagerPageState extends State<CallToActionManagerPage> {
                         ],
                       ).show();
                     }),
-                title: Text(list[index].source),
-                subtitle: Text(list[index].sourceName),
+                title: Text(list[index].sourceName ?? '-'),
+                subtitle: Text(list[index].sourceDesc ?? '-'),
               );
             },
           );

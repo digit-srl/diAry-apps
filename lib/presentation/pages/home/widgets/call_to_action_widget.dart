@@ -179,17 +179,26 @@ class ActionCard extends StatelessWidget {
                   ),
                   Row(
                     children: <Widget>[
-                      Icon(
-                        Icons.done_all,
-                        color: (call.executed ?? false)
-                            ? Colors.green
-                            : Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(
+                          Icons.done_all,
+                          color: (call.executed ?? false)
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
                       ),
-                      Icon(
-                        Icons.remove_red_eye,
-                        color:
-                            (call.opened ?? false) ? Colors.blue : Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(
+                          Icons.remove_red_eye,
+                          color: (call.opened ?? false)
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
                       ),
+                      if (call.maxTime != null && call.maxTime > 0)
+                        Text('${call.maxTime} sec'),
 //                      Icon(
 //                        Icons.remove_circle,
 //                        color:
@@ -266,9 +275,12 @@ class ActionCard extends StatelessWidget {
                             textAlign: TextAlign.center,
                           ),
                           onPressed: () async {
-                            await Hive.box<CallToActionSource>('blackList').add(
-                                CallToActionSource(
-                                    call.source, call.sourceName));
+                            await Hive.box<CallToActionSource>('blackList')
+                                .add(CallToActionSource(
+                              call.source,
+                              call.sourceName,
+                              call.sourceDesc,
+                            ));
                             await context
                                 .read<CallToActionNotifier>()
                                 .deleteCall(call.copyWith(archived: true));

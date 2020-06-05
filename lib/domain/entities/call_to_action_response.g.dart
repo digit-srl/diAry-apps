@@ -24,6 +24,8 @@ class CallAdapter extends TypeAdapter<Call> {
       lastUpdate: fields[3] as DateTime,
       source: fields[9] as String,
       sourceName: fields[10] as String,
+      sourceDesc: fields[11] as String,
+      maxTime: fields[12] as int,
       archived: fields[6] as bool,
       opened: fields[5] as bool,
       executed: fields[7] as bool,
@@ -33,7 +35,7 @@ class CallAdapter extends TypeAdapter<Call> {
   @override
   void write(BinaryWriter writer, Call obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -55,7 +57,11 @@ class CallAdapter extends TypeAdapter<Call> {
       ..writeByte(9)
       ..write(obj.source)
       ..writeByte(10)
-      ..write(obj.sourceName);
+      ..write(obj.sourceName)
+      ..writeByte(11)
+      ..write(obj.sourceDesc)
+      ..writeByte(12)
+      ..write(obj.maxTime);
   }
 }
 
