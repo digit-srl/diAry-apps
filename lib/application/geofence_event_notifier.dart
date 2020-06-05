@@ -47,3 +47,15 @@ class GeofenceEventNotifier extends StateNotifier<GeofenceEventState>
     }
   }
 }
+
+/* // Remove geofence from location to prevent recursive creation of GeofenceEvent.
+    Map locationData = params['location'];
+
+    if(locationData != null){
+      locationData.remove("geofence");
+      this.location = new Location(locationData);
+    }
+
+    this.identifier = params['identifier'];
+    this.action = params['action'];
+    this.extras = params['extras'];*/

@@ -2,6 +2,7 @@ import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
+import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
@@ -19,6 +20,7 @@ import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../app.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
 import 'package:diary/utils/extensions.dart';
@@ -81,7 +83,8 @@ class _HomePageState extends State<HomePage> {
             // CarCard(),
             GpsCard(),
             TrackingCard(),
-//            BetaCard(),
+            if (isDevVersion)
+              BetaCard(),
             MyPlacesCard(),
             SizedBox(
               height: 16,
@@ -91,7 +94,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: Material(
         elevation: 16,
-        color: Theme.of(context).primaryColor,
+        color: isDevVersion ? Colors.yellow : Theme.of(context).primaryColor,
         child: Container(
           height: 60 + MediaQuery.of(context).padding.bottom,
           child: Column(
@@ -213,7 +216,10 @@ class UploadStatsIconButton extends StatelessWidget {
     return IconButton(
       tooltip: "Condividi statistiche e riscatta WOM",
       icon: isStatsSended
-          ? Icon(CustomIcons.pocket_logo, size: 32,)
+          ? Icon(
+              CustomIcons.pocket_logo,
+              size: 32,
+            )
           : Icon(
               isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
             ),

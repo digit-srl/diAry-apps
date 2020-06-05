@@ -1,6 +1,7 @@
 import 'package:diary/application/date_notifier.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:diary/application/current_root_page_notifier.dart';
+import 'package:diary/utils/constants.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
 import 'package:diary/domain/entities/place.dart';
@@ -404,22 +405,22 @@ class DailyStatsWidget extends StatelessWidget {
   }
 
   // only for developers
-  void _showAggregationSettings(BuildContext context) {
-    final accuracy =
-        Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
-    final postProcessingEnabled =
-        Hive.box('user').get('postProcessing', defaultValue: true);
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        isDismissible: true,
-        useRootNavigator: true,
-        builder: (BuildContext context) {
-          return AggregationSettings(
-            accuracy: accuracy,
-          );
-        });
-  }
+//  void _showAggregationSettings(BuildContext context) {
+//    final accuracy =
+//        Hive.box('user').get('aggregationAccuracy', defaultValue: kMaxAccuracy);
+//    final postProcessingEnabled =
+//        Hive.box('user').get('postProcessing', defaultValue: true);
+//    showModalBottomSheet(
+//        context: context,
+//        isScrollControlled: true,
+//        isDismissible: true,
+//        useRootNavigator: true,
+//        builder: (BuildContext context) {
+//          return AggregationSettings(
+//            accuracy: accuracy,
+//          );
+//        });
+//  }
 }
 
 class DailyStatsWidget2 extends StatelessWidget {

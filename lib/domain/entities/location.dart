@@ -136,6 +136,15 @@ class Location {
 
   bool get isGoodPoint =>
       !isNotificationEvent && coords.accuracy < kMaxAccuracy;
+
+  /*
+  *
+  * (location.coords.latitude == 0.0 &&
+            location.coords.longitude == 0.0 &&
+            (location.event == Event.Off ||
+                location.event == Event.On ||
+                location.event == Event.Geofence)) ||
+        location.coords.accuracy > kMaxAccuracy)*/
 }
 
 class Coords {

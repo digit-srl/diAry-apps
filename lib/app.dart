@@ -37,6 +37,8 @@ import 'package:provider/provider.dart';
 
 import 'domain/entities/day.dart';
 
+bool isDevVersion = false;
+
 /// Main widget of the application. It initializes providers, and the first
 /// build layer with the custom FAB. It is necessary to keep it separated by the
 /// root page, to avoid state changes on the FAB, during page change.

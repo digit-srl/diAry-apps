@@ -43,7 +43,7 @@ class _BetaCardState extends State<BetaCard> {
           description: 'Scheda mostrata solo ai beta tester. Contiene '
               'funzioni per il test.',
           bottomButtons: <Widget>[
-            IconButton(
+            /* IconButton(
               icon: Icon(
                 Icons.bug_report,
                 color: Colors.red,
@@ -60,7 +60,7 @@ class _BetaCardState extends State<BetaCard> {
                       builder: (BuildContext context) => logConsole),
                 );
               },
-            ),
+            ),*/
             IconButton(
               icon: Icon(Icons.bug_report),
               tooltip: "Peersistent log report",
