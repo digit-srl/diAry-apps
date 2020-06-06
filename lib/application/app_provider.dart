@@ -40,8 +40,8 @@ class AppProvider with LocatorMixin {
             notification: bg.Notification(
                 priority:
                     -2, // bassa priorità: l'icona risulta meno invasiva (ridotta, quando possibile)
-                title: "Funzione di tracciamento attivata",
-                text: "L'app lavorerà in background senza disturbarti!",
+                title: "Servizio attivo",
+                text: "L'app sta lavorando in background.",
                 smallIcon:
                     "mipmap/notification_icon", // <-- defaults to app icon
                 largeIcon: "mipmap/notification_icon")))

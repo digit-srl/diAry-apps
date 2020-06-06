@@ -27,11 +27,11 @@ class InfoStatsWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Le statistiche di utilizzo mostrate in questa pagina possono '
-          'essere caricate in cloud in modo anonimo per contribuire ad '
+          'Le statistiche di utilizzo possono '
+          'essere caricate in cloud anonimamente, per contribuire ad '
           'un open data set statistico. Il caricamento può avvenire '
           'solo a conclusione della giornata (dopo la mezzanotte del '
-          'giorno a cui si riferiscono) e comporta il riconoscimento di WOM.',
+          'giorno a cui si riferiscono), e comporta il riconoscimento di WOM.',
           style: Theme.of(context).textTheme.body1,
         ),
         SizedBox(

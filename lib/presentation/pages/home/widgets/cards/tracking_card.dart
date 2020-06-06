@@ -17,9 +17,9 @@ class TrackingCard extends StatelessWidget {
         final isEnabled = value.isEnabled;
         return HomeGenericCard(
           enabled: isEnabled,
-          title: isEnabled ? 'Tracciamento Attivo' : 'Tracciam. non attivo',
-          description: "Mantenere il tracciamento attivo per il buon "
-                       "funzionamento dell\'app.",
+          title: isEnabled ? 'Servizio attivo' : 'Servizio non attivo',
+          description: "diAry raccoglie tracce dei tuoi spostamenti, "
+              "memorizzate rigorosamente in locale.",
           bottomButtons: <Widget>[
             GenericButton(
               onPressed: context.watch<ServiceNotifier>().invertEnabled,
