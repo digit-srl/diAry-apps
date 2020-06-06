@@ -34,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
     readVersion();
     items = [
       SettingItem(
-        Icons.file_download,
+        CustomIcons.database_export,
         'Esporta i dati degli spostamenti',
         'Salva in locale tutti i dati relativi agli spostamenti effettuati. '
             'Puoi scegliere quale formato di esportazione utilizzare, tra JSON '
@@ -53,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
       SettingItem(
-        Icons.format_list_bulleted,
+        CustomIcons.playlist_remove,
         'Blacklist Call To Action',
         'Le fonti dalle quali non desideri più ricevere Call To Action vengono '
             'visualizzate all\'interno di questa schermata. Questa permette '

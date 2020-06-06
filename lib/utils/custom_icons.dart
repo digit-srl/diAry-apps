@@ -30,8 +30,8 @@ class CustomIcons {
   static const IconData bookmark_outline = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData flask_outline = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cloud_upload_outline = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData cog_outline = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData crosshairs_off = IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData database_export = IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home_outline = IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData trash_can_outline = IconData(0xe80d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_outline = IconData(0xe80e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -43,4 +43,6 @@ class CustomIcons {
   static const IconData pocket_logo = IconData(0xe814, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData shield_account_outline = IconData(0xe815, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData call_to_action = IconData(0xe816, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData cog_outline_1 = IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData playlist_remove = IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
