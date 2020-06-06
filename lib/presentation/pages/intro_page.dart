@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/colors.dart';
-import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -71,9 +70,8 @@ class IntroPageState extends State<IntroPage> {
             pathImage: "assets/slide1.png",
             title: "Benvenuto in diAry!",
             description:
-                "Come un filo d’Arianna, i dati conservati sul proprio "
-                "smartphone offrono una traccia attendibile per uscire dal labirinto "
-                "del COVID-19.",
+                "Come un filo d’Arianna, i dati conservati sul tuo smartphone "
+                "offorno un supporto prezioso e attendibile alla tua memoria.",
           ),
           new Slide(
             maxLineTitle: 10,
@@ -101,11 +99,11 @@ class IntroPageState extends State<IntroPage> {
             heightImage: 200,
             pathImage: "assets/slide3.png",
             title:
-                "Incrocia le tracce locali con le segnalazioni delle autorità sanitarie",
-            description: "Le autorità sanitarie possono emanare delle "
-                "segnalazioni di pericolo, relativamente a determinati "
-                "luoghi e orari. DiAry incrocia tali segnalazioni con le tue "
-                "tracce locali, così da avvertirti di potenziali pericoli.",
+                "Informazioni e segnalazioni di tuo reale interesse",
+            description:
+                "Autorità sanitarie e soggetti autorizzati possono emanare "
+                "segnalazioni, riferite a specifici luoghi e orari.\n"
+                "diAry ti mostra solo quelle di reale interesse, incrociandole con le tue tracce in locale.",
           ),
           new Slide(
             maxLineTitle: 10,
@@ -137,13 +135,11 @@ class IntroPageState extends State<IntroPage> {
                 : "È tutto!",
             description: Platform.isAndroid
                 ? "Prima di terminare il tutorial, ti verrà "
-                    "richiesto di disabilitare l'ottimizzazione batteria per l'app. "
-                    "Ti raccomandiamo caldamente di permettere ciò, in quanto alcuni "
-                    "smartphone non consentono all'app di funzionare correttamente in background.\n"
-                : "" +
-                    "Ricorda: l’app non rappresenta un’alternativa alle norme di prevenzione "
-                        "vigenti, seppur ci auguriamo ne diverrà un importante alleato. "
-                        "Segui sempre le indicazioni del Ministero della Salute.",
+                    "richiesto di disabilitare l'ottimizzazione batteria per l'app.\n"
+                    "Ti raccomandiamo caldamente di permetterlo per consentire a diAry di funzionare correttamente e continuamente in background."
+                : "Ricorda: l’app non rappresenta un’alternativa alle norme di prevenzione "
+                    "vigenti, seppur ci auguriamo ne diverrà un importante alleato. "
+                    "Segui sempre le indicazioni del Ministero della Salute.",
           ),
         ],
       ),

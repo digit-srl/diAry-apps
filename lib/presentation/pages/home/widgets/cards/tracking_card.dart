@@ -16,17 +16,16 @@ class TrackingCard extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
         final isEnabled = value.isEnabled;
         return HomeGenericCard(
-          enabled: isEnabled,
-          title: isEnabled ? 'Servizio attivo' : 'Servizio non attivo',
-          description: "diAry raccoglie tracce dei tuoi spostamenti, "
-              "memorizzate rigorosamente in locale.",
-          bottomButtons: <Widget>[
-            GenericButton(
-              onPressed: context.watch<ServiceNotifier>().invertEnabled,
-              text: isEnabled ? 'Disattiva' : 'Attiva',
-            ),
-          ]
-        );
+            enabled: isEnabled,
+            title: isEnabled ? 'Servizio attivo' : 'Servizio non attivo',
+            description:
+                "diAry mantiene memoria dei tuoi spostamenti esclusivamente sul tuo smartphone",
+            bottomButtons: <Widget>[
+              GenericButton(
+                onPressed: context.watch<ServiceNotifier>().invertEnabled,
+                text: isEnabled ? 'Disattiva' : 'Attiva',
+              ),
+            ]);
       },
     );
   }
