@@ -73,6 +73,8 @@ class LocationRepositoryImpl implements LocationRepository {
         locationsPerDay[date].add(loc);
       } catch (ex) {
         logger.e('[ERROR] _readLocations $ex');
+        Hive.box<String>('logs')
+            .add('[ERROR] readAndFilterLocationsPerDay $ex');
       }
     }
     logger.i('Locations from DB: ${locations.length}');

@@ -74,9 +74,10 @@ class LocationUtils {
               [],
         );
       } catch (ex) {
+        Hive.box<String>('logs')
+            .add('[LocationUtils] aggregateLocationsInDayPerDate $ex');
         analytics.logEvent(
-            name: '[LocationUtils] aggregateLocationsInDayPerDate',
-            parameters: {'error': ex.toString()});
+            name: '[LocationUtils] ', parameters: {'error': ex.toString()});
         logger.e(ex);
       }
       i++;
@@ -161,8 +162,8 @@ class LocationUtils {
         ? partialDayPlaces.last.startTime.toMinutes() +
             partialDayPlaces.last.minutes
         : 0;
-    final maxAccuracy =
-        Hive.box('user').get('aggregationAccuracy', defaultValue: kMaxAccuracy);
+//    final maxAccuracy =
+//        Hive.box('user').get('aggregationAccuracy', defaultValue: kMaxAccuracy);
     final postProcessingEnabled =
         Hive.box('user').get('postProcessing', defaultValue: true);
     bool waitingOn = false;
@@ -186,7 +187,7 @@ class LocationUtils {
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
-      if (loc.coords.accuracy < maxAccuracy) {
+      if (loc.coords.accuracy < kMaxAccuracy) {
         int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
 
         final event = loc.event;
