@@ -20,7 +20,8 @@ class GpsCard extends StatelessWidget {
               iconData: Icons.gps_off,
               iconColor: accentColor,
               title: 'GPS non attivo',
-              description: 'Senza GPS, non può essere effettuato il tracciamento',
+              description: 'Senza di questo, il servizio non può funzionare '
+                  'correttamente.',
               bottomButtons: null,
             );
         } else {

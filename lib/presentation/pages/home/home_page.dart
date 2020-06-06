@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.fromLTRB(0,0,4,0),
                       child: Row(
                         children: <Widget>[
                           Icon(CustomIcons.wom_logo),
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                   UploadStatsIconButton(),
                   CallToActionIconButton(),
                   IconButton(
-                    icon: Icon(Icons.file_download),
+                    icon: Icon(CustomIcons.database_export),
                     tooltip: "Esporta CSV/JSON",
                     onPressed: () {
                       ImportExportUtils.exportSingleDay(context);

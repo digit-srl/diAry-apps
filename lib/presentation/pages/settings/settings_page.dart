@@ -34,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
     readVersion();
     items = [
       SettingItem(
-        Icons.file_download,
+        CustomIcons.database_export,
         'Esporta i dati degli spostamenti',
         'Salva in locale tutti i dati relativi agli spostamenti effettuati. '
             'Puoi scegliere quale formato di esportazione utilizzare, tra JSON '
@@ -46,18 +46,18 @@ class _SettingsPageState extends State<SettingsPage> {
           CustomIcons.flip_to_back,
           'Abilita l\'esecuzione in background',
           'Alcuni produttori di smartphone non consentono '
-              'alle applicazioni di essere eseguite adeguatamente '
-              'in background, rendendo il rilevamento poco preciso. '
-              'Con questo permesso, DiAry può risolvere '
-              'tale inconveniente.',
+          'alle applicazioni di essere eseguite adeguatamente '
+          'in background, rendendo il rilevamento poco preciso. '
+          'Con questo permesso, diAry può risolvere '
+          'tale inconveniente.',
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
       SettingItem(
-        Icons.format_list_bulleted,
+        CustomIcons.playlist_remove,
         'Blacklist Call To Action',
         'Le fonti dalle quali non desideri più ricevere Call To Action vengono '
-            'visualizzate all\'interno di questa schermata. Questa permette '
-            'di gestirle, ed eventualmente riabilitarle.',
+        'visualizzate all\'interno di questa schermata. Questa permette '
+        'di gestirle, ed eventualmente riabilitarle.',
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => CallToActionManagerPage(),
@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
           CustomIcons.account_multiple_outline,
           'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
-              'innovativa, società benefit. Scopri di più.',
+          'innovativa, società benefit. Scopri di più.',
           enabled: true, onTap: () {
         GenericUtils.launchURL('https://digit.srl');
       }),
@@ -113,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
       SettingItem(
         CustomIcons.shield_account_outline, 'Privacy Policy',
         'La privacy è un tema fondamentale per diAry. Scopri in che modo '
-            'questa viene tutelata dall\'app.',
+        'questa viene tutelata dall\'app.',
         enabled: true,
         onTap: () {
           GenericUtils.launchURL('https://covid19app.uniurb.it/privacy-policy/');
