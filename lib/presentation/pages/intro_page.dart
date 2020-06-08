@@ -98,8 +98,7 @@ class IntroPageState extends State<IntroPage> {
             backgroundColor: Colors.white,
             heightImage: 200,
             pathImage: "assets/slide3.png",
-            title:
-                "Informazioni e segnalazioni di tuo reale interesse",
+            title: "Informazioni e segnalazioni di tuo reale interesse",
             description:
                 "Autorità sanitarie e soggetti autorizzati possono emanare "
                 "segnalazioni, riferite a specifici luoghi e orari.\n"
