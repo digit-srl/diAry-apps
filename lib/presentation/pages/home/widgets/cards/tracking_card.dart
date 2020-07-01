@@ -1,3 +1,5 @@
+import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/custom_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:diary/application/service_notifier.dart';
@@ -16,6 +18,8 @@ class TrackingCard extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
         final isEnabled = value.isEnabled;
         return HomeGenericCard(
+            iconData: CustomIcons.diary_logo,
+            iconColor: accentColor,
             enabled: isEnabled,
             title: isEnabled ? 'Servizio attivo' : 'Servizio non attivo',
             description:
