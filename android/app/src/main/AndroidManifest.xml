@@ -16,7 +16,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
-        android:label="diAry">
+        android:label="WOM diAry">
 
         <activity
             android:name=".MainActivity"

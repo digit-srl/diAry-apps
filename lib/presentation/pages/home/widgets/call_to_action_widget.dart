@@ -28,7 +28,7 @@ class CallToActionWidget extends StatelessWidget {
         Text(
           'Premendo nel pulsante sottostante, WOM diAry consulterà il proprio server, '
           'per verifiare se sono presenti Call To Action. Queste verranno '
-          'incrociate, direttamente sullo smartphone, con le tracce memorizzate '
+          'incrociate, direttamente sullo smartphone, con la memoria locale '
           'in locale. Se l\'orario e il luogo coincidono, '
           'le Call To Action ti verranno '
           'mostrate nel box sottostante e potrai decidere se utilizzarle.\n',
