@@ -304,9 +304,7 @@ class WomResponseWidget extends StatelessWidget {
             GenericButton(
               text: 'Apri il Pocket',
               onPressed: () async {
-                if (await context
-                    .read<WomPocketNotifier>()
-                    .checkIfPocketIsInstalled()) {
+                if (await GenericUtils.checkIfPocketIsInstalled()) {
                   GenericUtils.launchURL(_dailyStatsResponse.womLink);
                 } else {
                   StoreRedirect.redirect(

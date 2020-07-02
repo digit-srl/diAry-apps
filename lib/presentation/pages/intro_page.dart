@@ -5,6 +5,7 @@ import 'package:diary/presentation/pages/root/root_page.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/app_theme.dart';
 import 'package:diary/utils/colors.dart';
+import 'package:diary/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -27,12 +28,10 @@ class IntroPage extends StatefulWidget {
 class IntroPageState extends State<IntroPage> {
   List<Slide> slides = List();
   final Key _focusDetectorKey = UniqueKey();
-  bool isPocketInstalled = false;
 
   @override
   void initState() {
     super.initState();
-    isPocketInstalled = context.read<WomPocketNotifier>().isInstalled;
   }
 
   void onDonePress() async {
@@ -52,6 +51,8 @@ class IntroPageState extends State<IntroPage> {
   Slide descriptionSlide;
   @override
   Widget build(BuildContext context) {
+    logger
+        .i('intro slides build $context.read<WomPocketNotifier>().isInstalled');
     descriptionSlide = Slide(
       maxLineTitle: 10,
       styleTitle:
@@ -70,14 +71,17 @@ class IntroPageState extends State<IntroPage> {
             "tra gli strumenti di innovazione sociale digitale della "
             "Commissione Europea.\n"
             "WOM diAry ti segnala le opportunità di riscuotere WOM come riconoscimento del valore delle tue azioni."
-            '${!isPocketInstalled ? '\n\nTi consigliamo di installare subito l\'applicazione WOM Pocket per collezionare i tuoi voucher.' : ''}',
+            '${!context.read<WomPocketNotifier>().isInstalled ? '\n\nTi consigliamo di installare subito l\'applicazione WOM Pocket per collezionare i tuoi voucher.' : ''}',
             textAlign: TextAlign.center,
             style:
                 Theme.of(context).textTheme.body1.copyWith(color: accentColor),
           ),
-          if (!isPocketInstalled)
+          if (!context.read<WomPocketNotifier>().isInstalled)
             GenericButton(
               onPressed: () {
+                if (widget.fromSettings) {
+                  Navigator.of(context).pop();
+                }
                 StoreRedirect.redirect(
                     androidAppId: 'social.wom.pocket', iOSAppId: "1466969163");
               },
@@ -161,30 +165,32 @@ class IntroPageState extends State<IntroPage> {
       child: FocusDetector(
         key: _focusDetectorKey,
         onFocusGained: () async {
-          isPocketInstalled = await context
-              .read<WomPocketNotifier>()
-              .checkIfPocketIsInstalled();
+          await context.read<WomPocketNotifier>().checkIfPocketIsInstalled();
           SchedulerBinding.instance.addPostFrameCallback((_) {
             setState(() {});
           });
         },
-        child: IntroSlider(
-          styleNameDoneBtn: Theme.of(context)
-              .textTheme
-              .headline
-              .copyWith(fontSize: 16, color: accentColor),
-          styleNameSkipBtn: Theme.of(context)
-              .textTheme
-              .headline
-              .copyWith(fontSize: 16, color: accentColor),
-          styleNamePrevBtn: Theme.of(context)
-              .textTheme
-              .headline
-              .copyWith(fontSize: 16, color: accentColor),
-          onDonePress: this.onDonePress,
-          slides: slides,
-        ),
+        child: buildIntroSlider(),
       ),
+    );
+  }
+
+  buildIntroSlider() {
+    return IntroSlider(
+      styleNameDoneBtn: Theme.of(context)
+          .textTheme
+          .headline
+          .copyWith(fontSize: 16, color: accentColor),
+      styleNameSkipBtn: Theme.of(context)
+          .textTheme
+          .headline
+          .copyWith(fontSize: 16, color: accentColor),
+      styleNamePrevBtn: Theme.of(context)
+          .textTheme
+          .headline
+          .copyWith(fontSize: 16, color: accentColor),
+      onDonePress: this.onDonePress,
+      slides: slides,
     );
   }
 }

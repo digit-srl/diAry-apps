@@ -1,32 +1,21 @@
-import 'dart:io';
-
-import 'package:device_apps/device_apps.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:state_notifier/state_notifier.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WomPocketNotifier extends StateNotifier<bool> {
-  WomPocketNotifier() : super(true) {
+  WomPocketNotifier(bool isInstalled) : super(isInstalled) {
     checkIfPocketIsInstalled();
   }
 
   bool get isInstalled => state;
 
   Future<bool> checkIfPocketIsInstalled() async {
+    logger.i('checkIfPocketIsInstalled');
     try {
-      bool isInstalled;
-      if (Platform.isAndroid) {
-        isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
-        state = isInstalled;
-      } else {
-        isInstalled = await canLaunch('1466969163://');
-        state = isInstalled;
-      }
-      return isInstalled;
+      state = await GenericUtils.checkIfPocketIsInstalled();
     } catch (ex) {
       logger.e(ex.toString());
-      return false;
     }
+    return state;
   }
 }

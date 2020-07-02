@@ -75,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
         GenericUtils.launchURL('https://wom.social/diary');
       }),
       SettingItem(CustomIcons.pocket_logo, 'WOM Pocket',
-          '${context.read<WomPocketNotifier>().isInstalled ? 'WOM Pocket correttamente installato' : 'WOM Pocket non installato'}',
+          '${context.read<WomPocketNotifier>().isInstalled ? 'WOM Pocket correttamente installato' : 'WOM Pocket assente, premi per installare'}',
           onTap: () {}),
       SettingItem(CustomIcons.wom_logo, 'Piattaforma WOM',
           'Scopri cos\'è la piattaforma WOM', onTap: () {

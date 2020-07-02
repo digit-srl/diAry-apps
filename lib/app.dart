@@ -50,41 +50,16 @@ class DiAryApp extends StatefulWidget {
 
 class _DiAryAppState extends State<DiAryApp> {
   ServiceNotifier serviceNotifier;
-//  DayNotifier dayNotifier;
   UserRepository userRepository;
   DailyStatsRepository dailyStatsRepository;
-//  final GlobalKey<UnicornDialerState> _dialerKey =
-//      GlobalKey<UnicornDialerState>(debugLabel: 'prova');
 
   @override
   void initState() {
     super.initState();
     userRepository =
         UserRepositoryImpl(UserLocalDataSourcesImpl(Hive.box('user')));
-//    dailyStatsRepository = DailyStatsRepositoryImpl(
-//        DailyStatsLocalDataSourcesImpl(Hive.box('dailyStatsResponse')),
-//        DailyStatsRemoteDataSourcesImpl());
     serviceNotifier = ServiceNotifier();
-//    dayNotifier = DayNotifier(widget.days);
-    //if (Platform.isAndroid) requestIgnoreBatteryOptimization();
   }
-
-  /*requestIgnoreBatteryOptimization() async {
-    try {
-      PermissionStatus permissionStatus = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.ignoreBatteryOptimizations);
-      if (permissionStatus == PermissionStatus.denied) {
-        await PermissionHandler()
-            .requestPermissions([PermissionGroup.ignoreBatteryOptimizations]);
-      }
-    } catch (ex) {
-      print('[App] Error requestIgnoreBatteryOptimization');
-      print(ex);
-      analytics.logEvent(
-          name: 'Error Ignore Optimization Battery',
-          parameters: {'error': ex.toString()});
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +111,8 @@ class _DiAryAppState extends State<DiAryApp> {
         StateNotifierProvider<GpsNotifier, GpsState>(
           create: (_) => GpsNotifier(),
         ),
-        StateNotifierProvider<WomPocketNotifier, bool>(
-          create: (_) => WomPocketNotifier(),
+        StateNotifierProvider<WomPocketNotifier, bool>.value(
+          value: context.read<WomPocketNotifier>(),
         ),
         StateNotifierProvider<RootElevationNotifier, ElevationState>(
           create: (_) => RootElevationNotifier(),

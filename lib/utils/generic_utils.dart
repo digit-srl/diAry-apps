@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:device_apps/device_apps.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
 import 'package:hive/hive.dart';
@@ -175,5 +178,18 @@ class GenericUtils {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  static Future<bool> checkIfPocketIsInstalled() async {
+    logger.i('checkIfPocketIsInstalled');
+
+      bool isInstalled;
+      if (Platform.isAndroid) {
+        isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
+      } else {
+        isInstalled = await canLaunch('1466969163://');
+      }
+      logger.i('installed $isInstalled');
+      return isInstalled;
   }
 }
