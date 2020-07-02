@@ -30,13 +30,13 @@ class CustomIcons {
   static const IconData bookmark_outline = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData flask_outline = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cloud_upload_outline = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData diary_logo = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData crosshairs_off = IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData database_export = IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home_outline = IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData trash_can_outline = IconData(0xe80d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_outline = IconData(0xe80e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData account_multiple_outline = IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData diary_logo = IconData(0xe810, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData wom_logo = IconData(0xe811, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData flip_to_back = IconData(0xe812, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData help_circle_outline = IconData(0xe813, fontFamily: _kFontFam, fontPackage: _kFontPkg);
