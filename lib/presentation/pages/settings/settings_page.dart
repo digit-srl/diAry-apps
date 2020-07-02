@@ -1,18 +1,21 @@
 import 'dart:io';
 
+import 'package:diary/application/wom_pocket_notifier.dart';
 import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
 import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:focus_detector/focus_detector.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info/package_info.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:store_redirect/store_redirect.dart';
 import '../../../utils/colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:provider/provider.dart';
 import '../intro_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -46,47 +49,38 @@ class _SettingsPageState extends State<SettingsPage> {
           CustomIcons.flip_to_back,
           'Abilita l\'esecuzione in background',
           'Alcuni produttori di smartphone non consentono '
-          'alle applicazioni di essere eseguite adeguatamente '
-          'in background, rendendo il rilevamento poco preciso. '
-          'Con questo permesso, diAry può risolvere '
-          'tale inconveniente.',
+              'alle applicazioni di essere eseguite adeguatamente '
+              'in background, rendendo il rilevamento poco preciso. '
+              'Con questo permesso, WOM diAry può risolvere '
+              'tale inconveniente.',
           onTap: () => requestIgnoreBatteryOptimization(),
         ),
       SettingItem(
         CustomIcons.playlist_remove,
         'Blacklist Call To Action',
         'Le fonti dalle quali non desideri più ricevere Call To Action vengono '
-        'visualizzate all\'interno di questa schermata. Questa permette '
-        'di gestirle, ed eventualmente riabilitarle.',
+            'visualizzate all\'interno di questa schermata. Questa permette '
+            'di gestirle, ed eventualmente riabilitarle.',
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => CallToActionManagerPage(),
           ),
         ),
       ),
-//      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
-//          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
-//          enabled: false),
-//      SettingItem(CustomIcons.hospital_box_outline, 'Allerta sanitaria:',
-//          'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
-//          enabled: false),
     ];
 
     utils = [
-      SettingItem(
-        CustomIcons.diary_logo,
-        'diAry - digital Arianna',
-        'Visualizza il changelog.',
-        onTap: () {
-          GenericUtils.launchURL('https://covid19app.uniurb.it/category/news/');
-        }
-      ),
-//      SettingItem(Icons.bug_report, 'Segnala un bug',
-//          'Notifica un problema al team di sviluppo tramite mail.',
-//          enabled: false),
-//      SettingItem(Icons.star, 'Valutaci sullo store!',
-//          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
-//          enabled: false),
+      SettingItem(CustomIcons.diary_logo, 'WOM diAry - digital Arianna',
+          'Scopri di più', onTap: () {
+        GenericUtils.launchURL('https://wom.social/diary');
+      }),
+      SettingItem(CustomIcons.pocket_logo, 'WOM Pocket',
+          '${context.read<WomPocketNotifier>().isInstalled ? 'WOM Pocket correttamente installato' : 'WOM Pocket non installato'}',
+          onTap: () {}),
+      SettingItem(CustomIcons.wom_logo, 'Piattaforma WOM',
+          'Scopri cos\'è la piattaforma WOM', onTap: () {
+        GenericUtils.launchURL('https://wom.social');
+      }),
       SettingItem(
         Icons.help_outline,
         'Tutorial',
@@ -105,18 +99,20 @@ class _SettingsPageState extends State<SettingsPage> {
           CustomIcons.account_multiple_outline,
           'Su di noi...',
           'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
-          'innovativa, società benefit. Scopri di più.',
+              'innovativa, società benefit. Scopri di più.',
           enabled: true, onTap: () {
         GenericUtils.launchURL('https://digit.srl');
       }),
 
       SettingItem(
-        CustomIcons.shield_account_outline, 'Privacy Policy',
-        'La privacy è un tema fondamentale per diAry. Scopri in che modo '
-        'questa viene tutelata dall\'app.',
+        CustomIcons.shield_account_outline,
+        'Privacy Policy',
+        'La privacy è un tema fondamentale per WOM diAry. Scopri in che modo '
+            'questa viene tutelata dall\'app.',
         enabled: true,
         onTap: () {
-          GenericUtils.launchURL('https://covid19app.uniurb.it/privacy-policy/');
+          GenericUtils.launchURL(
+              'https://digit.srl/privacy/diary-privacy-policy/');
         },
       ),
       // SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
@@ -129,105 +125,125 @@ class _SettingsPageState extends State<SettingsPage> {
   final titleStyle = TextStyle(fontWeight: FontWeight.w600);
 
   final titlePadding = const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0);
-
+  // Vital for identifying our FocusDetector when a rebuild occurs.
+  final Key _focusDetectorKey = UniqueKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Impostazioni',
-          style: Theme.of(context).textTheme.title,
+    return FocusDetector(
+      key: _focusDetectorKey,
+      onFocusGained: () async {
+        final isPocketInstalled =
+            await context.read<WomPocketNotifier>().checkIfPocketIsInstalled();
+        setState(() {
+          if (isPocketInstalled) {
+            utils[1].subtitle = 'WOM Pocket correttamente installato';
+            utils[1].onTap = () {};
+          } else {
+            utils[1].subtitle = 'WOM Pocket assente, premi per installare';
+            utils[1].onTap = () {
+              StoreRedirect.redirect(
+                  androidAppId: 'social.wom.pocket', iOSAppId: "1466969163");
+            };
+          }
+        });
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Impostazioni',
+            style: Theme.of(context).textTheme.title,
+          ),
+          centerTitle: true,
+          elevation: _elevation,
         ),
-        centerTitle: true,
-        elevation: _elevation,
-      ),
-      body: SingleChildScrollView(
-        controller: _controller,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 8,
-            ),
-            for (SettingItem item in items) ...[
-              ListTile(
-                leading: Icon(item.iconData,
-                    color: item.enabled
-                        ? Theme.of(context).iconTheme.color
-                        : secondaryText),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
-                ),
-                subtitle: Text(
-                  item.subtitle,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.body1.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
+        body: SingleChildScrollView(
+          controller: _controller,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 8,
               ),
-              items.indexOf(item) == items.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
-            ],
-            Padding(
-              padding: titlePadding,
-              child: Text(
-                'Informazioni',
-                style: Theme.of(context).textTheme.body2,
-              ),
-            ),
-            for (SettingItem item in utils) ...[
-              ListTile(
-                leading: item.iconData != null
-                    ? Icon(
-                        item.iconData,
+              for (SettingItem item in items) ...[
+                ListTile(
+                  leading: Icon(item.iconData,
+                      color: item.enabled
+                          ? Theme.of(context).iconTheme.color
+                          : secondaryText),
+                  title: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.subhead.copyWith(
                         color: item.enabled
-                            ? Theme.of(context).iconTheme.color
-                            : secondaryText,
-                      )
-                    : Image.asset(
-                        item.customImageIconAsset,
+                            ? Theme.of(context).textTheme.subhead.color
+                            : secondaryText),
+                  ),
+                  subtitle: Text(
+                    item.subtitle,
+                    style: Theme.of(context).textTheme.body1.copyWith(
                         color: item.enabled
-                            ? Theme.of(context).iconTheme.color
-                            : secondaryText,
-                        width: 24,
+                            ? Theme.of(context).textTheme.body1.color
+                            : secondaryText),
+                  ),
+                  onTap: item.onTap,
+                ),
+                items.indexOf(item) == items.length - 1
+                    ? Container()
+                    : Divider(
+                        indent: 72,
+                        endIndent: 16,
                       ),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
+              ],
+              Padding(
+                padding: titlePadding,
+                child: Text(
+                  'Informazioni',
+                  style: Theme.of(context).textTheme.body2,
                 ),
-                subtitle: Text(
-                  item.subtitle,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.body1.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
               ),
-              utils.indexOf(item) == utils.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
+              for (SettingItem item in utils) ...[
+                ListTile(
+                  leading: item.iconData != null
+                      ? Icon(
+                          item.iconData,
+                          color: item.enabled
+                              ? Theme.of(context).iconTheme.color
+                              : secondaryText,
+                        )
+                      : Image.asset(
+                          item.customImageIconAsset,
+                          color: item.enabled
+                              ? Theme.of(context).iconTheme.color
+                              : secondaryText,
+                          width: 24,
+                        ),
+                  title: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.subhead.copyWith(
+                        color: item.enabled
+                            ? Theme.of(context).textTheme.subhead.color
+                            : secondaryText),
+                  ),
+                  subtitle: Text(
+                    item.subtitle,
+                    style: Theme.of(context).textTheme.body1.copyWith(
+                        color: item.enabled
+                            ? Theme.of(context).textTheme.body1.color
+                            : secondaryText),
+                  ),
+                  onTap: item.onTap,
+                ),
+                utils.indexOf(item) == utils.length - 1
+                    ? Container()
+                    : Divider(
+                        indent: 72,
+                        endIndent: 16,
+                      ),
+              ],
+              SizedBox(
+                height: 16,
+              )
             ],
-            SizedBox(
-              height: 16,
-            )
-          ],
+          ),
         ),
       ),
     );
@@ -265,7 +281,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         if (mounted) {
           version = packageInfo.version;
-          utils[0].title = 'diAry - digital Arianna v. $version';
+          utils[0].title = 'WOM diAry - digital Arianna v. $version';
         }
       });
     });
@@ -275,9 +291,9 @@ class _SettingsPageState extends State<SettingsPage> {
 class SettingItem {
   final IconData iconData;
   String title;
-  final String subtitle;
+  String subtitle;
   final bool enabled;
-  final Function onTap;
+  Function onTap;
   final String customImageIconAsset;
 
   SettingItem(this.iconData, this.title, this.subtitle,
@@ -338,7 +354,7 @@ class _CallToActionManagerPageState extends State<CallToActionManagerPage> {
                         context: context,
                         style: AlertStyle(isCloseButton: false),
                         title:
-                            'Vuoi rimuovere ${list[index].source} dalla black list e tornare a ricevere le sue call to action?',
+                            'Vuoi rimuovere ${list[index].sourceName} dalla black list e tornare a ricevere le sue call to action?',
                         buttons: [
                           DialogButton(
                             child: Text('Annulla'),

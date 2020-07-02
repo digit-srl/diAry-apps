@@ -19,7 +19,7 @@ class TrackingCard extends StatelessWidget {
             enabled: isEnabled,
             title: isEnabled ? 'Servizio attivo' : 'Servizio non attivo',
             description:
-                "diAry mantiene memoria dei tuoi spostamenti esclusivamente sul tuo smartphone",
+                "WOM diAry conserva i dati esclusivamnete sul tuo smartphone",
             bottomButtons: <Widget>[
               GenericButton(
                 onPressed: context.watch<ServiceNotifier>().invertEnabled,

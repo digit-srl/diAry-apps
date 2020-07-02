@@ -59,7 +59,7 @@ class LocationNotifier extends StateNotifier<LocationState> with LocatorMixin {
 
   List<Location> getDayLocationsWithoutZeroLoc(DateTime date) {
     try {
-      final dailyLocations = List<Location>.from(locationsPerDate[date]);
+      final dailyLocations = List<Location>.from(locationsPerDate[date] ?? []);
       if (dailyLocations.isNotEmpty) {
         dailyLocations.removeWhere((location) => !location.isGoodPoint);
       }

@@ -16,14 +16,14 @@ class GpsCard extends StatelessWidget {
       builder: (BuildContext context, value, Widget child) {
         if (!value.gpsEnabled) {
           return HomeGenericCard(
-              enabled: value.gpsEnabled,
-              iconData: Icons.gps_off,
-              iconColor: accentColor,
-              title: 'GPS non attivo',
-              description: 'Senza di questo, il servizio non può funzionare '
-                  'correttamente.',
-              bottomButtons: null,
-            );
+            enabled: value.gpsEnabled,
+            iconData: Icons.gps_off,
+            iconColor: accentColor,
+            title: 'GPS non attivo',
+            description:
+                'Mantieni il GPS attivo per il corretto funzionamento dell\'applicazione.',
+            bottomButtons: null,
+          );
         } else {
           return Container();
         }

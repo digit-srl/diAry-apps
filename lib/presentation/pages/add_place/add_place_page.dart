@@ -579,8 +579,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
               "luogo premendo in un qualunque punto nella mappa. Puoi "
               "inoltre sceglierne il nome, il colore con quale "
               "visualizzarlo nella mappa, il raggio, e specificare se è "
-              "la tua abitazione principale. Passando più tempo nella tua "
-              "abitazione principale, otterrai un maggior numero di WOM.",
+              "la tua abitazione principale.",
               style: Theme.of(context).textTheme.body1,
             ),
           ],

@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>diAry</string>
+	<string>WOM diAry</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -23,13 +23,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>diAry requests your location when it’s in use and in background in order to track your movements. All information is stored on your device only.</string>
+	<string>WOM diAry requests your location when it’s in use and in background in order to track your movements. All information is stored on your device only.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>diAry requests your location in order to track your movements. All information is stored on your device only.</string>
+	<string>WOM diAry requests your location in order to track your movements. All information is stored on your device only.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>diAry requests your location when it’s in use in order to track your movements. All information is stored on your device only.</string>
+	<string>WOM diAry requests your location when it’s in use in order to track your movements. All information is stored on your device only.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>diAry requests your accelerometer data in order to detect your movements and activate location tracking.</string>
+	<string>WOM diAry requests your accelerometer data in order to detect your movements and activate location tracking.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

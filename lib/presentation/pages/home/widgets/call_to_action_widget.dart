@@ -26,21 +26,13 @@ class CallToActionWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Premendo nel pulsante sottostante, diAry consulterà il proprio server, '
+          'Premendo nel pulsante sottostante, WOM diAry consulterà il proprio server, '
           'per verifiare se sono presenti Call To Action. Queste verranno '
           'incrociate, direttamente sullo smartphone, con le tracce memorizzate '
-          'in locale. L\'operazione è basata su orario e luogo della '
-          'segnalazione: se ha esito positivo, le Call To Action verranno '
-          'mostrate nel box sottostante.\n',
+          'in locale. Se l\'orario e il luogo coincidono, '
+          'le Call To Action ti verranno '
+          'mostrate nel box sottostante e potrai decidere se utilizzarle.\n',
           style: Theme.of(context).textTheme.body1,
-        ),
-        Text(
-          'Le segnalazioni di rilevanza sanitaria sono evidenziate '
-          'con un cerchio di colore rosso nel titolo.',
-          style: Theme.of(context)
-              .textTheme
-              .body1
-              .copyWith(fontWeight: FontWeight.bold),
         ),
         SizedBox(
           height: 16,
@@ -314,12 +306,13 @@ class ActionCard extends StatelessWidget {
                         ),
                         color: Theme.of(context).accentColor,
                         onPressed: () async {
-                          await Hive.box<CallToActionSource>('blackList')
-                              .add(CallToActionSource(
-                            call.source,
-                            call.sourceName,
-                            call.sourceDesc,
-                          ));
+                          await Hive.box<CallToActionSource>('blackList').put(
+                              call.source,
+                              CallToActionSource(
+                                call.source,
+                                call.sourceName,
+                                call.sourceDesc,
+                              ));
                           await context
                               .read<CallToActionNotifier>()
                               .deleteCall(call.copyWith(archived: true));

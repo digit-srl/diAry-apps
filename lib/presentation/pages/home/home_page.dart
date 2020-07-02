@@ -6,8 +6,6 @@ import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/tracking_card.dart';
-import 'package:diary/presentation/pages/intro_page.dart';
-import 'package:diary/utils/alerts.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/custom_icons.dart';
 import 'package:diary/application/day_notifier.dart';
@@ -19,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
@@ -114,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0,0,4,0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                       child: Row(
                         children: <Widget>[
                           Icon(CustomIcons.wom_logo),
