@@ -3,10 +3,6 @@ import 'package:diary/domain/entities/call_to_action.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:diary/core/errors/exceptions.dart';
-import 'package:diary/domain/entities/daily_stats.dart';
-import 'package:diary/domain/entities/daily_stats_response.dart';
 import '../../keys.dart';
 
 abstract class CallToActionRemoteDataSources {

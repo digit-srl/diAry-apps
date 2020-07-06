@@ -314,11 +314,11 @@ class LocationUtils {
             }
           } else {
             // ultima azione = EXIT
-            Set<String> newPlaces = Set.from(places.last.places);
+            final newPlaces = Set<String>.from(places.last.places);
             if (newPlaces.contains(lastWhere)) {
               newPlaces.remove(lastWhere);
             }
-            if (places.last.places.isEmpty) {
+            if (newPlaces.isEmpty) {
               if (places.last.activity == currentActivity ||
                   places.last.activity == MotionActivity.Unknown) {
                 places.last.activity = currentActivity;
@@ -699,22 +699,22 @@ class LocationUtils {
   }
 }
 
-class AggregationData {
-  final List<Slice> slices;
-  final List<Slice> places;
-  final String centroidHash;
-  final int discardedSampleCount;
-  final int sampleCount;
-  final LatLngBounds bounds;
-  final double boundingBoxDiagonal;
-
-  AggregationData({
-    this.slices = const [],
-    this.places = const [],
-    this.centroidHash,
-    this.discardedSampleCount,
-    this.sampleCount,
-    this.bounds,
-    this.boundingBoxDiagonal,
-  });
-}
+//class AggregationData {
+//  final List<Slice> slices;
+//  final List<Slice> places;
+//  final String centroidHash;
+//  final int discardedSampleCount;
+//  final int sampleCount;
+//  final LatLngBounds bounds;
+//  final double boundingBoxDiagonal;
+//
+//  AggregationData({
+//    this.slices = const [],
+//    this.places = const [],
+//    this.centroidHash,
+//    this.discardedSampleCount,
+//    this.sampleCount,
+//    this.bounds,
+//    this.boundingBoxDiagonal,
+//  });
+//}

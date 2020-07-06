@@ -100,7 +100,6 @@ class Location {
 
     final speed = coords?.speed ?? 0.0;
     if (speed < 0.5) {
-      final currentActivity = activity.type;
       activity.type = 'still';
     }
   }
