@@ -76,8 +76,8 @@ class QueryAdapter extends TypeAdapter<Query> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Query(
-      from: fields[0] as String,
-      to: fields[1] as String,
+      from: fields[0] as DateTime,
+      to: fields[1] as DateTime,
       geometry: fields[2] as Geometry,
     );
   }

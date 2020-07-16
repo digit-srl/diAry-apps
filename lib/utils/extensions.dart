@@ -5,7 +5,9 @@ extension ExtensionDateTime on DateTime {
         this.year == date.year;
   }
 
-  DateTime get midnight => DateTime(this.year, this.month, this.day);
+  DateTime get midnight => this.isUtc
+      ? DateTime.utc(this.year, this.month, this.day)
+      : DateTime(this.year, this.month, this.day);
 
   bool get isToday => this.isSameDay(DateTime.now());
 

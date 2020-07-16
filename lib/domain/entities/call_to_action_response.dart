@@ -130,17 +130,17 @@ class Call {
 @HiveType(typeId: 4)
 class Query {
   @HiveField(0)
-  String from;
+  DateTime from;
   @HiveField(1)
-  String to;
+  DateTime to;
   @HiveField(2)
   Geometry geometry;
 
   Query({this.from, this.to, this.geometry});
 
   Query.fromJson(Map<String, dynamic> json) {
-    from = json['from'];
-    to = json['to'];
+    from = json['from'] != null ? DateTime.tryParse(json['from']) : null;
+    to = json['to'] != null ? DateTime.tryParse(json['to']) : null;
     geometry = json['geometry'] != null
         ? new Geometry.fromJson(json['geometry'])
         : null;

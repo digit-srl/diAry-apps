@@ -172,7 +172,7 @@ class DayNotifier extends StateNotifier<DayState> with LocatorMixin {
             day.places, homeIdentifier);
     final dailyStats = DailyStats(
         installationId: uuid,
-        date: date,
+        date: DateTime.utc(date.year, date.month, date.day),
         locationTracking: LocationTracking(
           minutesAtHome: minutesAtHome,
           minutesElsewhere: minutesElseWhere,

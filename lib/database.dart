@@ -7,7 +7,7 @@ import 'package:synchronized/synchronized.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DiAryDatabase {
-  static final DiAryDatabase _appDatabase = new DiAryDatabase._internal();
+  static final DiAryDatabase _appDatabase = DiAryDatabase._internal();
   final _lock = new Lock();
 
   DiAryDatabase._internal();

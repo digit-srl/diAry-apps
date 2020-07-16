@@ -51,8 +51,8 @@ class IntroPageState extends State<IntroPage> {
   Slide descriptionSlide;
   @override
   Widget build(BuildContext context) {
-    logger
-        .i('intro slides build $context.read<WomPocketNotifier>().isInstalled');
+    logger.i(
+        'intro slides build ${context.read<WomPocketNotifier>().isInstalled}');
     descriptionSlide = Slide(
       maxLineTitle: 10,
       styleTitle:

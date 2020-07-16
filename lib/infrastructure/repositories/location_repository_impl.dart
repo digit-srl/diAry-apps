@@ -10,8 +10,10 @@ import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:hive/hive.dart';
+import '../../database.dart' as db;
 
 abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getAllLocations();
@@ -35,7 +37,11 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<Either<Failure, List<Location>>> getAllLocations() async {
     try {
-      final locations = await locationsLocalDataSources.getAllLocations();
+      final startTime = DateTime.now();
+      final locations = await locationsLocalDataSources.getAllLocations('a');
+      print(locations.length);
+      print(
+          'locations readed: ${DateTime.now().difference(startTime).inMilliseconds}');
       return right(locations);
     } catch (e) {
       logger.e(e);
@@ -58,7 +64,7 @@ class LocationRepositoryImpl implements LocationRepository {
 
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay() async {
     Map<DateTime, List<Location>> locationsPerDay = {};
-    final locations = await locationsLocalDataSources.getAllLocations();
+    final locations = await locationsLocalDataSources.getAllLocations('a');
     logger.i('[LocationUtils] total records: ${locations.length}');
     final DateTime today = DateTime.now().midnight;
     if (locations.isEmpty) {
@@ -95,35 +101,36 @@ class LocationRepositoryImpl implements LocationRepository {
 //  Data
 //  Lista di geohashtroncati
 
-  bool isLocationsInPolygon(List<Location> locations, List<LatLng> polygon) {
-    Geodesy geo = Geodesy();
-    bool result = false;
-    for (int i = 0; i < locations.length; i++) {
-      if (locations[i].isGoodPoint) {
-        final latLng =
-            LatLng(locations[i].coords.latitude, locations[i].coords.longitude);
-        result = geo.isGeoPointInPolygon(latLng, polygon);
-        if (result) {
-          break;
-        }
-      }
-    }
-    return result;
-  }
+//  bool isLocationsInPolygon(List<Location> locations, List<LatLng> polygon) {
+//    Geodesy geo = Geodesy();
+//    bool result = false;
+//    for (int i = 0; i < locations.length; i++) {
+//      if (locations[i].isGoodPoint) {
+//        final latLng =
+//            LatLng(locations[i].coords.latitude, locations[i].coords.longitude);
+//        result = geo.isGeoPointInPolygon(latLng, polygon);
+//        if (result) {
+//          break;
+//        }
+//      }
+//    }
+//    return result;
+//  }
 
   int isLocationsInPolygon2(List<Location> locations, List<LatLng> polygon,
       int maxTime, int counter) {
     Geodesy geo = Geodesy();
     bool result = false;
     DateTime lastTimestamp;
+    int output = 0 + counter;
     for (int i = 0; i < locations.length; i++) {
       if (locations[i].isGoodPoint) {
         if (result) {
-          counter += locations[i].dateTime.difference(lastTimestamp).inSeconds;
+          output += locations[i].dateTime.difference(lastTimestamp).inSeconds;
           result = false;
-          if (counter >= maxTime) {
+          if (output >= maxTime) {
             logger.i('stop locations cycle');
-            logger.i('partial time : $counter');
+            logger.i('partial time : $output');
             break;
           }
         }
@@ -134,7 +141,7 @@ class LocationRepositoryImpl implements LocationRepository {
         lastTimestamp = locations[i].dateTime;
       }
     }
-    return counter;
+    return output == counter ? null : output;
   }
 
 /*  @override
@@ -182,23 +189,12 @@ class LocationRepositoryImpl implements LocationRepository {
       }
 
       final callToAction = buildCallToAction(locations, lastCallToAction);
-//      final callToAction =
-//          CallToAction(lastCheckTimestamp: DateTime.now().toUtc(), activities: [
-//        DailyHash(
-//            date: DateTime.now().subtract(Duration(days: 3)).toUtc(),
-//            hashes: ['u0m7']),
-//        DailyHash(date: DateTime.now().toUtc(), hashes: ['srbb']),
-//        DailyHash(
-//            date: DateTime.now().subtract(Duration(days: 2)).toUtc(),
-//            hashes: ['srbb', 'sr9g']),
-//      ]);
       final response =
           await callToActionRemoteDataSources.sendData(callToAction);
-      final calls = processCallToActionResponse2(response, locations);
+      final calls = await processCallToActionResponse2(response);
       for (int i = 0; i < calls.length; i++) {
         await locationsLocalDataSources.saveNewCallToActionResult(calls[i]);
       }
-
       return right(locationsLocalDataSources.getAllCalls());
     } catch (e) {
       logger.e(e);
@@ -215,9 +211,8 @@ class LocationRepositoryImpl implements LocationRepository {
     );
     for (int i = 0; i < locations.length; i++) {
       final loc = locations[i];
-      final date = loc.dateTime.isUtc
-          ? loc.dateTime.midnight
-          : loc.dateTime.midnight.toUtc();
+      final date = loc.dateTime.midnight;
+      print(date);
       if (!map.containsKey(date)) {
         map[date] = {};
       }
@@ -234,37 +229,37 @@ class LocationRepositoryImpl implements LocationRepository {
     return callToAction;
   }
 
-  List<Call> processCallToActionResponse(
-      CallToActionResponse response, List<Location> locations) {
-    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
-    final resultCalls = <Call>[];
-    if (response.hasMatch) {
-      final calls = response.calls;
+//  List<Call> processCallToActionResponse(
+//      CallToActionResponse response, List<Location> locations) {
+//    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
+//    final resultCalls = <Call>[];
+//    if (response.hasMatch) {
+//      final calls = response.calls;
+//
+//      for (int k = 0; k < calls.length; k++) {
+//        final call = calls[k];
+//        final source = call.source;
+//        if (source != null &&
+//            blackList.where((c) => c.source == source).isNotEmpty) {
+//          continue;
+//        }
+//        bool hasMatch = false;
+//        for (int i = 0; i < call.queries.length && !hasMatch; i++) {
+//          final q = call.queries[i];
+//          final coords = q.geometry.coordinates;
+//          hasMatch = isLocationsInPolygon(locations, coords);
+//        }
+//        if (hasMatch) {
+//          resultCalls.add(call);
+//          continue;
+//        }
+//      }
+//    }
+//    return resultCalls;
+//  }
 
-      for (int k = 0; k < calls.length; k++) {
-        final call = calls[k];
-        final source = call.source;
-        if (source != null &&
-            blackList.where((c) => c.source == source).isNotEmpty) {
-          continue;
-        }
-        bool hasMatch = false;
-        for (int i = 0; i < call.queries.length && !hasMatch; i++) {
-          final q = call.queries[i];
-          final coords = q.geometry.coordinates;
-          hasMatch = isLocationsInPolygon(locations, coords);
-        }
-        if (hasMatch) {
-          resultCalls.add(call);
-          continue;
-        }
-      }
-    }
-    return resultCalls;
-  }
-
-  List<Call> processCallToActionResponse2(
-      CallToActionResponse response, List<Location> locations) {
+  Future<List<Call>> processCallToActionResponse2(
+      CallToActionResponse response) async {
     final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
     final resultCalls = <Call>[];
     if (response.hasMatch) {
@@ -282,9 +277,19 @@ class LocationRepositoryImpl implements LocationRepository {
         int partialTime = 0;
         for (int i = 0; i < call.queries.length; i++) {
           final q = call.queries[i];
+          final locations =
+              await locationsLocalDataSources.getLocationsBetween(q.from, q.to);
+          if (locations.isEmpty) {
+            continue;
+          }
           final coords = q.geometry.coordinates;
-          partialTime =
+          final result =
               isLocationsInPolygon2(locations, coords, maxTime, partialTime);
+          if (result != null) {
+            partialTime = result;
+          } else {
+            continue;
+          }
           logger.i('partialTime = $partialTime');
           if (partialTime >= maxTime) {
             logger.i('stop query cycle');

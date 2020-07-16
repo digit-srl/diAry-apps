@@ -1,18 +1,33 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:diary/domain/entities/call_to_action_response.dart';
 import 'package:diary/domain/entities/location.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 import '../../database.dart' as db;
 
 abstract class LocationsLocalDataSources {
-  Future<List<Location>> getAllLocations();
+  Future<List<Location>> getAllLocations(String a);
   Future<List<Location>> getLocationsBetween(DateTime start, DateTime end);
   Future saveNewCallToActionResult(Call call);
   Future updateCall(Call call);
   List<Call> getAllCalls();
   Future deleteCall(Call call);
+}
+
+List<Location> buildLocations(List<Map<String, dynamic>> list) {
+  final locations = list
+      .map<Location>(
+        (dbLoc) => Location.fromJson(
+          json.decode(
+            String.fromCharCodes(dbLoc['data']),
+          ),
+        ),
+      )
+      .toList();
+  return locations;
 }
 
 class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
@@ -23,31 +38,31 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
   }
 
   @override
-  Future<List<Location>> getAllLocations() async {
+  Future<List<Location>> getAllLocations(String a) async {
+    final start = DateTime.now();
     final List<Map<String, dynamic>> list =
         await db.DiAryDatabase.get().getAllLocations();
-    final locations = list
-        .map(
-          (dbLoc) => Location.fromJson(
-            json.decode(
-              String.fromCharCodes(dbLoc['data']),
-            ),
-          ),
-        )
-        .toList();
+    final partialTime = DateTime.now();
+    print(
+        'locations readed from db : ${partialTime.difference(start).inMilliseconds}');
+
+    final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
+        buildLocations, list);
+    final endTime = DateTime.now();
+    print(
+        'locations builded: ${endTime.difference(partialTime).inMilliseconds}');
     return locations;
   }
 
   @override
   Future<List<Location>> getLocationsBetween(
       DateTime start, DateTime end) async {
-    final List<Map<String, dynamic>> list = await db.DiAryDatabase.get()
-        .getLocationsBetween(start.toUtc().toIso8601String().substring(0, 10),
-            end.toUtc().toIso8601String().substring(0, 10));
-    final locations = list
-        .map((dbLoc) =>
-            Location.fromJson(json.decode(String.fromCharCodes(dbLoc['data']))))
-        .toList();
+    final fromString = start.toIso8601String();
+    final toString = end.toIso8601String();
+    final List<Map<String, dynamic>> list =
+        await db.DiAryDatabase.get().getLocationsBetween(fromString, toString);
+    final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
+        buildLocations, list);
     return locations;
   }
 
