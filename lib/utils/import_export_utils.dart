@@ -3,39 +3,57 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:csv/csv.dart';
+import 'package:dartz/dartz.dart';
 import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
-import 'package:diary/domain/entities/day.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:file_picker/file_picker.dart';
-//import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../domain/entities/location.dart';
 import 'alerts.dart';
-import 'location_utils.dart';
 import 'logger.dart';
 import 'package:provider/provider.dart';
 
 class ImportExportUtils {
-  static Future<List<File>> saveFilesOnLocalStorage(
-      List<Location> locations, DateTime currentDate) async {
+  static Tuple2<String, String> _getJsonAndCsv(List<Location> locations) {
     List<Map<String, dynamic>> result = [];
-//  final locations = await bg.BackgroundGeolocation.locations;
     for (Location loc in locations) {
       result.add(loc.toJson());
     }
-    var csv = mapListToCsv(result);
+
+    var csv = _mapListToCsv(result);
+    var jsonEncoded = json.encode(result);
+    return Tuple2(csv, jsonEncoded);
+  }
+
+  static Future<List<File>> _saveFilesOnLocalStorage(
+      Tuple3<List<Location>, DateTime, String> tuple) async {
+//    List<Map<String, dynamic>> result = [];
+//  final locations = await bg.BackgroundGeolocation.locations;
+//    for (Location loc in tuple.value1) {
+//      result.add(loc.toJson());
+//    }
+//    var csv = await compute(_mapListToCsv, result);
+//    var jsonEncoded = await compute(json.encode, result);
+
+    List<Map<String, dynamic>> result = [];
+    for (Location loc in tuple.value1) {
+      result.add(loc.toJson());
+    }
+
+    var csv = _mapListToCsv(result);
     var jsonEncoded = json.encode(result);
 
-    final csvFile = await writeCsv(csv, currentDate);
-    final jsonFile = await writeJson(jsonEncoded, currentDate);
+    final csvFile = await writeCsv(csv, tuple.value2, tuple.value3);
+    final jsonFile = await writeJson(jsonEncoded, tuple.value2, tuple.value3);
     return [csvFile, jsonFile];
   }
 
-  static Future<String> _localPath(DateTime currentDate) async {
+  static Future<String> _localPath() async {
     final directory = Platform.isIOS
         ? await getApplicationDocumentsDirectory()
         : await getExternalStorageDirectory();
@@ -43,22 +61,22 @@ class ImportExportUtils {
     return directory.path;
   }
 
-  static Future<File> _localFile(DateTime currentDate) async {
+/*  static Future<File> _localFile(DateTime currentDate) async {
     final path = await _localPath(currentDate);
     return File(
         '$path/export_${currentDate.day}_${currentDate.month}_${currentDate.year}_${Random().nextInt(10000)}.csv');
-  }
+  }*/
 
-  static Future<File> writeCsv(String data, DateTime currentDate) async {
-    final file = await _localFile(currentDate);
+  static Future<File> writeCsv(
+      String data, DateTime currentDate, String path) async {
+    final file = File(
+        '$path/export_${currentDate.day}_${currentDate.month}_${currentDate.year}_${Random().nextInt(10000)}.csv');
     logger.i(file.path);
-
-    // Write the file.
-    return await file.writeAsString('$data');
+    return file.writeAsString('$data');
   }
 
-  static Future<File> writeJson(String data, DateTime currentDate) async {
-    final path = await _localPath(currentDate);
+  static Future<File> writeJson(
+      String data, DateTime currentDate, String path) async {
     final file = File(
         '$path/export_${currentDate.day}_${currentDate.month}_${currentDate.year}_${Random().nextInt(10000)}.json');
     logger.i(file.path);
@@ -66,7 +84,7 @@ class ImportExportUtils {
   }
 
   /// Convert a map list to csv
-  static String mapListToCsv(List<Map<String, dynamic>> mapList,
+  static String _mapListToCsv(List<Map<String, dynamic>> mapList,
       {ListToCsvConverter converter}) {
     if (mapList == null) {
       return null;
@@ -111,28 +129,6 @@ class ImportExportUtils {
       ..addAll(data));
   }
 
-/*  static Future<Day> importAndProcessJSON() async {
-    final File file = await FilePicker.getFile(
-        type: FileType.custom, allowedExtensions: ['json']);
-    final String data = await file.readAsString();
-    final map = json.decode(data);
-    final locations = List<Map<String, dynamic>>.from(map)
-        .map((element) => Location.fromJson(element))
-        .toList();
-//    final list = List<Map<String, dynamic>>.from(map)
-//        .map((element) => Loc.fromJson(element))
-//        .toList();
-    logger.i(locations.length);
-
-    locations.forEach((loc) {
-      final speed = loc?.coords?.speed ?? 0.0;
-      if (speed < 0.5) {
-        loc.activity.type = 'still';
-      }
-    });
-    return LocationUtils.aggregateLocationsInSlices3(locations: locations);
-  }*/
-
   static Future<List<Location>> importJSON() async {
     final File file = await FilePicker.getFile(
         type: FileType.custom, allowedExtensions: ['json']);
@@ -168,18 +164,26 @@ class ImportExportUtils {
       }
     }
 
+    Alerts.showLoading(context);
+
     final List<Location> locations =
         (await context.read<LocationRepositoryImpl>().getAllLocations())
             .getOrElse(() => []);
-
-    final List<File> files = await ImportExportUtils.saveFilesOnLocalStorage(
-        locations, DateTime.now());
+    final path = await _localPath();
+//    final files = await compute(ImportExportUtils._saveFilesOnLocalStorage,
+//        Tuple2(locations, DateTime.now()));
+//    final tuple2 =
+//        await compute<List<Location>, Tuple2>(_getJsonAndCsv, locations);
+    final List<File> files = await compute(
+        ImportExportUtils._saveFilesOnLocalStorage,
+        Tuple3(locations, DateTime.now(), path));
     if (files == null || files.isEmpty) return;
     final csvFile = files[0];
     final jsonFile = files[1];
     final csvPath = csvFile.path;
     final jsonPath = jsonFile.path;
 
+    Navigator.of(context).pop();
     Alerts.showAlertWithTwoActions(
         context,
         "Esporta tutti i dati",
@@ -225,9 +229,12 @@ class ImportExportUtils {
     final List<Location> locations =
         Provider.of<LocationNotifier>(context, listen: false)
             .getCurrentDayLocations;
-
-    final List<File> files =
-        await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);
+    final path = await _localPath();
+//    final tuple2 =
+//        await compute<List<Location>, Tuple2>(_getJsonAndCsv, locations);
+    final List<File> files = await compute(
+        ImportExportUtils._saveFilesOnLocalStorage,
+        Tuple3(locations, currentDate, path));
     if (files == null || files.isEmpty) return;
     final csvFile = files[0];
     final jsonFile = files[1];
