@@ -10,6 +10,7 @@ import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:hive/hive.dart';
@@ -37,11 +38,7 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<Either<Failure, List<Location>>> getAllLocations() async {
     try {
-      final startTime = DateTime.now();
-      final locations = await locationsLocalDataSources.getAllLocations('a');
-      print(locations.length);
-      print(
-          'locations readed: ${DateTime.now().difference(startTime).inMilliseconds}');
+      final locations = await locationsLocalDataSources.getAllLocations();
       return right(locations);
     } catch (e) {
       logger.e(e);
@@ -63,27 +60,32 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay() async {
-    Map<DateTime, List<Location>> locationsPerDay = {};
-    final locations = await locationsLocalDataSources.getAllLocations('a');
-    logger.i('[LocationUtils] total records: ${locations.length}');
-    final DateTime today = DateTime.now().midnight;
-    if (locations.isEmpty) {
-      return {today: []};
-    }
-    for (var loc in locations) {
-      try {
-        final date = loc.dateTime.midnight;
-        if (!locationsPerDay.containsKey(date)) {
-          locationsPerDay[date] = [];
-        }
-        locationsPerDay[date].add(loc);
-      } catch (ex) {
-        logger.e('[ERROR] _readLocations $ex');
-        Hive.box<String>('logs')
-            .add('[ERROR] readAndFilterLocationsPerDay $ex');
+    final locationsPerDay = <DateTime, List<Location>>{};
+    try {
+      final locations = await locationsLocalDataSources.getAllLocations();
+      logger.i('[LocationUtils] total records: ${locations.length}');
+      final DateTime today = DateTime.now().midnight;
+      if (locations.isEmpty) {
+        return {today: []};
       }
+      for (var loc in locations) {
+        try {
+          final date = loc.dateTime.midnight;
+          if (!locationsPerDay.containsKey(date)) {
+            locationsPerDay[date] = [];
+          }
+          locationsPerDay[date].add(loc);
+        } catch (ex) {
+          logger.e('[ERROR] _readLocations $ex');
+          Hive.box<String>('logs')
+              .add('[ERROR] readAndFilterLocationsPerDay $ex');
+        }
+      }
+      logger.i('Locations from DB: ${locations.length}');
+    } catch (ex, stackTrace) {
+      print(ex);
+      Crashlytics.instance.recordError(ex, stackTrace);
     }
-    logger.i('Locations from DB: ${locations.length}');
     return locationsPerDay;
   }
 

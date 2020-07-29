@@ -187,7 +187,7 @@ class LocationUtils {
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
-      if (loc.coords.accuracy < kMaxAccuracy) {
+      if (loc.coords.accuracy < kMaxAccuracy || loc.geofence != null) {
         int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
 
         final event = loc.event;

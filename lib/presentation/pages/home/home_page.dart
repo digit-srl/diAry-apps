@@ -13,6 +13,7 @@ import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
 import 'package:diary/utils/import_export_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
@@ -80,7 +81,7 @@ class _HomePageState extends State<HomePage> {
             // CarCard(),
             GpsCard(),
             TrackingCard(),
-            if (isDevVersion)
+            if (isDevVersion || !kReleaseMode)
               BetaCard(),
             MyPlacesCard(),
             SizedBox(

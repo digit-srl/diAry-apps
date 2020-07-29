@@ -8,7 +8,7 @@ import 'package:diary/application/date_notifier.dart';
 import 'package:diary/application/location_notifier.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
-import 'package:file_picker/file_picker.dart';
+//import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -129,7 +129,7 @@ class ImportExportUtils {
       ..addAll(data));
   }
 
-  static Future<List<Location>> importJSON() async {
+/*  static Future<List<Location>> importJSON() async {
     final File file = await FilePicker.getFile(
         type: FileType.custom, allowedExtensions: ['json']);
     final String data = await file.readAsString();
@@ -139,7 +139,7 @@ class ImportExportUtils {
         .toList();
     logger.i(locations.length);
     return locations;
-  }
+  }*/
 
   static exportAllData(BuildContext context) async {
     PermissionStatus permissionStatus = await PermissionHandler()

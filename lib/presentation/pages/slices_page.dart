@@ -44,7 +44,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
     final output = LocationUtils.aggregateLocationsInSlices3(
         date: widget.locations.first.dateTime,
         locations: widget.locations,
-        yesterdayPlaces: {'CASA'});
+        yesterdayPlaces: {});
     slices = output.slices;
     places = output.places;
   }
@@ -91,13 +91,13 @@ class _TabBarDemoState extends State<TabBarDemo> {
   }
 
   _importJson() async {
-    final locations = await ImportExportUtils.importJSON();
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
-      return TabBarDemo(
-        locations: locations,
-      );
-    }));
+//    final locations = await ImportExportUtils.importJSON();
+//    Navigator.of(context)
+//        .push(MaterialPageRoute(builder: (BuildContext context) {
+//      return TabBarDemo(
+//        locations: locations,
+//      );
+//    }));
   }
 }
 

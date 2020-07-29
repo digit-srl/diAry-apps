@@ -44,6 +44,15 @@ void main() async {
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
+  // makes the status bar in Android transparent. It is necessary to do it from
+  // here. More overlay styles are handled inside the build tree, with
+  // AnnotatedRegion, to keep them synchronized with day-night theme
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ),
+  );
+
   await Hive.initFlutter();
   Hive.registerAdapter(CallToActionSourceAdapter());
   Hive.registerAdapter(AnnotationAdapter());
@@ -68,23 +77,20 @@ void main() async {
 
   final repository = LocationRepositoryImpl(
       LocationsLocalDataSourcesImpl(), CallToActionRemoteDataSourcesImpl());
-  final Map<DateTime, List<Location>> locationsPerDate =
-      await repository.readAndFilterLocationsPerDay();
-  final days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
+  Map<DateTime, List<Location>> locationsPerDate = {};
+  Map<DateTime, Day> days = {};
 
-  final today = DateTime.now().midnight;
-  if (!days.containsKey(today)) {
-    days[today] = Day(date: today);
+  try {
+    locationsPerDate = await repository.readAndFilterLocationsPerDay();
+    days = LocationUtils.aggregateLocationsInDayPerDate(locationsPerDate);
+    final today = DateTime.now().midnight;
+    if (!days.containsKey(today)) {
+      days[today] = Day(date: today);
+    }
+  } catch (ex, stackTrace) {
+    print(ex);
+    Crashlytics.instance.recordError(ex, stackTrace);
   }
-
-  // makes the status bar in Android transparent. It is necessary to do it from
-  // here. More overlay styles are handled inside the build tree, with
-  // AnnotatedRegion, to keep them synchronized with day-night theme
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ),
-  );
 
   runApp(
     MultiProvider(

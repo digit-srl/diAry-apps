@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:device_apps/device_apps.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
-import 'package:hive/hive.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
@@ -183,15 +183,21 @@ class GenericUtils {
   }
 
   static Future<bool> checkIfPocketIsInstalled() async {
-    logger.i('checkIfPocketIsInstalled');
+    try {
+      logger.i('checkIfPocketIsInstalled');
 
-    bool isInstalled;
-    if (Platform.isAndroid) {
-      isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
-    } else {
-      isInstalled = await canLaunch('1466969163://');
+      bool isInstalled;
+      if (Platform.isAndroid) {
+        isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
+      } else {
+        isInstalled = await canLaunch('1466969163://');
+      }
+      logger.i('installed $isInstalled');
+      return isInstalled;
+    } catch (ex, stackTrace) {
+      print(ex);
+      Crashlytics.instance.recordError(ex, stackTrace);
+      return false;
     }
-    logger.i('installed $isInstalled');
-    return isInstalled;
   }
 }

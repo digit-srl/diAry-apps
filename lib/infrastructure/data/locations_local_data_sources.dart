@@ -9,7 +9,7 @@ import 'package:hive/hive.dart';
 import '../../database.dart' as db;
 
 abstract class LocationsLocalDataSources {
-  Future<List<Location>> getAllLocations(String a);
+  Future<List<Location>> getAllLocations();
   Future<List<Location>> getLocationsBetween(DateTime start, DateTime end);
   Future saveNewCallToActionResult(Call call);
   Future updateCall(Call call);
@@ -18,16 +18,21 @@ abstract class LocationsLocalDataSources {
 }
 
 List<Location> buildLocations(List<Map<String, dynamic>> list) {
-  final locations = list
-      .map<Location>(
-        (dbLoc) => Location.fromJson(
-          json.decode(
-            String.fromCharCodes(dbLoc['data']),
+  try {
+    final locations = list
+        .map<Location>(
+          (dbLoc) => Location.fromJson(
+            json.decode(
+              String.fromCharCodes(dbLoc['data']),
+            ),
           ),
-        ),
-      )
-      .toList();
-  return locations;
+        )
+        .toList();
+    return locations;
+  } catch (e) {
+    print(e);
+    return [];
+  }
 }
 
 class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
@@ -38,19 +43,11 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
   }
 
   @override
-  Future<List<Location>> getAllLocations(String a) async {
-    final start = DateTime.now();
+  Future<List<Location>> getAllLocations() async {
     final List<Map<String, dynamic>> list =
         await db.DiAryDatabase.get().getAllLocations();
-    final partialTime = DateTime.now();
-    print(
-        'locations readed from db : ${partialTime.difference(start).inMilliseconds}');
-
     final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
         buildLocations, list);
-    final endTime = DateTime.now();
-    print(
-        'locations builded: ${endTime.difference(partialTime).inMilliseconds}');
     return locations;
   }
 
