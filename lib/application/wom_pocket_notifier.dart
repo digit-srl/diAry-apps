@@ -3,7 +3,7 @@ import 'package:diary/utils/logger.dart';
 import 'package:state_notifier/state_notifier.dart';
 
 class WomPocketNotifier extends StateNotifier<bool> {
-  WomPocketNotifier(bool isInstalled) : super(isInstalled) {
+  WomPocketNotifier(bool isInstalled) : super(isInstalled ?? false) {
     checkIfPocketIsInstalled();
   }
 

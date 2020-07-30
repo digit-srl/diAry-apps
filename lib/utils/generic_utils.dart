@@ -193,7 +193,7 @@ class GenericUtils {
         isInstalled = await canLaunch('1466969163://');
       }
       logger.i('installed $isInstalled');
-      return isInstalled;
+      return isInstalled ?? false;
     } catch (ex, stackTrace) {
       print(ex);
       Crashlytics.instance.recordError(ex, stackTrace);

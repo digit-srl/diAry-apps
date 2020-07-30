@@ -13,9 +13,9 @@ class PocketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StateNotifierBuilder<bool>(
-      stateNotifier: context.watch<WomPocketNotifier>(),
+      stateNotifier: context.read<WomPocketNotifier>(),
       builder: (BuildContext context, installed, Widget child) {
-        if (!installed) {
+        if ((!installed) ?? false) {
           return HomeGenericCard(
             enabled: installed,
             iconData: CustomIcons.pocket_logo,

@@ -42,12 +42,29 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
     box = Hive.box('calls');
   }
 
+  // AsyncThread
+//  @override
+//  Future<List<Location>> getAllLocations() async {
+//    final List<Map<String, dynamic>> list =
+//        await db.DiAryDatabase.get().getAllLocations();
+//    final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
+//        buildLocations, list);
+//    return locations;
+//  }
+
   @override
   Future<List<Location>> getAllLocations() async {
     final List<Map<String, dynamic>> list =
         await db.DiAryDatabase.get().getAllLocations();
-    final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
-        buildLocations, list);
+    final locations = list
+        .map(
+          (dbLoc) => Location.fromJson(
+            json.decode(
+              String.fromCharCodes(dbLoc['data']),
+            ),
+          ),
+        )
+        .toList();
     return locations;
   }
 
