@@ -7,6 +7,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'constants.dart';
 import 'extensions.dart';
 import '../domain/entities/day.dart';
 import '../domain/entities/motion_activity.dart';
@@ -73,9 +74,10 @@ class LocationUtils {
               [],
         );
       } catch (ex) {
+        Hive.box<String>('logs')
+            .add('[LocationUtils] aggregateLocationsInDayPerDate $ex');
         analytics.logEvent(
-            name: '[LocationUtils] aggregateLocationsInDayPerDate',
-            parameters: {'error': ex.toString()});
+            name: '[LocationUtils] ', parameters: {'error': ex.toString()});
         logger.e(ex);
       }
       i++;
@@ -160,8 +162,8 @@ class LocationUtils {
         ? partialDayPlaces.last.startTime.toMinutes() +
             partialDayPlaces.last.minutes
         : 0;
-    final maxAccuracy =
-        Hive.box('user').get('aggregationAccuracy', defaultValue: 1000);
+//    final maxAccuracy =
+//        Hive.box('user').get('aggregationAccuracy', defaultValue: kMaxAccuracy);
     final postProcessingEnabled =
         Hive.box('user').get('postProcessing', defaultValue: true);
     bool waitingOn = false;
@@ -185,7 +187,7 @@ class LocationUtils {
       final partialMinutes = currentMinutes - cumulativeMinutes;
       final currentActivity = getActivityFromString(loc.activity.type);
 
-      if (loc.coords.accuracy < maxAccuracy) {
+      if (loc.coords.accuracy < kMaxAccuracy || loc.geofence != null) {
         int partialPlaceMinutes = currentMinutes - cumulativePlacesMinutes;
 
         final event = loc.event;
@@ -312,11 +314,11 @@ class LocationUtils {
             }
           } else {
             // ultima azione = EXIT
-            Set<String> newPlaces = Set.from(places.last.places);
+            final newPlaces = Set<String>.from(places.last.places);
             if (newPlaces.contains(lastWhere)) {
               newPlaces.remove(lastWhere);
             }
-            if (places.last.places.isEmpty) {
+            if (newPlaces.isEmpty) {
               if (places.last.activity == currentActivity ||
                   places.last.activity == MotionActivity.Unknown) {
                 places.last.activity = currentActivity;
@@ -697,22 +699,22 @@ class LocationUtils {
   }
 }
 
-class AggregationData {
-  final List<Slice> slices;
-  final List<Slice> places;
-  final String centroidHash;
-  final int discardedSampleCount;
-  final int sampleCount;
-  final LatLngBounds bounds;
-  final double boundingBoxDiagonal;
-
-  AggregationData({
-    this.slices = const [],
-    this.places = const [],
-    this.centroidHash,
-    this.discardedSampleCount,
-    this.sampleCount,
-    this.bounds,
-    this.boundingBoxDiagonal,
-  });
-}
+//class AggregationData {
+//  final List<Slice> slices;
+//  final List<Slice> places;
+//  final String centroidHash;
+//  final int discardedSampleCount;
+//  final int sampleCount;
+//  final LatLngBounds bounds;
+//  final double boundingBoxDiagonal;
+//
+//  AggregationData({
+//    this.slices = const [],
+//    this.places = const [],
+//    this.centroidHash,
+//    this.discardedSampleCount,
+//    this.sampleCount,
+//    this.bounds,
+//    this.boundingBoxDiagonal,
+//  });
+//}

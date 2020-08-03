@@ -5,4 +5,6 @@ abstract class UserRepository {
   Future<void> removeHomeGeofence();
   Future<String> getUserUuid();
   int getDailyAnnotationCount(DateTime date);
+  DateTime getLastCallToActionDate();
+  Future<void> saveCallToActionDate(DateTime dateTime);
 }

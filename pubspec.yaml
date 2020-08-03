@@ -9,9 +9,9 @@ description: A new Flutter application.
 # In Android, build-name is used as versionName while build-number used as versionCode.
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
+# Read more about iOS ver+20sioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.1.2+14
+version: 0.2.0+32
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -20,50 +20,58 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_background_geolocation: ^1.7.3
+  flutter_background_geolocation: ^1.8.0
   auto_size_text: ^2.1.0
-  google_maps_flutter: ^0.5.26+4
-  flutter_statusbarcolor: ^0.2.3
+  google_maps_flutter: ^0.5.27+2
+  flutter_statusbarcolor: ^0.2.1
   flutter_circular_chart: ^0.1.0
   flutter_state_notifier: ^0.3.0
   rflutter_alert: ^1.0.3
   path_provider: ^1.6.7
   esys_flutter_share: ^1.0.2
-  device_preview: ^0.4.4
+#  device_preview: ^0.4.5
   sized_context: ^0.2.1+1
   unicorndial:
     git: git://github.com/giandifra/unicornspeeddial.git
-  firebase_analytics: ^5.0.11
+  firebase_analytics: ^5.0.14
   permission_handler: ^4.4.0+hotfix.4
   firebase_crashlytics: ^0.1.3+3
   csv: ^4.0.3
+  http: ^0.12.1
   uuid: ^2.0.4
   hive: ^1.4.1+1
   hive_flutter: ^0.3.0+2
   flutter_colorpicker: ^0.3.4
   package_info: ^0.4.0+17
-  file_picker: ^1.6.3+2
   sliding_sheet: ^0.3.3
-  freezed_annotation: ^0.7.1
+  freezed_annotation: ^0.11.0
   meta: ^1.1.8
-  dartz:
-  intl:
+  dartz: ^0.9.1
+  intl: ^0.16.1
   dart_geohash: ^1.0.2
-  url_launcher: ^5.4.5
+  url_launcher: ^5.4.11
   equatable:
   path:
   sqflite:
   logger_flutter: ^0.7.1
   geodesy: ^0.3.2
-
-
+  flutter_slidable: ^0.5.4
+  webview_flutter: ^0.3.21
+  intro_slider: ^2.3.1
+  device_apps: ^1.0.10
+  store_redirect: ^1.0.2
+  focus_detector: ^1.0.3
+  # file_picker: ^1.12.0
 
 dev_dependencies:
   hive_generator: ^0.7.0+2
-  build_runner: ^1.9.0
-  freezed:
+  build_runner: ^1.10.0
+  freezed: ^0.11.2
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  dartx: ^0.3.0
 
 flutter:
   uses-material-design: true
@@ -79,6 +87,12 @@ flutter:
     - assets/annotated_pin.png
     - assets/normal_map_style.json
     - assets/dark_map_style.json
+    - assets/slide1.png
+    - assets/slide2.png
+    - assets/slide3.png
+    - assets/slide4.png
+    - assets/slide5.png
+
 
   fonts:
     - family: Nunito

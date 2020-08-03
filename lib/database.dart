@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:diary/utils/logger.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,7 +8,7 @@ import 'package:synchronized/synchronized.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DiAryDatabase {
-  static final DiAryDatabase _appDatabase = new DiAryDatabase._internal();
+  static final DiAryDatabase _appDatabase = DiAryDatabase._internal();
   final _lock = new Lock();
 
   DiAryDatabase._internal();
@@ -59,8 +60,9 @@ class DiAryDatabase {
       final _db = await getDb();
       var result = await _db.rawQuery('SELECT * FROM locations;');
       return result;
-    } catch (e) {
+    } catch (e, stack) {
       logger.e('[DiAryDatabase] [getAllLocations] $e');
+      Crashlytics.instance.recordError(e, stack);
       return [];
     }
   }

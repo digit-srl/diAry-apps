@@ -1,18 +1,22 @@
 import 'dart:io';
-import 'package:diary/domain/entities/location.dart';
-import 'package:diary/utils/alerts.dart';
+
+import 'package:diary/application/wom_pocket_notifier.dart';
+import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/import_export_utils.dart';
-import 'package:diary/utils/logger.dart';
-import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:diary/utils/permissions_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:diary/application/location_notifier.dart';
-import 'package:diary/application/date_notifier.dart';
+import 'package:focus_detector/focus_detector.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:provider/provider.dart';
+import 'package:store_redirect/store_redirect.dart';
 import '../../../utils/colors.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:provider/provider.dart';
+import '../intro_page.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -22,7 +26,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   List<SettingItem> items;
   List<SettingItem> utils;
-  List<SettingItem> legals;
   final double targetElevation = 3;
   double _elevation = 0;
   ScrollController _controller;
@@ -34,40 +37,87 @@ class _SettingsPageState extends State<SettingsPage> {
     readVersion();
     items = [
       SettingItem(
-        Icons.file_download,
-        'Exporta i dati degli spostamenti',
-        'Salva in locale i dati relativi agli spostamenti effettuati. Puoi decidere periodo e formato di esportazione.',
-        onTap: exportJson,
+        CustomIcons.database_export,
+        'Esporta i dati degli spostamenti',
+        'Salva in locale tutti i dati relativi agli spostamenti effettuati. '
+            'Puoi scegliere quale formato di esportazione utilizzare, tra JSON '
+            'e CSV.',
+        onTap: () => ImportExportUtils.exportAllData(context),
       ),
-      SettingItem(Icons.gps_fixed, 'Calibra Sensori',
-          'Utile per per rendere più precise le rilevazioni dell\'accelerometro e del GPS.',
-          enabled: false),
-      SettingItem(CustomIcons.hospital_box_outline, 'Allerta sanitaria:',
-          'Incrocia i dati che hai raccolto con le segnalazioni delle autorità sanitarie',
-          enabled: false),
+      if (Platform.isAndroid)
+        SettingItem(
+          CustomIcons.flip_to_back,
+          'Abilita l\'esecuzione in background',
+          'Alcuni produttori di smartphone non consentono '
+              'alle applicazioni di essere eseguite adeguatamente '
+              'in background, rendendo il rilevamento poco preciso. '
+              'Con questo permesso, WOM diAry può risolvere '
+              'tale inconveniente.',
+          onTap: () => requestIgnoreBatteryOptimization(),
+        ),
+      SettingItem(
+        CustomIcons.playlist_remove,
+        'Blacklist Call To Action',
+        'Le fonti dalle quali non desideri più ricevere Call To Action vengono '
+            'visualizzate all\'interno di questa schermata. Questa permette '
+            'di gestirle, ed eventualmente riabilitarle.',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CallToActionManagerPage(),
+          ),
+        ),
+      ),
     ];
 
     utils = [
-      SettingItem(null, 'diAry - digital Arianna',
-          'Premi per visualizzare il changelog',
-          enabled: false, customImageIconAsset: 'assets/diary_logo.png'),
-      SettingItem(Icons.bug_report, 'Segnala un bug',
-          'Notifica un problema al team di sviluppo tramite mail.',
-          enabled: false),
-      SettingItem(Icons.star, 'Valutaci sullo store!',
-          'Diamo molto peso al giudizio e alle valutazioni degli utenti, e facciamo sempre il possibile per renderle positive.',
-          enabled: false),
-      SettingItem(Icons.supervised_user_circle, 'Su di noi...',
-          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl innovativa, società benefit. Scopri di più',
-          enabled: false),
+      SettingItem(CustomIcons.diary_logo, 'WOM diAry - digital Arianna',
+          'Scopri di più', onTap: () {
+        GenericUtils.launchURL('https://wom.social/diary');
+      }),
+      SettingItem(CustomIcons.pocket_logo, 'WOM Pocket',
+          '${context.read<WomPocketNotifier>().isInstalled ? 'WOM Pocket correttamente installato' : 'WOM Pocket assente, premi per installare'}',
+          onTap: () {}),
+      SettingItem(CustomIcons.wom_logo, 'Piattaforma WOM',
+          'Scopri cos\'è la piattaforma WOM', onTap: () {
+        GenericUtils.launchURL('https://wom.social');
+      }),
+      SettingItem(
+        Icons.help_outline,
+        'Tutorial',
+        'Visualizza il tutorial iniziale.',
+        onTap: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => IntroPage(
+                      fromSettings: true,
+                    )),
+          )
+        },
+      ),
+      SettingItem(
+          CustomIcons.account_multiple_outline,
+          'Su di noi...',
+          'L\'app è sviluppata dall\'Università di Urbino e da Digit, srl '
+              'innovativa, società benefit. Scopri di più.',
+          enabled: true, onTap: () {
+        GenericUtils.launchURL('https://digit.srl');
+      }),
+
+      SettingItem(
+        CustomIcons.shield_account_outline,
+        'Privacy Policy',
+        'La privacy è un tema fondamentale per WOM diAry. Scopri in che modo '
+            'questa viene tutelata dall\'app.',
+        enabled: true,
+        onTap: () {
+          GenericUtils.launchURL(
+              'https://digit.srl/privacy/diary-privacy-policy/');
+        },
+      ),
+      // SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
     ];
 
-    legals = [
-      SettingItem(Icons.info_outline, 'Terms of service', null, enabled: false),
-      SettingItem(Icons.info_outline, 'Privacy Policy', null, enabled: false),
-      SettingItem(Icons.info_outline, 'Licence open source', null,
-          enabled: false),
-    ];
     _controller = ScrollController();
     _controller.addListener(_scrollListener);
   }
@@ -75,191 +125,139 @@ class _SettingsPageState extends State<SettingsPage> {
   final titleStyle = TextStyle(fontWeight: FontWeight.w600);
 
   final titlePadding = const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0);
-
+  // Vital for identifying our FocusDetector when a rebuild occurs.
+  final Key _focusDetectorKey = UniqueKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Impostazioni',
-          style: Theme.of(context).textTheme.title,
+    return FocusDetector(
+      key: _focusDetectorKey,
+      onFocusGained: () async {
+        final isPocketInstalled =
+            await context.read<WomPocketNotifier>().checkIfPocketIsInstalled();
+        setState(() {
+          if (isPocketInstalled) {
+            utils[1].subtitle = 'WOM Pocket correttamente installato';
+            utils[1].onTap = () {};
+          } else {
+            utils[1].subtitle = 'WOM Pocket assente, premi per installare';
+            utils[1].onTap = () {
+              StoreRedirect.redirect(
+                  androidAppId: 'social.wom.pocket', iOSAppId: "1466969163");
+            };
+          }
+        });
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Impostazioni',
+            style: Theme.of(context).textTheme.title,
+          ),
+          centerTitle: true,
+          elevation: _elevation,
         ),
-        centerTitle: true,
-        elevation: _elevation,
-      ),
-      body: SingleChildScrollView(
-        controller: _controller,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 8,
-            ),
-            for (SettingItem item in items) ...[
-              ListTile(
-                leading: Icon(item.iconData,
-                    color: item.enabled
-                        ? Theme.of(context).iconTheme.color
-                        : secondaryText),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
-                ),
-                subtitle: Text(
-                  item.subtitle,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.body1.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
+        body: SingleChildScrollView(
+          controller: _controller,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 8,
               ),
-              items.indexOf(item) == items.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
-            ],
-            Padding(
-              padding: titlePadding,
-              child: Text(
-                'Informazioni utili',
-                style: Theme.of(context).textTheme.body2,
-              ),
-            ),
-            for (SettingItem item in utils) ...[
-              ListTile(
-                leading: item.iconData != null
-                    ? Icon(
-                        item.iconData,
+              for (SettingItem item in items) ...[
+                ListTile(
+                  leading: Icon(item.iconData,
+                      color: item.enabled
+                          ? Theme.of(context).iconTheme.color
+                          : secondaryText),
+                  title: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.subhead.copyWith(
                         color: item.enabled
-                            ? Theme.of(context).iconTheme.color
-                            : secondaryText,
-                      )
-                    : Image.asset(
-                        item.customImageIconAsset,
+                            ? Theme.of(context).textTheme.subhead.color
+                            : secondaryText),
+                  ),
+                  subtitle: Text(
+                    item.subtitle,
+                    style: Theme.of(context).textTheme.body1.copyWith(
                         color: item.enabled
-                            ? Theme.of(context).iconTheme.color
-                            : secondaryText,
-                        width: 24,
+                            ? Theme.of(context).textTheme.body1.color
+                            : secondaryText),
+                  ),
+                  onTap: item.onTap,
+                ),
+                items.indexOf(item) == items.length - 1
+                    ? Container()
+                    : Divider(
+                        indent: 72,
+                        endIndent: 16,
                       ),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
+              ],
+              Padding(
+                padding: titlePadding,
+                child: Text(
+                  'Informazioni',
+                  style: Theme.of(context).textTheme.body2,
                 ),
-                subtitle: Text(
-                  item.subtitle,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.body1.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
               ),
-              utils.indexOf(item) == utils.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
+              for (SettingItem item in utils) ...[
+                ListTile(
+                  leading: item.iconData != null
+                      ? Icon(
+                          item.iconData,
+                          color: item.enabled
+                              ? Theme.of(context).iconTheme.color
+                              : secondaryText,
+                        )
+                      : Image.asset(
+                          item.customImageIconAsset,
+                          color: item.enabled
+                              ? Theme.of(context).iconTheme.color
+                              : secondaryText,
+                          width: 24,
+                        ),
+                  title: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.subhead.copyWith(
+                        color: item.enabled
+                            ? Theme.of(context).textTheme.subhead.color
+                            : secondaryText),
+                  ),
+                  subtitle: Text(
+                    item.subtitle,
+                    style: Theme.of(context).textTheme.body1.copyWith(
+                        color: item.enabled
+                            ? Theme.of(context).textTheme.body1.color
+                            : secondaryText),
+                  ),
+                  onTap: item.onTap,
+                ),
+                utils.indexOf(item) == utils.length - 1
+                    ? Container()
+                    : Divider(
+                        indent: 72,
+                        endIndent: 16,
+                      ),
+              ],
+              SizedBox(
+                height: 16,
+              )
             ],
-            Padding(
-              padding: titlePadding,
-              child: Text(
-                'Informazioni Legali',
-                style: Theme.of(context).textTheme.body2,
-              ),
-            ),
-            for (SettingItem item in legals) ...[
-              ListTile(
-                leading: Icon(
-                  item.iconData,
-                  color: item.enabled
-                      ? Theme.of(context).iconTheme.color
-                      : secondaryText,
-                ),
-                title: Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.subhead.copyWith(
-                      color: item.enabled
-                          ? Theme.of(context).textTheme.subhead.color
-                          : secondaryText),
-                ),
-                onTap: item.onTap,
-              ),
-              legals.indexOf(item) == legals.length - 1
-                  ? Container()
-                  : Divider(
-                      indent: 72,
-                      endIndent: 16,
-                    ),
-            ],
-          ],
+          ),
         ),
       ),
     );
   }
 
-  exportJson() async {
-    PermissionStatus permissionStatus = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.storage);
-
-    logger.i(permissionStatus);
-    if (permissionStatus == PermissionStatus.neverAskAgain) {
-      Alerts.showAlertWithPosNegActions(
-          context,
-          "Attenzione",
-          "In percedenza hai disabilitato il permesso di archiviazione. E' "
-              "necessario abilitarlo manualmente dalle impostazioni di sistema.",
-          "Vai a Impostazioni", () {
-        PermissionHandler().openAppSettings();
-      });
-      return;
-    } else if (permissionStatus != PermissionStatus.granted) {
-      final permissions = await PermissionHandler()
-          .requestPermissions([PermissionGroup.storage]);
-      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    final currentDate =
-        Provider.of<DateState>(context, listen: false).selectedDate;
-
-    final List<Location> locations =
-        Provider.of<LocationNotifier>(context, listen: false)
-            .getCurrentDayLocations;
-
-    final List<File> files =
-        await ImportExportUtils.saveFilesOnLocalStorage(locations, currentDate);
-    if (files == null || files.isEmpty) return;
-    final csvFile = files[0];
-    final jsonFile = files[1];
-    final csvPath = csvFile.path;
-    final jsonPath = jsonFile.path;
-
-    Alerts.showAlertWithTwoActions(
-        context,
-        "Esporta dati",
-        "Seleziona il formato per l'esportazione dei dati.",
-        "CSV",
-        () {
-          Share.file('Il mio file CSV', csvPath.split('/').last,
-              csvFile.readAsBytesSync(), 'application/*');
-        },
-        "JSON",
-        () {
-          Share.file('Il mio file JSON', jsonPath.split('/').last,
-              jsonFile.readAsBytesSync(), 'application/*');
-        });
-  }
+//  requestIgnoreBatteryOptimization() async {
+//    try {
+//      PermissionStatus permissionStatus = await PermissionHandler()
+//          .checkPermissionStatus(PermissionGroup.ignoreBatteryOptimizations);
+//      print(permissionStatus);
+//    } catch (ex) {
+//      await PermissionHandler().openAppSettings();
+//    }
+//  }
 
   void _scrollListener() {
     double newElevation = _controller.offset > 1 ? targetElevation : 0;
@@ -272,9 +270,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller?.removeListener(_scrollListener);
     _controller?.dispose();
+    super.dispose();
   }
 
   void readVersion() async {
@@ -283,7 +281,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         if (mounted) {
           version = packageInfo.version;
-          utils[0].title = 'diAry - digital Arianna v. $version';
+          utils[0].title = 'WOM diAry - digital Arianna v. $version';
         }
       });
     });
@@ -293,9 +291,9 @@ class _SettingsPageState extends State<SettingsPage> {
 class SettingItem {
   final IconData iconData;
   String title;
-  final String subtitle;
+  String subtitle;
   final bool enabled;
-  final Function onTap;
+  Function onTap;
   final String customImageIconAsset;
 
   SettingItem(this.iconData, this.title, this.subtitle,
@@ -303,4 +301,84 @@ class SettingItem {
       : assert(title != null),
         assert(iconData != null ||
             (iconData == null && customImageIconAsset != null));
+}
+
+class MyWebView extends StatelessWidget {
+  final String url;
+
+  const MyWebView({Key key, this.url}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      child: Container(
+        child: WebView(
+          initialUrl: url,
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+  }
+}
+
+class CallToActionManagerPage extends StatefulWidget {
+  @override
+  _CallToActionManagerPageState createState() =>
+      _CallToActionManagerPageState();
+}
+
+class _CallToActionManagerPageState extends State<CallToActionManagerPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Call To Action Black List'),
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box<CallToActionSource>('blackList').listenable(),
+        builder: (BuildContext context, Box<CallToActionSource> value,
+            Widget child) {
+          final list = value.values.toList();
+          if (list.isEmpty) {
+            return Center(child: Text('Nessuna sorgente nella black list'));
+          }
+          return ListView.builder(
+            itemCount: list.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                trailing: IconButton(
+                    icon: Icon(Icons.remove_circle),
+                    color: Colors.red,
+                    onPressed: () {
+                      Alert(
+                        context: context,
+                        style: AlertStyle(isCloseButton: false),
+                        title:
+                            'Vuoi rimuovere ${list[index].sourceName} dalla black list e tornare a ricevere le sue call to action?',
+                        buttons: [
+                          DialogButton(
+                            child: Text('Annulla'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          DialogButton(
+                            child: Text('Si'),
+                            onPressed: () {
+                              value.deleteAt(index);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ).show();
+                    }),
+                title: Text(list[index].sourceName ?? '-'),
+                subtitle: Text(list[index].sourceDesc ?? '-'),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 }

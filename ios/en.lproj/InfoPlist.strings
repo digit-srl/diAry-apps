@@ -1,0 +1,11 @@
+/*
+  InfoPlist.strings
+  Runner
+
+  Created by Gian Marco Di Francesco on 22/05/2020.
+  Copyright © 2020 The Chromium Authors. All rights reserved.
+*/
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "WOM diAry requests your location when it’s in use and in background in order to track your movements. All information is stored on your device only.";
+"NSLocationWhenInUseUsageDescription" = "WOM diAry requests your location when it’s in use in order to track your movements. All information is stored on your device only.";
+"NSLocationAlwaysUsageDescription" = "WOM diAry requests your location in order to track your movements. All information is stored on your device only.";
+"NSMotionUsageDescription" = "WOM diAry requests your accelerometer data in order to detect your movements and activate location tracking.";

@@ -1,0 +1,11 @@
+/*
+  InfoPlist.strings
+  Runner
+
+  Created by Gian Marco Di Francesco on 22/05/2020.
+  Copyright © 2020 The Chromium Authors. All rights reserved.
+*/
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "WOM diAry richiede l’accesso alla tua posizione geografica quando l’applicazione è attiva ed in background, per tenere traccia dei tuoi movimenti. I dati sono memorizzati esclusivamente sul tuo dispositivo.";
+"NSLocationWhenInUseUsageDescription" = "WOM diAry richiede l’accesso alla tua posizione geografica quando l’applicazione è attiva, per tenere traccia dei tuoi movimenti. I dati sono memorizzati esclusivamente sul tuo dispositivo.";
+"NSLocationAlwaysUsageDescription" = "WOM diAry richiede l’accesso alla tua posizione geografica per tenere traccia dei tuoi movimenti. I dati sono memorizzati esclusivamente sul tuo dispositivo.";
+"NSMotionUsageDescription" = "WOM diAry richiede l’accesso all’accelerometro per rilevare i tuoi spostamenti ed attivare la registrazione della posizione geografica.";

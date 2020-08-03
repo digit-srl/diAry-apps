@@ -59,7 +59,7 @@ class DailyStatsLegend extends StatelessWidget {
                 height: 8,
               ),
               Text(
-                'L\'anello più interno mostra le segnalazioni piazzate durante la giornata.',
+                'L\'anello più interno mostra le annotazioni inserite durante la giornata.',
                 style: Theme.of(context).textTheme.body1,
               ),
               SizedBox(

@@ -1,3 +1,5 @@
+import 'package:diary/utils/constants.dart';
+
 enum Event {
   On,
   Off,
@@ -98,7 +100,6 @@ class Location {
 
     final speed = coords?.speed ?? 0.0;
     if (speed < 0.5) {
-      final currentActivity = activity.type;
       activity.type = 'still';
     }
   }
@@ -132,7 +133,17 @@ class Location {
       coords.longitude == 0.0 &&
       (event == Event.Off || event == Event.On || event == Event.Geofence);
 
-  bool get isGoodPoint => !isNotificationEvent && coords.accuracy < 1000;
+  bool get isGoodPoint =>
+      !isNotificationEvent && coords.accuracy < kMaxAccuracy;
+
+  /*
+  *
+  * (location.coords.latitude == 0.0 &&
+            location.coords.longitude == 0.0 &&
+            (location.event == Event.Off ||
+                location.event == Event.On ||
+                location.event == Event.Geofence)) ||
+        location.coords.accuracy > kMaxAccuracy)*/
 }
 
 class Coords {

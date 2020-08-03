@@ -1,6 +1,7 @@
 import 'package:diary/application/call_to_action/call_to_action_notifier.dart';
 import 'package:diary/application/root_elevation_notifier.dart';
 import 'package:diary/infrastructure/repositories/location_repository_impl.dart';
+import 'package:diary/infrastructure/repositories/user_repository_impl.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/beta_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/gps_card.dart';
 import 'package:diary/presentation/pages/home/widgets/cards/my_places_card.dart';
@@ -11,10 +12,13 @@ import 'package:diary/application/day_notifier.dart';
 import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
 import 'package:diary/presentation/widgets/info_stats_widget.dart';
+import 'package:diary/utils/import_export_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/presentation/pages/settings/settings_page.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
+import '../../../app.dart';
 import 'widgets/call_to_action_widget.dart';
 import 'widgets/daily_stats.dart';
 import 'package:diary/utils/extensions.dart';
@@ -77,7 +81,8 @@ class _HomePageState extends State<HomePage> {
             // CarCard(),
             GpsCard(),
             TrackingCard(),
-            BetaCard(),
+            if (isDevVersion || !kReleaseMode)
+              BetaCard(),
             MyPlacesCard(),
             SizedBox(
               height: 16,
@@ -87,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: Material(
         elevation: 16,
-        color: Theme.of(context).primaryColor,
+        color: isDevVersion ? Colors.yellow : Theme.of(context).primaryColor,
         child: Container(
           height: 60 + MediaQuery.of(context).padding.bottom,
           child: Column(
@@ -107,16 +112,12 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                       child: Row(
                         children: <Widget>[
-                          Image.asset(
-                            'assets/wom_pin.png',
-                            color: Theme.of(context).iconTheme.color,
-                            width: 16,
-                          ),
+                          Icon(CustomIcons.wom_logo),
                           SizedBox(
-                            width: 8,
+                            width: 2,
                           ),
                           Text(
                             context.select((DayState value) =>
@@ -134,6 +135,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   UploadStatsIconButton(),
                   CallToActionIconButton(),
+                  IconButton(
+                    icon: Icon(CustomIcons.database_export),
+                    tooltip: "Esporta CSV/JSON",
+                    onPressed: () {
+                      ImportExportUtils.exportSingleDay(context);
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Icons.settings),
                     tooltip: "Impostazioni",
@@ -169,12 +177,13 @@ class CallToActionIconButton extends StatelessWidget {
 
     return IconButton(
       icon: Icon(
-        CustomIcons.hospital_box_outline,
+        CustomIcons.call_to_action,
+        size: 20,
       ),
       onPressed: () {
         showCallToActionBottomSheet(context);
       },
-      tooltip: "Notifica sanitaria... Coming soon!",
+      tooltip: "Call to action",
     );
   }
 
@@ -182,9 +191,14 @@ class CallToActionIconButton extends StatelessWidget {
     BottomSheets.showFullPageBottomSheet(
         context,
         StateNotifierProvider(
-          create: (BuildContext context) =>
-              CallToActionNotifier(context.read<LocationRepositoryImpl>()),
-          child: CallToActionWidget(),
+          create: (BuildContext context) => CallToActionNotifier(
+              context.read<LocationRepositoryImpl>(),
+              context.read<UserRepositoryImpl>())
+            ..loadCalls(),
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: CallToActionWidget(),
+          ),
         ));
   }
 }
@@ -200,12 +214,9 @@ class UploadStatsIconButton extends StatelessWidget {
     return IconButton(
       tooltip: "Condividi statistiche e riscatta WOM",
       icon: isStatsSended
-          ? Container(
-//              height: 30,
-              child: Image.asset(
-                'assets/wom_pocket_logo.png',
-                color: Theme.of(context).iconTheme.color,
-              ),
+          ? Icon(
+              CustomIcons.pocket_logo,
+              size: 32,
             )
           : Icon(
               isToday ? Icons.cloud_off : CustomIcons.cloud_upload_outline,
@@ -223,8 +234,11 @@ class UploadStatsIconButton extends StatelessWidget {
         StateNotifierProvider(
           create: (BuildContext context) =>
               UploadStatsNotifier(dailyStats, response),
-          child: InfoStatsWidget(
-            dailyStats: dailyStats,
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: InfoStatsWidget(
+              dailyStats: dailyStats,
+            ),
           ),
         ));
   }

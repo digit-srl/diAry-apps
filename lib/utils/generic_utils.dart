@@ -1,6 +1,9 @@
+import 'dart:io';
+
+import 'package:device_apps/device_apps.dart';
 import 'package:diary/domain/entities/motion_activity.dart';
 import 'package:diary/domain/entities/slice.dart';
-import 'package:hive/hive.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
@@ -109,6 +112,9 @@ class GenericUtils {
   }
 
   static int getWomCountForThisDay(List<Slice> places) {
+    if (places.isEmpty) {
+      return 0;
+    }
     try {
       int offMinutes = 0;
       int unknownMinutes = 0;
@@ -133,35 +139,34 @@ class GenericUtils {
       // TODO leggere anche gli id dei precedenti luoghi intesi come "CASA"
       // altrimenti cambianddo casa l algo non riconosce i luoghi impostati
       // come CASA nei giorni passati
-      final homeIdentifier = Hive.box('user').get(homeGeofenceKey);
+//      final homeIdentifier = Hive.box('user').get(homeGeofenceKey);
 
-      int homeMinutes = 0;
-      if (homeIdentifier != null) {
-        final homeSlices =
-            places.where((p) => p.places.contains(homeIdentifier));
-        if (homeSlices.isNotEmpty) {
-          homeMinutes = homeSlices
-              .map((slice) => slice.minutes)
-              .reduce((curr, next) => curr + next);
-        }
-      }
+//      int homeMinutes = 0;
+//      if (homeIdentifier != null) {
+//        final homeSlices =
+//            places.where((p) => p.places.contains(homeIdentifier));
+//        if (homeSlices.isNotEmpty) {
+//          homeMinutes = homeSlices
+//              .map((slice) => slice.minutes)
+//              .reduce((curr, next) => curr + next);
+//        }
+//      }
       final onMinutes = 1440 - offMinutes - unknownMinutes;
       if (onMinutes < 0) {
         throw Exception('[GeneriUtils] onMinites cannont to be less that zero');
       }
 
       int onWom = (onMinutes / 60.0).ceil();
-      int homeWom = (homeMinutes / 60.0).ceil();
+//      int homeWom = (homeMinutes / 60.0).ceil();
       int wom = onWom;
-      if (homeWom > 12) {
-        int tmp = homeWom - 12;
-        tmp *= 2;
-        wom = onWom + tmp;
-      }
+//      if (homeWom > 12) {
+//        int tmp = homeWom - 12;
+//        tmp *= 2;
+//        wom = onWom + tmp;
+//      }
 
       logger.i(
-          '[DayNotifier] homeMinutes : $homeMinutes, offMinutes $offMinutes, onMinutes: $onMinutes. WOM $wom');
-
+          '[DayNotifier] offMinutes $offMinutes, onMinutes: $onMinutes. WOM $wom');
       return wom;
     } catch (ex) {
       logger.e('[DayNotifier] [ERROR] getWomCountForThisDay() $ex');
@@ -169,11 +174,30 @@ class GenericUtils {
     }
   }
 
-  static launchURL(String url) async {
+  static Future<bool> launchURL(String url) async {
     if (await canLaunch(url)) {
-      await launch(url);
+      return await launch(url);
     } else {
-      throw 'Could not launch $url';
+      return false;
+    }
+  }
+
+  static Future<bool> checkIfPocketIsInstalled() async {
+    try {
+      logger.i('checkIfPocketIsInstalled');
+
+      bool isInstalled;
+      if (Platform.isAndroid) {
+        isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
+      } else {
+        isInstalled = await canLaunch('wom://transfer/abcedfg');
+      }
+      logger.i('installed $isInstalled');
+      return isInstalled ?? false;
+    } catch (ex, stackTrace) {
+      print(ex);
+      Crashlytics.instance.recordError(ex, stackTrace);
+      return false;
     }
   }
 }

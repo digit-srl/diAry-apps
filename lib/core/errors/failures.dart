@@ -6,6 +6,8 @@ class UnprocessableDayFailure extends Failure {}
 
 class NoLocationsFoundFailure extends Failure {}
 
+class NoCallsFoundFailure extends Failure {}
+
 class UnknownFailure extends Failure {
   final String message;
 

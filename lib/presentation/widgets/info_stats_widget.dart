@@ -1,4 +1,5 @@
 import 'package:diary/application/upload_stats/upload_stats_notifier.dart';
+import 'package:diary/application/wom_pocket_notifier.dart';
 import 'package:diary/presentation/widgets/generic_button.dart';
 import 'package:diary/utils/bottom_sheets.dart';
 import 'package:diary/utils/generic_utils.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_state_notifier/flutter_state_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:diary/domain/entities/daily_stats.dart';
 import 'package:diary/domain/entities/daily_stats_response.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:diary/utils/extensions.dart';
 
@@ -27,11 +29,11 @@ class InfoStatsWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          'Le statistiche di utilizzo mostrate in questa pagina possono '
-          'essere caricate in cloud in modo anonimo per contribuire ad '
+          'Le statistiche di utilizzo possono '
+          'essere caricate in cloud anonimamente, per contribuire ad '
           'un open data set statistico. Il caricamento può avvenire '
           'solo a conclusione della giornata (dopo la mezzanotte del '
-          'giorno a cui si riferiscono) e comporta il riconoscimento di WOM.',
+          'giorno a cui si riferiscono), e comporta il riconoscimento di WOM.',
           style: Theme.of(context).textTheme.body1,
         ),
         SizedBox(
@@ -301,8 +303,13 @@ class WomResponseWidget extends StatelessWidget {
             Spacer(),
             GenericButton(
               text: 'Apri il Pocket',
-              onPressed: () {
-                GenericUtils.launchURL(_dailyStatsResponse.womLink);
+              onPressed: () async {
+                if (!(await GenericUtils.launchURL(
+                    _dailyStatsResponse.womLink))) {
+                  StoreRedirect.redirect(
+                      androidAppId: 'social.wom.pocket',
+                      iOSAppId: "1466969163");
+                }
               },
             ),
           ],

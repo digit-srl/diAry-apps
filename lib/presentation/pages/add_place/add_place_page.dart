@@ -114,193 +114,202 @@ class _AddPlacePageState extends State<AddPlacePage> {
   @override
   Widget build(BuildContext context) {
 //    _createMarkerImageFromAsset(context);
-    return Scaffold(
-      key: _scaffoldKey,
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(
-          editingMode ? 'Modifica Luogo' : 'Aggiungi luogo',
-          style: Theme.of(context).textTheme.title,
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.help_outline),
-            tooltip: "Cos'è questa schermata?",
-            onPressed: () {
-              _showHelper(context);
-            },
-          )
-        ],
-        elevation: 4,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(240.0),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: _selectColor,
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 16, 20),
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: _currentColor,
-                          shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(new FocusNode());
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text(
+            editingMode ? 'Modifica Luogo' : 'Aggiungi luogo',
+            style: Theme.of(context).textTheme.title,
+          ),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.help_outline),
+              tooltip: "Cos'è questa schermata?",
+              onPressed: () {
+                _showHelper(context);
+              },
+            )
+          ],
+          elevation: 4,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(240.0),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: _selectColor,
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(0, 0, 16, 20),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: _currentColor,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        cursorColor: Theme.of(context).iconTheme.color,
-                        controller: _placeEditingController,
-                        expands: false,
-                        maxLines: 1,
-                        maxLength: 20,
-                        style: Theme.of(context).textTheme.body2,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
+                      Expanded(
+                        child: TextField(
+                          cursorColor: Theme.of(context).iconTheme.color,
+                          controller: _placeEditingController,
+                          expands: false,
+                          maxLines: 1,
+                          maxLength: 20,
+                          style: Theme.of(context).textTheme.body2,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  width: 0,
+                                  style: BorderStyle.none,
+                                ),
                               ),
+                              filled: true,
+                              fillColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              hintText: "Inserisci qui il nome del luogo",
+                              hintStyle:
+                                  Theme.of(context).textTheme.body1.copyWith(
+                                        color: Color(0xFFC0CCDA),
+                                      ),
+                              //counterText: "",
+                              counterStyle:
+                                  Theme.of(context).textTheme.caption),
+                          onChanged: (text) {
+                            setState(() {
+                              _canSave = (text.trim().length >= 3 &&
+                                  _lastLocation != null);
+                            });
+                          },
+//                        onSubmitted: (text) {
+//                          if (_canSave) _addGeofence();
+//                        },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Abitazione principale",
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.subhead,
                             ),
-                            filled: true,
-                            fillColor: Theme.of(context).colorScheme.secondary,
-                            hintText: "Inserisci qui il nome del luogo",
-                            hintStyle:
-                                Theme.of(context).textTheme.body1.copyWith(
-                                      color: Color(0xFFC0CCDA),
-                                    ),
-                            //counterText: "",
-                            counterStyle: Theme.of(context).textTheme.caption),
-                        onChanged: (text) {
-                          setState(() {
-                            _canSave = (text.trim().length >= 3 &&
-                                _lastLocation != null);
-                          });
-                        },
-                        onSubmitted: (text) {
-                          if (_canSave) _addGeofence();
-                        },
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Abitazione principale",
-                            textAlign: TextAlign.left,
-                            style: Theme.of(context).textTheme.subhead,
-                          ),
-                        ],
+                      Switch(
+                        activeColor: Theme.of(context).iconTheme.color,
+                        inactiveThumbColor:
+                            Theme.of(context).colorScheme.secondary,
+                        inactiveTrackColor:
+                            Theme.of(context).colorScheme.secondary,
+                        value: _isHome,
+                        onChanged: _isHomeEnabled
+                            ? (bool value) {
+                                setState(() {
+                                  this._isHome = value;
+                                });
+                              }
+                            : null,
                       ),
-                    ),
-                    Switch(
-                      activeColor: Theme.of(context).iconTheme.color,
-                      inactiveThumbColor:
-                          Theme.of(context).colorScheme.secondary,
-                      inactiveTrackColor:
-                          Theme.of(context).colorScheme.secondary,
-                      value: _isHome,
-                      onChanged: _isHomeEnabled
-                          ? (bool value) {
-                              setState(() {
-                                this._isHome = value;
-                              });
-                            }
-                          : null,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  "Raggio",
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.subhead,
-                ),
-                Slider(
-                  min: 10.0,
-                  max: 50.0,
-                  divisions: 4,
-                  label: '${_radius.toInt()} metri',
-                  value: _radius,
-                  onChanged: (value) {
-                    setState(
-                      () {
-                        this._radius = value;
-                        _addCircle(_lastLocation);
-                      },
-                    );
-                  },
-                ),
-              ],
+                    ],
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                    "Raggio",
+                    textAlign: TextAlign.left,
+                    style: Theme.of(context).textTheme.subhead,
+                  ),
+                  Slider(
+                    min: 10.0,
+                    max: 50.0,
+                    divisions: 4,
+                    label: '${_radius.toInt()} metri',
+                    value: _radius,
+                    onChanged: (value) {
+                      setState(
+                        () {
+                          this._radius = value;
+                          _addCircle(_lastLocation);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addPlaceIfPossible,
-        child: Icon(Icons.check),
-        backgroundColor: Theme.of(context).accentColor,
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target:
-                  _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
-              zoom: _zoom,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+        floatingActionButton: FloatingActionButton(
+          onPressed: _addPlaceIfPossible,
+          child: Icon(Icons.check),
+          backgroundColor: Theme.of(context).accentColor,
+        ),
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _lastLocation ??
+                    LatLng(37.42796133580664, -122.085749655962),
+                zoom: _zoom,
+              ),
+              zoomControlsEnabled: false,
+              // onCameraMove: (cameraPosition) {
+              //   setState(() {
+              //   addCircle(cameraPosition.target);
+              // });
+              //},
+              onMapCreated: (controller) {
+                controller.setMapStyle(AppTheme.isNightModeOn(context)
+                    ? _darkMapStyle
+                    : _normalMapStyle);
+                _controller.complete(controller);
+              },
+              onTap: (location) {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                setState(() {
+                  _lastLocation = location;
+                  _addCircle(location);
+                });
+              },
+              markers: _markers,
+              circles: _circles,
             ),
-            // onCameraMove: (cameraPosition) {
-            //   setState(() {
-            //   addCircle(cameraPosition.target);
-            // });
-            //},
-            onMapCreated: (controller) {
-              controller.setMapStyle(AppTheme.isNightModeOn(context)
-                  ? _darkMapStyle
-                  : _normalMapStyle);
-              _controller.complete(controller);
-            },
-            onTap: (location) {
-              setState(() {
-                _lastLocation = location;
-                _addCircle(location);
-              });
-            },
-            markers: _markers,
-            circles: _circles,
-          ),
-          ManualDetectionPositionLayer(),
-          Positioned(
-            top: 42,
-            right: 25,
-            child: GpsSmallFabButton(
-              onPressed: _gpsClick,
+            ManualDetectionPositionLayer(),
+            Positioned(
+              top: 42,
+              right: 25,
+              child: GpsSmallFabButton(
+                onPressed: _gpsClick,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -570,8 +579,7 @@ class _AddPlacePageState extends State<AddPlacePage> {
               "luogo premendo in un qualunque punto nella mappa. Puoi "
               "inoltre sceglierne il nome, il colore con quale "
               "visualizzarlo nella mappa, il raggio, e specificare se è "
-              "la tua abitazione principale. Passando più tempo nella tua "
-              "abitazione principale, otterrai un maggior numero di WOM.",
+              "la tua abitazione principale.",
               style: Theme.of(context).textTheme.body1,
             ),
           ],

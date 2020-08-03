@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:diary/core/errors/failures.dart';
 import 'package:diary/domain/entities/call_to_action.dart';
 import 'package:diary/domain/entities/call_to_action_response.dart';
+import 'package:diary/domain/entities/call_to_action_source.dart';
 import 'package:diary/domain/entities/day.dart';
 import 'package:diary/domain/entities/location.dart';
 import 'package:diary/infrastructure/data/call_to_action_remote_data_sources.dart';
@@ -9,14 +10,23 @@ import 'package:diary/infrastructure/data/locations_local_data_sources.dart';
 import 'package:diary/utils/extensions.dart';
 import 'package:diary/utils/location_utils.dart';
 import 'package:diary/utils/logger.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geodesy/geodesy.dart';
+import 'package:hive/hive.dart';
+import '../../database.dart' as db;
 
 abstract class LocationRepository {
   Future<Either<Failure, List<Location>>> getAllLocations();
   Future<Either<Failure, List<Location>>> getLocationsBetween(
       DateTime start, DateTime end);
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay();
-  Future<Either<Failure, List<Call>>> performCallToAction();
+  Future<Either<Failure, List<Call>>> performCallToAction(
+      DateTime lastCallToAction);
+  Either<Failure, List<Call>> getAllCalls();
+
+  Future updateCall(Call call);
+  Future deleteCall(Call call);
 }
 
 class LocationRepositoryImpl implements LocationRepository {
@@ -50,25 +60,32 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   Future<Map<DateTime, List<Location>>> readAndFilterLocationsPerDay() async {
-    Map<DateTime, List<Location>> locationsPerDay = {};
-    final locations = await locationsLocalDataSources.getAllLocations();
-    logger.i('[LocationUtils] total records: ${locations.length}');
-    final DateTime today = DateTime.now().midnight;
-    if (locations.isEmpty) {
-      return {today: []};
-    }
-    for (var loc in locations) {
-      try {
-        final date = loc.dateTime.midnight;
-        if (!locationsPerDay.containsKey(date)) {
-          locationsPerDay[date] = [];
-        }
-        locationsPerDay[date].add(loc);
-      } catch (ex) {
-        logger.e('[ERROR] _readLocations $ex');
+    final locationsPerDay = <DateTime, List<Location>>{};
+    try {
+      final locations = await locationsLocalDataSources.getAllLocations();
+      logger.i('[LocationUtils] total records: ${locations.length}');
+      final DateTime today = DateTime.now().midnight;
+      if (locations.isEmpty) {
+        return {today: []};
       }
+      for (var loc in locations) {
+        try {
+          final date = loc.dateTime.midnight;
+          if (!locationsPerDay.containsKey(date)) {
+            locationsPerDay[date] = [];
+          }
+          locationsPerDay[date].add(loc);
+        } catch (ex) {
+          logger.e('[ERROR] _readLocations $ex');
+          Hive.box<String>('logs')
+              .add('[ERROR] readAndFilterLocationsPerDay $ex');
+        }
+      }
+      logger.i('Locations from DB: ${locations.length}');
+    } catch (ex, stackTrace) {
+      print(ex);
+      Crashlytics.instance.recordError(ex, stackTrace);
     }
-    logger.i('Locations from DB: ${locations.length}');
     return locationsPerDay;
   }
 
@@ -86,20 +103,47 @@ class LocationRepositoryImpl implements LocationRepository {
 //  Data
 //  Lista di geohashtroncati
 
-  bool isLocationsInPolygon(List<Location> locations, List<LatLng> polygon) {
+//  bool isLocationsInPolygon(List<Location> locations, List<LatLng> polygon) {
+//    Geodesy geo = Geodesy();
+//    bool result = false;
+//    for (int i = 0; i < locations.length; i++) {
+//      if (locations[i].isGoodPoint) {
+//        final latLng =
+//            LatLng(locations[i].coords.latitude, locations[i].coords.longitude);
+//        result = geo.isGeoPointInPolygon(latLng, polygon);
+//        if (result) {
+//          break;
+//        }
+//      }
+//    }
+//    return result;
+//  }
+
+  int isLocationsInPolygon2(List<Location> locations, List<LatLng> polygon,
+      int maxTime, int counter) {
     Geodesy geo = Geodesy();
     bool result = false;
+    DateTime lastTimestamp;
+    int output = 0 + counter;
     for (int i = 0; i < locations.length; i++) {
       if (locations[i].isGoodPoint) {
+        if (result) {
+          output += locations[i].dateTime.difference(lastTimestamp).inSeconds;
+          result = false;
+          if (output >= maxTime) {
+            logger.i('stop locations cycle');
+            logger.i('partial time : $output');
+            break;
+          }
+        }
+
         final latLng =
             LatLng(locations[i].coords.latitude, locations[i].coords.longitude);
         result = geo.isGeoPointInPolygon(latLng, polygon);
-        if (result) {
-          break;
-        }
+        lastTimestamp = locations[i].dateTime;
       }
     }
-    return result;
+    return output == counter ? null : output;
   }
 
 /*  @override
@@ -136,7 +180,8 @@ class LocationRepositoryImpl implements LocationRepository {
   }*/
 
   @override
-  Future<Either<Failure, List<Call>>> performCallToAction() async {
+  Future<Either<Failure, List<Call>>> performCallToAction(
+      DateTime lastCallToAction) async {
     try {
       final result = await getAllLocations();
       final locations = List<Location>.unmodifiable(
@@ -145,38 +190,31 @@ class LocationRepositoryImpl implements LocationRepository {
         return left(NoLocationsFoundFailure());
       }
 
-      final callToAction = buildCallToAction(locations);
-//      final callToAction =
-//          CallToAction(lastCheckTimestamp: DateTime.now().toUtc(), activities: [
-//        DailyHash(
-//            date: DateTime.now().subtract(Duration(days: 3)).toUtc(),
-//            hashes: ['u0m7']),
-//        DailyHash(date: DateTime.now().toUtc(), hashes: ['srbb']),
-//        DailyHash(
-//            date: DateTime.now().subtract(Duration(days: 2)).toUtc(),
-//            hashes: ['srbb', 'sr9g']),
-//      ]);
+      final callToAction = buildCallToAction(locations, lastCallToAction);
       final response =
           await callToActionRemoteDataSources.sendData(callToAction);
-      final calls = processCallToActionResponse(response, locations);
-      return right(calls);
+      final calls = await processCallToActionResponse2(response);
+      for (int i = 0; i < calls.length; i++) {
+        await locationsLocalDataSources.saveNewCallToActionResult(calls[i]);
+      }
+      return right(locationsLocalDataSources.getAllCalls());
     } catch (e) {
       logger.e(e);
       return left(UnknownFailure(e.toString()));
     }
   }
 
-  CallToAction buildCallToAction(List<Location> locations) {
+  CallToAction buildCallToAction(
+      List<Location> locations, DateTime lastCallToActionDate) {
     final map = <DateTime, Set<String>>{};
     final callToAction = CallToAction(
-      lastCheckTimestamp: DateTime.now().toUtc(),
+      lastCheckTimestamp: lastCallToActionDate,
       activities: [],
     );
     for (int i = 0; i < locations.length; i++) {
       final loc = locations[i];
-      final date = loc.dateTime.isUtc
-          ? loc.dateTime.midnight
-          : loc.dateTime.midnight.toUtc();
+      final date = loc.dateTime.midnight;
+      print(date);
       if (!map.containsKey(date)) {
         map[date] = {};
       }
@@ -193,26 +231,104 @@ class LocationRepositoryImpl implements LocationRepository {
     return callToAction;
   }
 
-  List<Call> processCallToActionResponse(
-      CallToActionResponse response, List<Location> locations) {
-    List<Call> resultCalls = [];
+//  List<Call> processCallToActionResponse(
+//      CallToActionResponse response, List<Location> locations) {
+//    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
+//    final resultCalls = <Call>[];
+//    if (response.hasMatch) {
+//      final calls = response.calls;
+//
+//      for (int k = 0; k < calls.length; k++) {
+//        final call = calls[k];
+//        final source = call.source;
+//        if (source != null &&
+//            blackList.where((c) => c.source == source).isNotEmpty) {
+//          continue;
+//        }
+//        bool hasMatch = false;
+//        for (int i = 0; i < call.queries.length && !hasMatch; i++) {
+//          final q = call.queries[i];
+//          final coords = q.geometry.coordinates;
+//          hasMatch = isLocationsInPolygon(locations, coords);
+//        }
+//        if (hasMatch) {
+//          resultCalls.add(call);
+//          continue;
+//        }
+//      }
+//    }
+//    return resultCalls;
+//  }
+
+  Future<List<Call>> processCallToActionResponse2(
+      CallToActionResponse response) async {
+    final blackList = Hive.box<CallToActionSource>('blackList').values.toList();
+    final resultCalls = <Call>[];
     if (response.hasMatch) {
       final calls = response.calls;
 
       for (int k = 0; k < calls.length; k++) {
         final call = calls[k];
-        bool hasMatch = false;
-        for (int i = 0; i < call.queries.length && !hasMatch; i++) {
-          final q = call.queries[i];
-          hasMatch = isLocationsInPolygon(locations, q.geometry.coordinates);
+        final maxTime = call.maxTime ?? 0;
+        logger.i('maxTime = $maxTime');
+        final source = call.source;
+        if (source != null &&
+            blackList.where((c) => c.source == source).isNotEmpty) {
+          continue;
         }
-        if (hasMatch) {
-          resultCalls.add(Call(description: call.description, url: call.url));
+        int partialTime = 0;
+        for (int i = 0; i < call.queries.length; i++) {
+          final q = call.queries[i];
+          final locations =
+              await locationsLocalDataSources.getLocationsBetween(q.from, q.to);
+          if (locations.isEmpty) {
+            continue;
+          }
+          final coords = q.geometry.coordinates;
+          final result =
+              isLocationsInPolygon2(locations, coords, maxTime, partialTime);
+          if (result != null) {
+            partialTime = result;
+          } else {
+            continue;
+          }
+          logger.i('partialTime = $partialTime');
+          if (partialTime >= maxTime) {
+            logger.i('stop query cycle');
+            logger.i('matching');
+            resultCalls.add(call);
+            break;
+          }
+        }
+        if (partialTime >= maxTime) {
+          logger.i('go to next call');
           continue;
         }
       }
     }
     return resultCalls;
+  }
+
+  @override
+  Either<Failure, List<Call>> getAllCalls() {
+    try {
+      final calls = locationsLocalDataSources.getAllCalls();
+//      if (calls.isEmpty) return left(NoCallsFoundFailure());
+      return right(calls);
+    } catch (e) {
+      logger.e(e);
+      return left(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future updateCall(Call call) async {
+    await locationsLocalDataSources.updateCall(call);
+  }
+
+  @override
+  Future deleteCall(Call call) async {
+    await locationsLocalDataSources.deleteCall(call);
   }
 }
 

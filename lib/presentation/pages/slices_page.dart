@@ -42,9 +42,9 @@ class _TabBarDemoState extends State<TabBarDemo> {
 
   updateSlices() async {
     final output = LocationUtils.aggregateLocationsInSlices3(
-      date: widget.locations.first.dateTime,
-      locations: widget.locations,
-    );
+        date: widget.locations.first.dateTime,
+        locations: widget.locations,
+        yesterdayPlaces: {});
     slices = output.slices;
     places = output.places;
   }
@@ -91,13 +91,13 @@ class _TabBarDemoState extends State<TabBarDemo> {
   }
 
   _importJson() async {
-    final locations = await ImportExportUtils.importJSON();
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
-      return TabBarDemo(
-        locations: locations,
-      );
-    }));
+//    final locations = await ImportExportUtils.importJSON();
+//    Navigator.of(context)
+//        .push(MaterialPageRoute(builder: (BuildContext context) {
+//      return TabBarDemo(
+//        locations: locations,
+//      );
+//    }));
   }
 }
 
@@ -165,8 +165,8 @@ class SlicesPage extends StatelessWidget {
     if (isPlace) {
       Set<String> list = {};
       slice.places.forEach((identifier) {
-//        list.add(identifier);
-        list.add(Hive.box<Place>('places').get(identifier).name);
+        list.add(identifier);
+//        list.add(Hive.box<Place>('places').get(identifier).name);
       });
       return list.toString();
     }

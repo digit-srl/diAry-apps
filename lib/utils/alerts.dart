@@ -7,15 +7,15 @@ import 'package:rflutter_alert/rflutter_alert.dart';
  * dialog templates.
  */
 class Alerts {
-
   // alerts' common custom style
-  static AlertStyle customStyle(BuildContext context) {
+  static AlertStyle customStyle(BuildContext context,
+      {isOverlayTapDismiss = true}) {
     return AlertStyle(
       animationType: AnimationType.grow,
       isCloseButton: false,
-      isOverlayTapDismiss: true,
+      isOverlayTapDismiss: isOverlayTapDismiss,
       descStyle: Theme.of(context).textTheme.body1,
-      overlayColor: Colors.black.withOpacity(0.8),
+      overlayColor: Colors.black.withOpacity(0.6),
       backgroundColor: Theme.of(context).primaryColor,
       animationDuration: Duration(milliseconds: 200),
       alertBorder: RoundedRectangleBorder(
@@ -28,6 +28,18 @@ class Alerts {
     );
   }
 
+  static showLoading(BuildContext context) async {
+    return await Alert(
+      context: context,
+      style: customStyle(context, isOverlayTapDismiss: false),
+      content: Center(
+        child: CircularProgressIndicator(),
+      ),
+      title: '',
+      buttons: [],
+    ).show();
+  }
+
   // alert with a single button. At the end of the passed action, it dismiss the
   // dialog automatically. If button text or actions are not passed, it
   // implements a standard behavior (OK as button text, dismiss as action)
@@ -37,7 +49,6 @@ class Alerts {
         context: context,
         title: title,
         desc: description,
-        style: customStyle(context),
         buttons: [
           DialogButton(
               radius: BorderRadius.circular(10.0),
@@ -71,24 +82,23 @@ class Alerts {
         style: customStyle(context),
         buttons: [
           DialogButton(
-            radius: BorderRadius.circular(10.0),
-            child: Text(
-              negativeButtonText ?? "Annulla",
-              style: Theme.of(context)
-                  .textTheme
-                  .button
-                  .copyWith(color: Theme.of(context).textTheme.body2.color),
-            ),
-            color: Colors.transparent,
+              radius: BorderRadius.circular(10.0),
+              child: Text(
+                negativeButtonText ?? "Annulla",
+                style: Theme.of(context)
+                    .textTheme
+                    .button
+                    .copyWith(color: Theme.of(context).textTheme.body2.color),
+              ),
+              color: Colors.transparent,
               onPressed: onNegative == null
                   ? () {
-                Navigator.pop(context);
-              }
+                      Navigator.pop(context);
+                    }
                   : () {
-                onNegative();
-                Navigator.pop(context);
-              }
-          ),
+                      Navigator.pop(context);
+                      onNegative();
+                    }),
           DialogButton(
             radius: BorderRadius.circular(10.0),
             child: Text(
@@ -97,8 +107,8 @@ class Alerts {
             ),
             color: Theme.of(context).accentColor,
             onPressed: () {
-              onPositive();
               Navigator.pop(context);
+              onPositive();
             },
           )
         ]).show();
@@ -148,6 +158,36 @@ class Alerts {
         ]).show();
   }
 
+  // Alert with a personalized content and no buttons.
+  // It has a custom style to remove the default border of the buttons, that,
+  // without buttons, makes the dialog asymmetric.
+  static showAlertWithContentAndNoButtons(BuildContext context, String title,
+      String description, Widget content) async {
+    return await Alert(
+      context: context,
+      title: title,
+      desc: description,
+      style: AlertStyle(
+        animationType: AnimationType.grow,
+        isCloseButton: false,
+        isOverlayTapDismiss: true,
+        descStyle: Theme.of(context).textTheme.body1,
+        overlayColor: Colors.black.withOpacity(0.6),
+        backgroundColor: Theme.of(context).primaryColor,
+        animationDuration: Duration(milliseconds: 200),
+        alertBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          side: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+        buttonAreaPadding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+        titleStyle: Theme.of(context).textTheme.headline,
+      ),
+      buttons: [],
+      content: content,
+    ).show();
+  }
 
   // Alert a content, passed as widget, and an action button
   // At the end of the passed actions, it dismiss the dialog automatically.
@@ -155,12 +195,11 @@ class Alerts {
   // (OK as button text, dismiss as action)
   static showAlertWithContent(BuildContext context, String title,
       Widget content, String positiveButtonText, Function onPositive) async {
-
     await Alert(
-      style: customStyle(context),
-      context: context,
-      title: title,
-      content: content,
+        style: customStyle(context),
+        context: context,
+        title: title,
+        content: content,
         buttons: [
           DialogButton(
               radius: BorderRadius.circular(10.0),
@@ -172,10 +211,9 @@ class Alerts {
                     .copyWith(color: Theme.of(context).textTheme.body2.color),
               ),
               color: Colors.transparent,
-              onPressed:  () {
+              onPressed: () {
                 Navigator.pop(context);
-              }
-          ),
+              }),
           DialogButton(
             radius: BorderRadius.circular(10.0),
             child: Text(
@@ -188,7 +226,6 @@ class Alerts {
               Navigator.pop(context);
             },
           )
-        ]
-    ).show();
+        ]).show();
   }
 }

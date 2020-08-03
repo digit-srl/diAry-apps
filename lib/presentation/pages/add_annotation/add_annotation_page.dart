@@ -154,6 +154,7 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
             rotateGesturesEnabled: false,
             tiltGesturesEnabled: false,
             myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
             initialCameraPosition: CameraPosition(
               target:
                   _lastLocation ?? LatLng(37.42796133580664, -122.085749655962),
@@ -339,11 +340,9 @@ class _AddAnnotationPageState extends State<AddAnnotationPage> {
               height: 8,
             ),
             Text(
-              "Da qui è possibile aggiungere segnalare situazioni "
-              "particolari degne di nota. L'annotazione verrà applicata "
+              "Da qui è possibile annotare situazioni di cui vuoi conservare memoria. L'annotazione verrà applicata "
               "alla tua posizione corrente, per cui è necessario autorizzare "
-              "l'accesso alla localizzazione da parte dell'app per poterne "
-              "aggiungere una.",
+              "l'accesso alla localizzazione da parte dell'app.",
               style: Theme.of(context).textTheme.body1,
             ),
           ],

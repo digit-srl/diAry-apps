@@ -11,29 +11,29 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>diAry</string>
+	<string>WOM diAry</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>wom</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requests your location when it's in use and in background.</string>
+	<string>WOM diAry requests your location when it’s in use and in background in order to track your movements. All information is stored on your device only.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requests to always update your location data.</string>
-	<key>NSLocationUsageDescription</key>
-	<string>This app requests to use your location.</string>
+	<string>WOM diAry requests your location in order to track your movements. All information is stored on your device only.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requests your location when it's in use.</string>
+	<string>WOM diAry requests your location when it’s in use in order to track your movements. All information is stored on your device only.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>This app requests the device's accelerators to access movement data.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requests access to your files to store the location data on your device.</string>
+	<string>WOM diAry requests your accelerometer data in order to detect your movements and activate location tracking.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
