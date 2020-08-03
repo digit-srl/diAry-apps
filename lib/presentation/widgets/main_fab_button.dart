@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:diary/presentation/pages/add_annotation/add_annotation_page.dart';
 import 'package:diary/presentation/pages/add_place/add_place_page.dart';
 import 'package:diary/utils/custom_icons.dart';
+import 'package:diary/utils/generic_utils.dart';
 import 'package:diary/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:unicorndial/unicorndial.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /*
  * The main expandable FAB of the app, that brings possibility to add places
@@ -48,10 +51,10 @@ class MainFabButton extends StatelessWidget {
   List<UnicornButton> _buildMenuItems(BuildContext context) {
     return <UnicornButton>[
       UnicornButton(
-        labelShadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
         hasLabel: true,
         labelText: "Aggiungi luogo",
         labelColor: Theme.of(context).textTheme.body2.color,
+        labelShadowColor: Theme.of(context).primaryColor.withOpacity(0.5),
         labelBackgroundColor: Theme.of(context).primaryColor,
         currentButton: FloatingActionButton(
           heroTag: "aggiungi luogo",

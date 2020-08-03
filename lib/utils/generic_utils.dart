@@ -174,11 +174,11 @@ class GenericUtils {
     }
   }
 
-  static launchURL(String url) async {
+  static Future<bool> launchURL(String url) async {
     if (await canLaunch(url)) {
-      await launch(url);
+      return await launch(url);
     } else {
-      throw 'Could not launch $url';
+      return false;
     }
   }
 
@@ -190,7 +190,7 @@ class GenericUtils {
       if (Platform.isAndroid) {
         isInstalled = await DeviceApps.isAppInstalled('social.wom.pocket');
       } else {
-        isInstalled = await canLaunch('1466969163://');
+        isInstalled = await canLaunch('wom://transfer/abcedfg');
       }
       logger.i('installed $isInstalled');
       return isInstalled ?? false;

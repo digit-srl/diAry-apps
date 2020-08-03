@@ -75,23 +75,41 @@ class QueryAdapter extends TypeAdapter<Query> {
     var fields = <int, dynamic>{
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Query(
-      from: fields[0] as DateTime,
-      to: fields[1] as DateTime,
-      geometry: fields[2] as Geometry,
-    );
+    try {
+      return Query(
+        from: fields[3] as DateTime,
+        to: fields[4] as DateTime,
+        geometry: fields[2] as Geometry,
+        fromS: fields[0] as String,
+        toS: fields[1] as String,
+      );
+    } catch (ex) {
+      logger.e(ex);
+      final now = DateTime.now();
+      return Query(
+        from: now,
+        to: now.add(Duration(hours: 1)),
+        geometry: fields[2] as Geometry,
+        fromS: now.toIso8601String(),
+        toS: now.toIso8601String(),
+      );
+    }
   }
 
   @override
   void write(BinaryWriter writer, Query obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.from)
+      ..write(obj.fromS)
       ..writeByte(1)
-      ..write(obj.to)
+      ..write(obj.toS)
       ..writeByte(2)
-      ..write(obj.geometry);
+      ..write(obj.geometry)
+      ..writeByte(3)
+      ..write(obj.from)
+      ..writeByte(4)
+      ..write(obj.to);
   }
 }
 
