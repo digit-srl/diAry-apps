@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:diary/domain/entities/call_to_action_response.dart';
 import 'package:diary/domain/entities/location.dart';
@@ -68,11 +69,21 @@ class LocationsLocalDataSourcesImpl implements LocationsLocalDataSources {
     return locations;
   }
 
+  //2020-09-07T11:00:00.000Z
+  //2020-09-07T13:00:00.000Z
   @override
   Future<List<Location>> getLocationsBetween(
       DateTime start, DateTime end) async {
-    final fromString = start.toIso8601String();
-    final toString = end.toIso8601String();
+    String fromString;
+    String toString;
+    if (Platform.isAndroid) {
+      fromString = start.toIso8601String();
+      toString = end.toIso8601String();
+    } else if (Platform.isIOS) {
+      fromString = (start.millisecondsSinceEpoch / 1000).toString();
+      toString = (end.millisecondsSinceEpoch / 1000).toString();
+    }
+
     final List<Map<String, dynamic>> list =
         await db.DiAryDatabase.get().getLocationsBetween(fromString, toString);
     final locations = await compute<List<Map<String, dynamic>>, List<Location>>(
